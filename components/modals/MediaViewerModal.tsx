@@ -1,6 +1,6 @@
 'use client';
 
-import { X, Download, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, Download, ChevronLeft, ChevronRight, Lock } from 'lucide-react';
 import { MediaItem } from '@/types';
 import { formatFileSize } from '@/lib/utils';
 
@@ -10,10 +10,16 @@ interface MediaViewerModalProps {
   mediaItem: MediaItem | null;
   allItems?: MediaItem[];
   onNavigate?: (direction: 'prev' | 'next') => void;
+  canDownload?: boolean;
 }
 
-export default function MediaViewerModal({ isOpen, onClose, mediaItem, allItems = [], onNavigate }: MediaViewerModalProps) {
+export default function MediaViewerModal({ isOpen, onClose, mediaItem, allItems = [], onNavigate, canDownload = true }: MediaViewerModalProps) {
   if (!isOpen || !mediaItem) return null;
+
+  const preventRightClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    return false;
+  };
 
   const handleDownload = async () => {
     try {
@@ -45,12 +51,22 @@ export default function MediaViewerModal({ isOpen, onClose, mediaItem, allItems 
         <X className="w-6 h-6 text-white" />
       </button>
 
-      <button 
-        onClick={handleDownload}
-        className="absolute top-4 right-16 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors z-10"
-      >
-        <Download className="w-6 h-6 text-white" />
-      </button>
+      {canDownload ? (
+        <button 
+          onClick={handleDownload}
+          className="absolute top-4 right-16 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors z-10"
+          title="Download"
+        >
+          <Download className="w-6 h-6 text-white" />
+        </button>
+      ) : (
+        <div 
+          className="absolute top-4 right-16 p-2 bg-red-500/50 rounded-full z-10 cursor-not-allowed"
+          title="Downloads are disabled"
+        >
+          <Lock className="w-6 h-6 text-white" />
+        </div>
+      )}
 
       {onNavigate && hasPrev && (
         <button 
@@ -76,6 +92,8 @@ export default function MediaViewerModal({ isOpen, onClose, mediaItem, allItems 
             src={mediaItem.url} 
             alt={mediaItem.title || ''} 
             className="max-w-full max-h-full object-contain"
+            onContextMenu={preventRightClick}
+            draggable={false}
           />
         )}
         
@@ -85,6 +103,8 @@ export default function MediaViewerModal({ isOpen, onClose, mediaItem, allItems 
             controls 
             autoPlay
             className="max-w-full max-h-full"
+            onContextMenu={preventRightClick}
+            controlsList="nodownload"
           />
         )}
         
@@ -111,13 +131,20 @@ export default function MediaViewerModal({ isOpen, onClose, mediaItem, allItems 
         {mediaItem.type === 'other' && (
           <div className="bg-white/10 rounded-lg p-8 backdrop-blur text-white text-center">
             <div className="text-lg font-semibold mb-4">{mediaItem.title}</div>
-            <button 
-              onClick={handleDownload}
-              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg flex items-center gap-2 mx-auto"
-            >
-              <Download className="w-5 h-5" />
-              Download File
-            </button>
+            {canDownload ? (
+              <button 
+                onClick={handleDownload}
+                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg flex items-center gap-2 mx-auto"
+              >
+                <Download className="w-5 h-5" />
+                Download File
+              </button>
+            ) : (
+              <div className="px-6 py-3 bg-gray-600 rounded-lg flex items-center gap-2 mx-auto cursor-not-allowed opacity-60">
+                <Lock className="w-5 h-5" />
+                Downloads Disabled
+              </div>
+            )}
           </div>
         )}
       </div>

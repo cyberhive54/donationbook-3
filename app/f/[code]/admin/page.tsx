@@ -1645,6 +1645,7 @@ function AdminPageContent() {
         festivalId={festival?.id || ""}
         festivalCode={festival?.code || ""}
         initial={editingAlbum}
+        festival={festival}
       />
 
       <ManageAlbumMediaModal
