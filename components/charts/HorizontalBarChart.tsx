@@ -28,7 +28,7 @@ export default function HorizontalBarChart({ data, title, colors = DEFAULT_COLOR
               <CartesianGrid strokeDasharray="3 3" horizontal={false} />
               <XAxis type="number" tick={{ fontSize: 12 }} />
               <YAxis type="category" dataKey="name" tick={{ fontSize: 12 }} width={80} />
-              <Tooltip formatter={(value: number) => `₹${value.toLocaleString()}`} />
+              <Tooltip formatter={(value: number | undefined) => `₹${(value ?? 0).toLocaleString()}`} />
               <Bar dataKey="value" radius={[0, 8, 8, 0]}>
                 {data.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />

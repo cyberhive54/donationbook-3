@@ -63,7 +63,7 @@ export default function DonutChart({ data, title, colors = DEFAULT_COLORS }: Don
                     <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value: number) => `₹${value.toLocaleString()}`} />
+                <Tooltip formatter={(value: number | undefined) => `₹${(value ?? 0).toLocaleString()}`} />
               </PieChart>
             </ResponsiveContainer>
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">

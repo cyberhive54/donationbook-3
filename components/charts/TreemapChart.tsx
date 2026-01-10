@@ -91,7 +91,7 @@ export default function TreemapChart({ data, title, colors = DEFAULT_COLORS }: T
               stroke="#fff"
               content={<CustomContent />}
             >
-              <Tooltip formatter={(value: number) => `₹${value.toLocaleString()}`} />
+              <Tooltip formatter={(value: number | undefined) => `₹${(value ?? 0).toLocaleString()}`} />
             </Treemap>
           </ResponsiveContainer>
           <div className="mt-4 grid grid-cols-2 gap-2">

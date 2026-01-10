@@ -49,7 +49,7 @@ export default function RadialBarChart({ data, title, colors = DEFAULT_COLORS }:
                 cornerRadius={10}
               />
               <Tooltip 
-                formatter={(value: number) => `₹${value.toLocaleString()}`}
+                formatter={(value: number | undefined) => `₹${(value ?? 0).toLocaleString()}`}
                 contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '8px' }}
               />
             </RechartsRadialBarChart>
