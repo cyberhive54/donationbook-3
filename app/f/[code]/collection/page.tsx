@@ -95,7 +95,7 @@ export default function CollectionPage() {
   }, [collections]);
 
   const dailyCollections = useMemo(() => {
-    return groupByDateBetween(collections, festival?.event_start_date || null, festival?.event_end_date || null);
+    return groupByDateBetween(collections, festival?.ce_start_date || null, festival?.ce_end_date || null);
   }, [collections, festival]);
 
   const bgStyle: React.CSSProperties = festival?.theme_bg_image_url
@@ -146,7 +146,7 @@ export default function CollectionPage() {
 
               <h2 className="text-2xl font-bold text-gray-800 mt-12 mb-6">Statistics</h2>
               <div className="space-y-6">
-                <CollectionVsExpenseChart collections={collections} expenses={expenses} festivalStartDate={festival.event_start_date} festivalEndDate={festival.event_end_date} />
+                <CollectionVsExpenseChart collections={collections} expenses={expenses} festivalStartDate={festival.ce_start_date} festivalEndDate={festival.ce_end_date} />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <PieChart data={collectionsByGroup} title="Collections by Group" />

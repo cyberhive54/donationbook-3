@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { X, Upload, Image as ImageIcon } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
-import { Album } from '@/types';
+import { Album, Festival } from '@/types';
 import { useSession } from '@/lib/hooks/useSession';
 
 interface AddEditAlbumModalProps {
@@ -14,15 +14,17 @@ interface AddEditAlbumModalProps {
   festivalId: string;
   festivalCode: string;
   initial?: Album | null;
+  festival?: Festival | null;
 }
 
-export default function AddEditAlbumModal({ isOpen, onClose, onSuccess, festivalId, festivalCode, initial }: AddEditAlbumModalProps) {
+export default function AddEditAlbumModal({ isOpen, onClose, onSuccess, festivalId, festivalCode, initial, festival }: AddEditAlbumModalProps) {
   const { session } = useSession(festivalCode);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [year, setYear] = useState<number | ''>('');
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string>('');
+  const [allowDownload, setAllowDownload] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -32,12 +34,14 @@ export default function AddEditAlbumModal({ isOpen, onClose, onSuccess, festival
         setDescription(initial.description || '');
         setYear(initial.year || '');
         setCoverPreview(initial.cover_url || '');
+        setAllowDownload(initial.allow_download !== false);
         setCoverFile(null);
       } else {
         setTitle('');
         setDescription('');
         setYear('');
         setCoverPreview('');
+        setAllowDownload(true);
         setCoverFile(null);
       }
     }
@@ -86,6 +90,7 @@ export default function AddEditAlbumModal({ isOpen, onClose, onSuccess, festival
           description: description.trim() || null,
           year: year === '' ? null : Number(year),
           cover_url: coverUrl || null,
+          allow_download: allowDownload,
         }).eq('id', initial.id);
         if (error) throw error;
 
@@ -111,6 +116,7 @@ export default function AddEditAlbumModal({ isOpen, onClose, onSuccess, festival
           description: description.trim() || null,
           year: year === '' ? null : Number(year),
           cover_url: coverUrl || null,
+          allow_download: allowDownload,
         }).select('id').single();
         if (error) throw error;
         albumId = insertedData.id;
@@ -184,6 +190,28 @@ export default function AddEditAlbumModal({ isOpen, onClose, onSuccess, festival
               <input type="file" accept="image/*" onChange={handleCoverChange} className="hidden" />
             </label>
             <div className="text-xs text-gray-500 mt-1">Max 5MB. JPG, PNG, WEBP</div>
+          </div>
+          
+          <div>
+            <label className={`flex items-center gap-2 ${festival?.allow_media_download === false ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}>
+              <input 
+                type="checkbox" 
+                checked={allowDownload} 
+                onChange={(e) => setAllowDownload(e.target.checked)}
+                disabled={festival?.allow_media_download === false}
+                className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              />
+              <span className="text-sm font-medium text-gray-700">Allow visitors to download media from this album</span>
+            </label>
+            {festival?.allow_media_download === false ? (
+              <div className="text-xs text-red-600 mt-1 font-medium">
+                ⚠️ Festival-wide downloads are disabled. Enable them in Festival Settings first.
+              </div>
+            ) : (
+              <div className="text-xs text-gray-500 mt-1">
+                Control whether visitors can download media from this specific album
+              </div>
+            )}
           </div>
           
           <div className="flex gap-2 pt-2 flex-shrink-0 border-t border-gray-200 mt-4">

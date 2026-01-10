@@ -501,6 +501,7 @@ export default function ManageAlbumMediaModal({ isOpen, onClose, albumId, festiv
         onClose={() => setViewingMedia(null)}
         mediaItem={viewingMedia}
         allItems={filtered}
+        canDownload={true}
         onNavigate={(direction) => {
           const currentIndex = filtered.findIndex(item => item.id === viewingMedia?.id);
           if (direction === 'prev' && currentIndex > 0) {

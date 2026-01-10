@@ -109,6 +109,12 @@ export default function ShowcasePage() {
     }
   };
 
+  const preventRightClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    toast.error('Right-click is disabled on media');
+    return false;
+  };
+
   const toggleSelect = (id: string) => {
     setSelectedItems(prev => {
       const newSet = new Set(prev);
@@ -259,10 +265,22 @@ export default function ShowcasePage() {
                       onClick={() => setViewingMedia(item)}
                     >
                       {item.type === 'image' ? (
-                        <img src={item.url} alt={item.title || ''} className="w-full h-36 object-cover" />
+                        <img 
+                          src={item.url} 
+                          alt={item.title || ''} 
+                          className="w-full h-36 object-cover" 
+                          onContextMenu={preventRightClick}
+                          draggable={false}
+                        />
                       ) : item.type === 'video' && item.thumbnail_url ? (
                         <div className="relative">
-                          <img src={item.thumbnail_url} alt={item.title || ''} className="w-full h-36 object-cover" />
+                          <img 
+                            src={item.thumbnail_url} 
+                            alt={item.title || ''} 
+                            className="w-full h-36 object-cover" 
+                            onContextMenu={preventRightClick}
+                            draggable={false}
+                          />
                           <div className="absolute inset-0 flex items-center justify-center bg-black/30">
                             <Film className="w-8 h-8 text-white" />
                           </div>
@@ -333,6 +351,7 @@ export default function ShowcasePage() {
         onClose={() => setViewingMedia(null)}
         mediaItem={viewingMedia}
         allItems={filtered}
+        canDownload={canDownload}
         onNavigate={(direction) => {
           const currentIndex = filtered.findIndex(item => item.id === viewingMedia?.id);
           if (direction === 'prev' && currentIndex > 0) {
