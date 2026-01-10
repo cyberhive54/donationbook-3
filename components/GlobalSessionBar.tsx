@@ -46,40 +46,72 @@ export default function GlobalSessionBar({ festivalCode, currentPage = 'other' }
 
   const handleLogout = async () => {
     // Log logout activity before clearing session
-    if (session && (session.type === 'admin' || session.type === 'super_admin')) {
-      console.log('[GlobalSessionBar] Attempting to log logout activity:', {
-        festival_id: session.festivalId,
-        admin_id: session.type === 'admin' ? session.adminId : null,
-        session_type: session.type,
-        action_type: session.type === 'admin' ? 'logout' : 'super_admin_logout'
-      });
-      
-      try {
-        const { data: logData, error: logError } = await supabase.rpc('log_admin_activity', {
-          p_festival_id: session.festivalId,
-          p_admin_id: session.type === 'admin' ? session.adminId : null,
-          p_action_type: session.type === 'admin' ? 'logout' : 'super_admin_logout',
-          p_action_details: { logout_time: new Date().toISOString() },
-          p_target_type: null,
-          p_target_id: null
+    if (session) {
+      if (session.type === 'admin' || session.type === 'super_admin') {
+        // Log admin/super_admin logout
+        console.log('[GlobalSessionBar] Attempting to log logout activity:', {
+          festival_id: session.festivalId,
+          admin_id: session.type === 'admin' ? session.adminId : null,
+          session_type: session.type,
+          action_type: session.type === 'admin' ? 'logout' : 'super_admin_logout'
         });
         
-        console.log('[GlobalSessionBar] Logout activity log result:', {
-          data: logData,
-          error: logError,
-          errorMessage: logError?.message,
-          errorCode: logError?.code,
-          errorDetails: logError?.details,
-          errorHint: logError?.hint
-        });
-        
-        if (logError) {
-          console.error('[GlobalSessionBar] Error logging logout activity:', logError);
+        try {
+          const { data: logData, error: logError } = await supabase.rpc('log_admin_activity', {
+            p_festival_id: session.festivalId,
+            p_admin_id: session.type === 'admin' ? session.adminId : null,
+            p_action_type: session.type === 'admin' ? 'logout' : 'super_admin_logout',
+            p_action_details: { logout_time: new Date().toISOString() },
+            p_target_type: null,
+            p_target_id: null
+          });
+          
+          console.log('[GlobalSessionBar] Logout activity log result:', {
+            data: logData,
+            error: logError,
+            errorMessage: logError?.message,
+            errorCode: logError?.code,
+            errorDetails: logError?.details,
+            errorHint: logError?.hint
+          });
+          
+          if (logError) {
+            console.error('[GlobalSessionBar] Error logging logout activity:', logError);
+            // Continue with logout even if logging fails
+          }
+        } catch (logError: any) {
+          console.error('[GlobalSessionBar] Exception logging logout activity:', logError);
           // Continue with logout even if logging fails
         }
-      } catch (logError: any) {
-        console.error('[GlobalSessionBar] Exception logging logout activity:', logError);
-        // Continue with logout even if logging fails
+      } else if (session.type === 'visitor') {
+        // Log visitor logout
+        console.log('[GlobalSessionBar] Logging visitor logout:', {
+          festival_id: session.festivalId,
+          visitor_name: session.visitorName,
+          session_id: session.sessionId
+        });
+        
+        try {
+          const { data: logData, error: logError } = await supabase.rpc('log_visitor_logout', {
+            p_festival_id: session.festivalId,
+            p_visitor_name: session.visitorName,
+            p_session_id: session.sessionId,
+            p_logout_method: 'manual'
+          });
+          
+          console.log('[GlobalSessionBar] Visitor logout log result:', {
+            data: logData,
+            error: logError
+          });
+          
+          if (logError) {
+            console.error('[GlobalSessionBar] Error logging visitor logout:', logError);
+            // Continue with logout even if logging fails
+          }
+        } catch (logError: any) {
+          console.error('[GlobalSessionBar] Exception logging visitor logout:', logError);
+          // Continue with logout even if logging fails
+        }
       }
     }
     

@@ -40,6 +40,8 @@ export interface Festival {
   banner_show_dates?: boolean
   banner_show_duration?: boolean
   admin_display_preference?: "code" | "name"
+  // Download control
+  allow_media_download?: boolean
 }
 
 export interface BasicInfo {
@@ -129,6 +131,8 @@ export interface Album {
   // Multi-admin tracking
   created_by_admin_id?: string
   updated_by_admin_id?: string
+  // Download control
+  allow_download?: boolean
 }
 
 export type MediaType = "image" | "video" | "audio" | "pdf" | "other"
@@ -145,6 +149,9 @@ export interface MediaItem {
   duration_sec?: number
   created_at?: string
   thumbnail_url?: string
+  // External link support
+  is_external_link?: boolean
+  external_link?: string
 }
 
 export interface Group {
@@ -228,6 +235,10 @@ export interface AccessLog {
   admin_id?: string
   user_password_id?: string
   auth_method?: string
+  // Logout tracking
+  logout_at?: string | null
+  session_duration_seconds?: number | null
+  logout_method?: string | null
 }
 
 export interface FestivalPassword {
@@ -405,4 +416,31 @@ export interface TopExpenseItem {
   item: string
   amount: number
   percentage: number
+}
+
+// Analytics Card Configuration
+export type AnalyticsCardType = 
+  | 'festival_snapshot'
+  | 'collection_target'
+  | 'previous_year_summary'
+  | 'donation_buckets'
+  | 'time_of_day'
+  | 'daily_net_balance'
+  | 'top_expenses'
+  | 'transaction_count_by_day'
+  | 'collections_by_group'
+  | 'collections_by_mode'
+  | 'expenses_by_category'
+  | 'expenses_by_mode'
+  | 'top_donators';
+
+export interface AnalyticsCard {
+  id: string
+  festival_id: string
+  card_type: AnalyticsCardType
+  is_visible: boolean
+  sort_order: number
+  card_config?: Record<string, any>
+  created_at?: string
+  updated_at?: string
 }
