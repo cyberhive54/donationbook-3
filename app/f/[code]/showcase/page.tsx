@@ -8,13 +8,16 @@ import { Album, MediaItem, Festival } from '@/types';
 import BottomNav from '@/components/BottomNav';
 import GlobalSessionBar from '@/components/GlobalSessionBar';
 import { getThemeStyles, getThemeClasses } from '@/lib/theme';
-import { Download, Eye, FileText, Film, Music, FileIcon, Image as ImageIcon } from 'lucide-react';
+import { Download, Eye, FileText, Film, Music, FileIcon, Image as ImageIcon, Lock } from 'lucide-react';
 import { formatFileSize } from '@/lib/utils';
 import MediaViewerModal from '@/components/modals/MediaViewerModal';
+import { useSession } from '@/lib/hooks/useSession';
+import toast from 'react-hot-toast';
 
 export default function ShowcasePage() {
   const params = useParams<{ code: string }>();
   const code = (params?.code as string) || '';
+  const { session } = useSession(code);
 
   const [festival, setFestival] = useState<Festival | null>(null);
   const [albums, setAlbums] = useState<Album[]>([]);
@@ -23,6 +26,27 @@ export default function ShowcasePage() {
   const [filter, setFilter] = useState<'all'|'image'|'video'|'audio'|'pdf'|'other'>('all');
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [viewingMedia, setViewingMedia] = useState<MediaItem | null>(null);
+  
+  // Check if download is allowed
+  const canDownload = useMemo(() => {
+    // Admins and super_admins can always download
+    if (session?.type === 'admin' || session?.type === 'super_admin') {
+      return true;
+    }
+    
+    // For visitors, check festival and album settings
+    // Festival setting overrides album setting only when festival denies
+    if (festival?.allow_media_download === false) {
+      return false;
+    }
+    
+    // If festival allows, check album setting
+    if (active?.allow_download === false) {
+      return false;
+    }
+    
+    return true;
+  }, [festival, active, session]);
 
   useEffect(() => {
     const fetchAlbums = async () => {
@@ -55,7 +79,19 @@ export default function ShowcasePage() {
   const themeClasses = getThemeClasses(festival);
 
   const handleDownload = async (item: MediaItem) => {
+    // Check download permission
+    if (!canDownload) {
+      toast.error('Downloads are disabled for this festival/album');
+      return;
+    }
+    
     try {
+      // If it's an external link, open in new tab
+      if (item.is_external_link && item.external_link) {
+        window.open(item.external_link, '_blank');
+        return;
+      }
+      
       const response = await fetch(item.url);
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
@@ -66,8 +102,10 @@ export default function ShowcasePage() {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      toast.success('Download started');
     } catch (error) {
       console.error('Download failed:', error);
+      toast.error('Download failed');
     }
   };
 
@@ -84,7 +122,15 @@ export default function ShowcasePage() {
   };
 
   const handleBulkDownload = async () => {
+    // Check download permission
+    if (!canDownload) {
+      toast.error('Downloads are disabled for this festival/album');
+      return;
+    }
+    
     const selectedMediaItems = items.filter(item => selectedItems.has(item.id));
+    toast.success(`Downloading ${selectedMediaItems.length} items...`);
+    
     for (const item of selectedMediaItems) {
       await handleDownload(item);
       await new Promise(resolve => setTimeout(resolve, 500));
@@ -167,12 +213,24 @@ export default function ShowcasePage() {
                     {selectedItems.size} selected · {formatFileSize(selectedTotalSize)}
                   </span>
                   <div className="flex gap-2">
-                    <button 
-                      onClick={handleBulkDownload}
-                      className="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700"
-                    >
-                      Download All
-                    </button>
+                    {canDownload ? (
+                      <button 
+                        onClick={handleBulkDownload}
+                        className="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700"
+                      >
+                        <Download className="w-4 h-4 inline mr-1" />
+                        Download All
+                      </button>
+                    ) : (
+                      <button 
+                        disabled
+                        className="px-3 py-1 bg-gray-300 text-gray-500 rounded-lg text-sm cursor-not-allowed flex items-center gap-1"
+                        title="Downloads disabled"
+                      >
+                        <Lock className="w-4 h-4" />
+                        Download Disabled
+                      </button>
+                    )}
                     <button 
                       onClick={() => setSelectedItems(new Set())}
                       className="px-3 py-1 border rounded-lg text-sm theme-text"
@@ -229,15 +287,27 @@ export default function ShowcasePage() {
                       <button 
                         onClick={(e) => { e.stopPropagation(); setViewingMedia(item); }}
                         className="p-1.5 bg-blue-600 text-white rounded hover:bg-blue-700"
+                        title="View"
                       >
                         <Eye className="w-4 h-4" />
                       </button>
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); handleDownload(item); }}
-                        className="p-1.5 bg-green-600 text-white rounded hover:bg-green-700"
-                      >
-                        <Download className="w-4 h-4" />
-                      </button>
+                      {canDownload ? (
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); handleDownload(item); }}
+                          className="p-1.5 bg-green-600 text-white rounded hover:bg-green-700"
+                          title="Download"
+                        >
+                          <Download className="w-4 h-4" />
+                        </button>
+                      ) : (
+                        <button 
+                          disabled
+                          className="p-1.5 bg-gray-300 text-gray-500 rounded cursor-not-allowed"
+                          title="Downloads disabled"
+                        >
+                          <Lock className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))}
