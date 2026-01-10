@@ -146,7 +146,7 @@ function PublicAnalyticsContent() {
   const renderCard = (card: AnalyticsCard) => {
     const topExpensesCount = card.card_config?.top_count || 3
     const topDonatorsCount = card.card_config?.top_count || 5
-    const topExpensesData = useMemo(() => getTopExpenses(expenses, topExpensesCount), [expenses, topExpensesCount])
+    const topExpensesData = getTopExpenses(expenses, topExpensesCount)
 
     switch (card.card_type) {
       case 'festival_snapshot':
