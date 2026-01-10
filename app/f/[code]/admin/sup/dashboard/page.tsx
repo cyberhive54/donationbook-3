@@ -740,12 +740,12 @@ function SuperAdminDashboardContent() {
                 <p className="text-xs text-gray-600 mt-1">Manage collections, expenses, settings</p>
               </a>
               <a
-                href={`/f/${code}/admin/sup/analytics`}
+                href={`/f/${code}/analytics`}
                 className="theme-card bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow text-center"
               >
                 <Activity className="w-8 h-8 text-green-600 mx-auto mb-2" />
                 <h3 className="font-semibold text-gray-800">Analytics</h3>
-                <p className="text-xs text-gray-600 mt-1">View charts and insights</p>
+                <p className="text-xs text-gray-600 mt-1">View comprehensive analytics and charts</p>
               </a>
               <a
                 href={`/f/${code}/admin/sup/activity`}

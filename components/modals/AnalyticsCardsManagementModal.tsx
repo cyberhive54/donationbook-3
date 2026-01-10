@@ -80,6 +80,15 @@ export default function AnalyticsCardsManagementModal({ isOpen, onClose, festiva
     ));
   };
 
+  const updateTopCount = (cardId: string, topCount: number) => {
+    setCards(prev => prev.map(card => 
+      card.id === cardId ? { 
+        ...card, 
+        card_config: { ...card.card_config, top_count: topCount } 
+      } : card
+    ));
+  };
+
   const moveCard = (index: number, direction: 'up' | 'down') => {
     const newCards = [...cards];
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
@@ -193,7 +202,7 @@ export default function AnalyticsCardsManagementModal({ isOpen, onClose, festiva
                           <p className="text-sm text-gray-600 mt-1">
                             {CARD_DESCRIPTIONS[card.card_type] || 'No description available'}
                           </p>
-                          <div className="flex items-center gap-2 mt-2">
+                          <div className="flex items-center gap-2 mt-2 flex-wrap">
                             <span className="text-xs text-gray-500">Order: {card.sort_order}</span>
                             {card.card_type === 'top_donators' && (
                               <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
@@ -206,6 +215,27 @@ export default function AnalyticsCardsManagementModal({ isOpen, onClose, festiva
                               </span>
                             )}
                           </div>
+                          
+                          {(card.card_type === 'top_donators' || card.card_type === 'top_expenses') && (
+                            <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Show top:
+                              </label>
+                              <div className="flex items-center gap-2">
+                                <input
+                                  type="number"
+                                  min="3"
+                                  max="20"
+                                  value={card.card_config?.top_count || (card.card_type === 'top_donators' ? 5 : 3)}
+                                  onChange={(e) => updateTopCount(card.id, parseInt(e.target.value) || 5)}
+                                  className="w-20 px-3 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                                <span className="text-sm text-gray-600">
+                                  {card.card_type === 'top_donators' ? 'donators' : 'expenses'}
+                                </span>
+                              </div>
+                            </div>
+                          )}
                         </div>
 
                         {/* Actions */}
@@ -240,6 +270,7 @@ export default function AnalyticsCardsManagementModal({ isOpen, onClose, festiva
             <ul className="text-sm text-blue-800 space-y-1">
               <li>• Click the eye icon to show/hide cards</li>
               <li>• Use the grip icon to reorder cards (higher = shown first)</li>
+              <li>• Configure "Top X" for donators and expenses cards</li>
               <li>• Hidden cards will not appear on the visitor analytics page</li>
               <li>• Changes take effect immediately after saving</li>
             </ul>
