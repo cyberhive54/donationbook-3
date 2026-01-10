@@ -432,7 +432,9 @@ export type AnalyticsCardType =
   | 'collections_by_mode'
   | 'expenses_by_category'
   | 'expenses_by_mode'
-  | 'top_donators';
+  | 'top_donators'
+  | 'average_donation_per_donor'
+  | 'collection_vs_expense_comparison';
 
 export interface AnalyticsCard {
   id: string
