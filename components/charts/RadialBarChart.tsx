@@ -42,11 +42,8 @@ export default function RadialBarChart({ data, title, colors = DEFAULT_COLORS }:
               endAngle={-270}
             >
               <RadialBar
-                minAngle={15}
                 background
-                clockWise
                 dataKey="value"
-                cornerRadius={10}
               />
               <Tooltip 
                 formatter={(value: number | undefined) => `₹${(value ?? 0).toLocaleString()}`}
