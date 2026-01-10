@@ -1,0 +1,98 @@
+﻿
+> donation-book@0.1.0 build
+> next build
+
+  Γû▓ Next.js 14.2.5
+  - Environments: .env.local
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully
+   Linting and checking validity of types ...
+
+./app/f/[code]/admin/page.tsx
+1488:25  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./app/f/[code]/admin/sup/analytics/page.tsx
+28:6  Warning: React Hook useEffect has a missing dependency: 'fetchData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./app/f/[code]/admin/sup/analytics-overview/page.tsx
+23:6  Warning: React Hook useEffect has a missing dependency: 'fetchData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./app/f/[code]/admin/sup/expense-analytics/page.tsx
+25:6  Warning: React Hook useEffect has a missing dependency: 'fetchData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./app/f/[code]/admin/sup/transaction-analytics/page.tsx
+25:6  Warning: React Hook useEffect has a missing dependency: 'fetchData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./app/f/[code]/analytics/page.tsx
+43:6  Warning: React Hook useEffect has a missing dependency: 'fetchData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./app/f/[code]/page.tsx
+52:6  Warning: React Hook useEffect has a missing dependency: 'handleDirectLinkAuth'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./app/f/[code]/showcase/page.tsx
+127:21  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+204:25  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+207:27  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./app/f/[code]/transaction/page.tsx
+141:6  Warning: React Hook useMemo has missing dependencies: 'festival?.event_end_date' and 'festival?.event_start_date'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/charts/CollectionVsExpenseChart.tsx
+55:6  Warning: React Hook useMemo has missing dependencies: 'festivalEndDate' and 'festivalStartDate'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/charts/TopDonatorsChart.tsx
+66:21  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./components/modals/AddEditAlbumModal.tsx
+171:17  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./components/modals/AnalyticsConfigModal.tsx
+50:6  Warning: React Hook useEffect has a missing dependency: 'fetchAnalyticsConfig'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/modals/CreateAdminModal.tsx
+38:6  Warning: React Hook useEffect has a missing dependency: 'adminCode'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/modals/DeleteAdminModal.tsx
+43:6  Warning: React Hook useEffect has a missing dependency: 'fetchStats'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/modals/EditAdminModal.tsx
+48:6  Warning: React Hook useEffect has a missing dependency: 'fetchPasswordCount'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/modals/ManageAlbumMediaModal.tsx
+62:6  Warning: React Hook useEffect has a missing dependency: 'fetchItems'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+174:6  Warning: React Hook useEffect has a missing dependency: 'processUploadQueue'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+453:23  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+456:25  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./components/modals/ManageUserPasswordsModal.tsx
+45:6  Warning: React Hook useEffect has missing dependencies: 'fetchPasswords' and 'onClose'. Either include them or remove the dependency array. If 'onClose' changes too often, find the parent component that defines it and wrap that definition in useCallback.  react-hooks/exhaustive-deps
+645:6  Warning: React Hook useEffect has a missing dependency: 'fetchVisitors'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/modals/MediaViewerModal.tsx
+75:11  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./lib/hooks/useSession.ts
+143:6  Warning: React Hook useEffect has a missing dependency: 'logout'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules
+node.exe : Failed to compile.
+At line:1 char:1
++ & "C:\nvm4w\nodejs/node.exe" "C:\nvm4w\nodejs/node_modules/npm/bin/np ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Failed to compile.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+./components/ui/chart.tsx:126:7
+Type error: Property 'label' does not exist on type 'Omit<Omit<Props<ValueType, NameType>, PropertiesReadFromContext> 
+& { active?: boolean | undefined; allowEscapeViewBox?: AllowInDimension | undefined; ... 17 more ...; wrapperStyle?: 
+CSSProperties | undefined; } & ClassAttributes<...> & HTMLAttributes<...> & { ...; }, "ref">'.
+
+[0m [90m 124 |[39m       hideLabel [33m=[39m [36mfalse[39m[33m,[39m[0m
+[0m [90m 125 |[39m       hideIndicator [33m=[39m [36mfalse[39m[33m,[39m[0m
+[0m[31m[1m>[22m[39m[90m 126 |[39m       label[33m,[39m[0m
+[0m [90m     |[39m       [31m[1m^[22m[39m[0m
+[0m [90m 127 |[39m       labelFormatter[33m,[39m[0m
+[0m [90m 128 |[39m       labelClassName[33m,[39m[0m
+[0m [90m 129 |[39m       formatter[33m,[39m[0m
