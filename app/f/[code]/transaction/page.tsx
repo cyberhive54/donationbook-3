@@ -115,8 +115,8 @@ export default function TransactionPage() {
   }, [expenses]);
 
   const dailyCollectionExpense = useMemo(() => {
-    const collectionsByDate = groupByDateBetween(collections, festival?.event_start_date || null, festival?.event_end_date || null);
-    const expensesByDate = groupByDateBetween(expenses, festival?.event_start_date || null, festival?.event_end_date || null);
+    const collectionsByDate = groupByDateBetween(collections, festival?.ce_start_date || null, festival?.ce_end_date || null);
+    const expensesByDate = groupByDateBetween(expenses, festival?.ce_start_date || null, festival?.ce_end_date || null);
 
     const dateMap = new Map<string, { collection: number; expense: number }>();
 
@@ -188,7 +188,7 @@ export default function TransactionPage() {
 
               <h2 className="text-2xl font-bold text-gray-800 mt-12 mb-6">Statistics</h2>
               <div className="space-y-6">
-                <CollectionVsExpenseChart collections={collections} expenses={expenses} festivalStartDate={festival.event_start_date} festivalEndDate={festival.event_end_date} />
+                <CollectionVsExpenseChart collections={collections} expenses={expenses} festivalStartDate={festival.ce_start_date} festivalEndDate={festival.ce_end_date} />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <PieChart data={collectionsByGroup} title="Collections by Group" />

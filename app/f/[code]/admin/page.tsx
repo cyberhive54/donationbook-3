@@ -1672,8 +1672,8 @@ function AdminPageContent() {
         modes={collectionModes}
         editData={editingCollection}
         festivalId={festival?.id || ""}
-        festivalStartDate={festival?.event_start_date}
-        festivalEndDate={festival?.event_end_date}
+        festivalStartDate={festival?.ce_start_date}
+        festivalEndDate={festival?.ce_end_date}
       />
 
       <AddExpenseModal
@@ -1687,8 +1687,8 @@ function AdminPageContent() {
         modes={expenseModes}
         editData={editingExpense}
         festivalId={festival?.id || ""}
-        festivalStartDate={festival?.event_start_date}
-        festivalEndDate={festival?.event_end_date}
+        festivalStartDate={festival?.ce_start_date}
+        festivalEndDate={festival?.ce_end_date}
       />
 
       {/* Import Collections Modal */}

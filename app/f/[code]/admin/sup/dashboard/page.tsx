@@ -16,6 +16,8 @@ import CreateAdminModal from "@/components/modals/CreateAdminModal"
 import EditAdminModal from "@/components/modals/EditAdminModal"
 import DeleteAdminModal from "@/components/modals/DeleteAdminModal"
 import EditFestivalModal from "@/components/modals/EditFestivalModal"
+import DeleteFestivalModal from "@/components/modals/DeleteFestivalModal"
+import AnalyticsCardsManagementModal from "@/components/modals/AnalyticsCardsManagementModal"
 import { InfoSkeleton, CardSkeleton, TableSkeleton } from "@/components/Loader"
 import toast from "react-hot-toast"
 import { Plus, Edit, Trash2, Eye, EyeOff, Search, Users, Activity, Calendar, Shield } from "lucide-react"
@@ -63,6 +65,8 @@ function SuperAdminDashboardContent() {
   const [editingFestivalCode, setEditingFestivalCode] = useState(false)
   const [newFestivalCode, setNewFestivalCode] = useState("")
   const [codeEditLoading, setCodeEditLoading] = useState(false)
+  const [isDeleteFestivalOpen, setIsDeleteFestivalOpen] = useState(false)
+  const [isAnalyticsCardsOpen, setIsAnalyticsCardsOpen] = useState(false)
 
   useEffect(() => {
     if (code) fetchData()
@@ -684,6 +688,47 @@ function SuperAdminDashboardContent() {
               </div>
             </div>
 
+            {/* Analytics Configuration */}
+            <div className="theme-card bg-white rounded-lg shadow-md p-6 mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-lg font-bold text-gray-800">Analytics Cards Configuration</h3>
+                  <p className="text-sm text-gray-600 mt-1">Manage which analytics cards are shown on the visitor analytics page</p>
+                </div>
+                <button
+                  onClick={() => setIsAnalyticsCardsOpen(true)}
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2"
+                >
+                  <Settings className="w-4 h-4" />
+                  Manage Cards
+                </button>
+              </div>
+              <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
+                <p className="text-sm text-indigo-800">
+                  Control visibility, order, and configuration of analytics cards shown to visitors. 
+                  You can show/hide cards and reorder them to customize the analytics page layout.
+                </p>
+              </div>
+            </div>
+
+            {/* Danger Zone - Delete Festival */}
+            <div className="theme-card bg-white rounded-lg shadow-md p-6 mb-6 border-2 border-red-200 bg-gradient-to-br from-red-50 to-white">
+              <div className="flex items-center gap-2 mb-4">
+                <h3 className="text-lg font-bold text-red-900">Danger Zone</h3>
+                <span className="px-2 py-1 bg-red-600 text-white text-xs rounded-full">Destructive</span>
+              </div>
+              <p className="text-sm text-red-700 mb-4">
+                Permanently delete this festival and all associated data. This action cannot be undone.
+              </p>
+              <button
+                onClick={() => setIsDeleteFestivalOpen(true)}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+              >
+                <Trash2 className="w-4 h-4" />
+                Delete Festival
+              </button>
+            </div>
+
             {/* Quick Links */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
               <a
@@ -753,6 +798,18 @@ function SuperAdminDashboardContent() {
         }}
         onSuccess={fetchData}
         admin={selectedAdmin}
+        festivalId={festival?.id || ""}
+      />
+
+      <DeleteFestivalModal
+        isOpen={isDeleteFestivalOpen}
+        onClose={() => setIsDeleteFestivalOpen(false)}
+        festival={festival}
+      />
+
+      <AnalyticsCardsManagementModal
+        isOpen={isAnalyticsCardsOpen}
+        onClose={() => setIsAnalyticsCardsOpen(false)}
         festivalId={festival?.id || ""}
       />
     </div>

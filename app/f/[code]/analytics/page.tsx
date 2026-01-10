@@ -188,8 +188,8 @@ function PublicAnalyticsContent() {
           {festival && (
             <p className="text-gray-600">
               Collection Period:{" "}
-              {festival.event_start_date ? new Date(festival.event_start_date).toLocaleDateString() : "N/A"} to{" "}
-              {festival.event_end_date ? new Date(festival.event_end_date).toLocaleDateString() : "N/A"}
+              {festival.ce_start_date ? new Date(festival.ce_start_date).toLocaleDateString() : "N/A"} to{" "}
+              {festival.ce_end_date ? new Date(festival.ce_end_date).toLocaleDateString() : "N/A"}
             </p>
           )}
         </div>

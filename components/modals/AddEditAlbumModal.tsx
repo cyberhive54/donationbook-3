@@ -23,6 +23,7 @@ export default function AddEditAlbumModal({ isOpen, onClose, onSuccess, festival
   const [year, setYear] = useState<number | ''>('');
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string>('');
+  const [allowDownload, setAllowDownload] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -32,12 +33,14 @@ export default function AddEditAlbumModal({ isOpen, onClose, onSuccess, festival
         setDescription(initial.description || '');
         setYear(initial.year || '');
         setCoverPreview(initial.cover_url || '');
+        setAllowDownload(initial.allow_download !== false);
         setCoverFile(null);
       } else {
         setTitle('');
         setDescription('');
         setYear('');
         setCoverPreview('');
+        setAllowDownload(true);
         setCoverFile(null);
       }
     }
@@ -86,6 +89,7 @@ export default function AddEditAlbumModal({ isOpen, onClose, onSuccess, festival
           description: description.trim() || null,
           year: year === '' ? null : Number(year),
           cover_url: coverUrl || null,
+          allow_download: allowDownload,
         }).eq('id', initial.id);
         if (error) throw error;
 
@@ -111,6 +115,7 @@ export default function AddEditAlbumModal({ isOpen, onClose, onSuccess, festival
           description: description.trim() || null,
           year: year === '' ? null : Number(year),
           cover_url: coverUrl || null,
+          allow_download: allowDownload,
         }).select('id').single();
         if (error) throw error;
         albumId = insertedData.id;
@@ -184,6 +189,19 @@ export default function AddEditAlbumModal({ isOpen, onClose, onSuccess, festival
               <input type="file" accept="image/*" onChange={handleCoverChange} className="hidden" />
             </label>
             <div className="text-xs text-gray-500 mt-1">Max 5MB. JPG, PNG, WEBP</div>
+          </div>
+          
+          <div>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input 
+                type="checkbox" 
+                checked={allowDownload} 
+                onChange={(e) => setAllowDownload(e.target.checked)}
+                className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+              />
+              <span className="text-sm font-medium text-gray-700">Allow visitors to download media from this album</span>
+            </label>
+            <div className="text-xs text-gray-500 mt-1">Note: If festival-level downloads are disabled, this setting will be overridden</div>
           </div>
           
           <div className="flex gap-2 pt-2 flex-shrink-0 border-t border-gray-200 mt-4">

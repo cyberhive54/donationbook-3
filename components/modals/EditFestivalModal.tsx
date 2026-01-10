@@ -39,6 +39,12 @@ interface FestivalFormData {
   target_visibility: boolean
   previous_year_total_collection: string
   previous_year_total_expense: string
+  theme_bg_color: string
+  theme_bg_image_url: string
+  theme_dark: boolean
+  theme_text_color: string
+  theme_border_color: string
+  allow_media_download: boolean
 }
 
 export default function EditFestivalModal({ isOpen, onClose, onSuccess, festival }: EditFestivalModalProps) {
@@ -67,6 +73,12 @@ export default function EditFestivalModal({ isOpen, onClose, onSuccess, festival
     target_visibility: false,
     previous_year_total_collection: "",
     previous_year_total_expense: "",
+    theme_bg_color: "#f8fafc",
+    theme_bg_image_url: "",
+    theme_dark: false,
+    theme_text_color: "",
+    theme_border_color: "",
+    allow_media_download: true,
   })
 
   // Initialize form data from festival
@@ -97,6 +109,12 @@ export default function EditFestivalModal({ isOpen, onClose, onSuccess, festival
         target_visibility: other_data.target_visibility || false,
         previous_year_total_collection: other_data.previous_year_total_collection?.toString() || "",
         previous_year_total_expense: other_data.previous_year_total_expense?.toString() || "",
+        theme_bg_color: festival.theme_bg_color || "#f8fafc",
+        theme_bg_image_url: festival.theme_bg_image_url || "",
+        theme_dark: festival.theme_dark || false,
+        theme_text_color: festival.theme_text_color || "",
+        theme_border_color: festival.theme_border_color || "",
+        allow_media_download: festival.allow_media_download !== false,
       })
     }
   }, [festival, isOpen])
@@ -163,6 +181,12 @@ export default function EditFestivalModal({ isOpen, onClose, onSuccess, festival
           ce_end_date: formData.ce_end_date || null,
           requires_password: formData.requires_password,
           user_password: formData.requires_password ? formData.user_password.trim() : null,
+          theme_bg_color: formData.theme_bg_color || null,
+          theme_bg_image_url: formData.theme_bg_image_url.trim() || null,
+          theme_dark: formData.theme_dark,
+          theme_text_color: formData.theme_text_color || null,
+          theme_border_color: formData.theme_border_color || null,
+          allow_media_download: formData.allow_media_download,
           other_data: {
             // Preserve existing analytics settings (managed in Analytics Config Modal)
             ...(festival?.other_data || {}),
@@ -384,6 +408,86 @@ export default function EditFestivalModal({ isOpen, onClose, onSuccess, festival
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Theme Settings */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Theme Settings</h3>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Background Color</label>
+                  <input
+                    type="color"
+                    name="theme_bg_color"
+                    value={formData.theme_bg_color}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-10"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Background Image URL</label>
+                  <input
+                    type="text"
+                    name="theme_bg_image_url"
+                    value={formData.theme_bg_image_url}
+                    onChange={handleChange}
+                    placeholder="https://example.com/image.jpg"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Text Color</label>
+                  <input
+                    type="color"
+                    name="theme_text_color"
+                    value={formData.theme_text_color}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-10"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Border Color</label>
+                  <input
+                    type="color"
+                    name="theme_border_color"
+                    value={formData.theme_border_color}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-10"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="theme_dark"
+                    checked={formData.theme_dark}
+                    onChange={handleChange}
+                    className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                  />
+                  <span className="text-sm font-medium text-gray-700">Enable Dark Mode</span>
+                </label>
+              </div>
+
+              <div>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="allow_media_download"
+                    checked={formData.allow_media_download}
+                    onChange={handleChange}
+                    className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                  />
+                  <span className="text-sm font-medium text-gray-700">Allow visitors to download media (festival-wide)</span>
+                </label>
+                <p className="text-xs text-gray-500 mt-1">When disabled, visitors cannot download any media from showcase</p>
               </div>
             </div>
           </div>
