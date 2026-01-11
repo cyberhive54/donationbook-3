@@ -30,22 +30,34 @@ export default function ShowcasePage() {
   
   // Check if download is allowed
   const canDownload = useMemo(() => {
+    console.log('canDownload check:', {
+      session_type: session?.type,
+      festival_allow: festival?.allow_media_download,
+      album_allow: active?.allow_download,
+      active_album: active?.title
+    });
+    
     // Admins and super_admins can always download
     if (session?.type === 'admin' || session?.type === 'super_admin') {
+      console.log('Admin/Super Admin - downloads allowed');
       return true;
     }
     
     // For visitors, check festival and album settings
-    // Festival setting overrides album setting only when festival denies
+    // If festival setting is explicitly false, deny downloads
     if (festival?.allow_media_download === false) {
+      console.log('Festival blocks downloads');
       return false;
     }
     
-    // If festival allows, check album setting
+    // If festival setting is explicitly true or undefined (default true), check album
+    // If album setting is explicitly false, deny downloads  
     if (active?.allow_download === false) {
+      console.log('Album blocks downloads');
       return false;
     }
     
+    console.log('Downloads allowed');
     return true;
   }, [festival, active, session]);
 
@@ -53,6 +65,11 @@ export default function ShowcasePage() {
     const fetchAlbums = async () => {
       const { data: fest } = await supabase.from('festivals').select('*').eq('code', code).maybeSingle();
       if (!fest) return;
+      console.log('Festival data loaded:', {
+        code: fest.code,
+        allow_media_download: fest.allow_media_download,
+        session_type: session?.type
+      });
       setFestival(fest);
       const { data } = await supabase.from('albums').select('*').eq('festival_id', fest.id).order('year', { ascending: false });
       setAlbums((data as Album[]) || []);
@@ -177,6 +194,27 @@ export default function ShowcasePage() {
     <PasswordGate code={code}>
       <div className={`min-h-screen p-4 pb-24 ${themeClasses}`} style={{ ...bgStyle, ...themeStyles }}>
         <div className="max-w-7xl mx-auto">
+          {/* Debug banner - shows viewing mode */}
+          {(session?.type === 'admin' || session?.type === 'super_admin') && (
+            <div className="mb-4 bg-amber-100 border-l-4 border-amber-500 text-amber-900 p-3 rounded">
+              <div className="flex items-center gap-2">
+                <span className="font-bold">🔓 Admin Mode:</span>
+                <span>You are viewing as {session.type === 'super_admin' ? 'Super Admin' : 'Admin'}. Download restrictions do not apply to you.</span>
+              </div>
+            </div>
+          )}
+          
+          {/* Debug info - shows download settings */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="mb-4 bg-blue-100 border-l-4 border-blue-500 text-blue-900 p-3 rounded text-xs">
+              <div><strong>Debug Info:</strong></div>
+              <div>Session Type: {session?.type || 'visitor'}</div>
+              <div>Festival Download Setting: {festival?.allow_media_download === true ? 'Enabled ✓' : festival?.allow_media_download === false ? 'Disabled ✗' : 'Not Set (defaults to Enabled)'}</div>
+              <div>Album Download Setting: {active?.allow_download === true ? 'Enabled ✓' : active?.allow_download === false ? 'Disabled ✗' : 'Not Set (defaults to Enabled)'}</div>
+              <div>Can Download: {canDownload ? 'YES ✓' : 'NO ✗'}</div>
+            </div>
+          )}
+          
           <h1 className="text-2xl font-bold theme-text mb-4">Showcase</h1>
           
           {albums.length === 0 ? (
@@ -192,7 +230,13 @@ export default function ShowcasePage() {
                   className={`theme-card border rounded-lg overflow-hidden text-left transition-all ${active?.id === a.id ? 'border-blue-600 ring-2 ring-blue-300' : ''}`}
                 >
                   {a.cover_url && (
-                    <img src={a.cover_url} alt={a.title} className="w-full h-32 object-cover" />
+                    <img 
+                      src={a.cover_url} 
+                      alt={a.title} 
+                      className="w-full h-32 object-cover" 
+                      onContextMenu={preventRightClick}
+                      draggable={false}
+                    />
                   )}
                   <div className="p-3">
                     <div className="font-semibold theme-text truncate">{a.title}</div>
