@@ -1,14 +1,10 @@
--- Migration: Add New Analytics Card Types
+-- Migration: Add New Analytics Card Types - Part 2
 -- Date: 2026-01-10
--- Purpose: Add 'average_donation_per_donor' and 'collection_vs_expense_comparison' card types
+-- Purpose: Use the new card types added in Part 1
 
 -- ===============================================
--- PART 1: Add New Card Types to Enum
+-- PREREQUISITE: Run 009-ADD-NEW-ANALYTICS-CARDS-PART1.sql FIRST
 -- ===============================================
-
--- Add new values to the enum type
-ALTER TYPE analytics_card_type ADD VALUE IF NOT EXISTS 'average_donation_per_donor';
-ALTER TYPE analytics_card_type ADD VALUE IF NOT EXISTS 'collection_vs_expense_comparison';
 
 -- ===============================================
 -- PART 2: Update Initialize Function
