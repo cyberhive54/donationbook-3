@@ -166,7 +166,6 @@ function PublicAnalyticsContent() {
       case 'festival_snapshot':
         const prevYearCollection = analyticsConfig?.previous_year_total_collection || 0
         const prevYearExpense = analyticsConfig?.previous_year_total_expense || 0
-        const prevYearNetBalance = prevYearCollection - prevYearExpense
         
         const hasPrevYearData = prevYearCollection > 0 || prevYearExpense > 0
         
