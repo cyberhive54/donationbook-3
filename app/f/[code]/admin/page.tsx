@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useEffect, useState, Suspense } from "react"
-import { useParams } from "next/navigation"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { supabase } from "@/lib/supabase"
 import type { Festival, Collection, Expense, Stats, Album, MediaItem } from "@/types"
 import { calculateStats, calculateStorageStats, formatFileSize } from "@/lib/utils"
@@ -25,7 +25,7 @@ import ManageUserPasswordsModal from "@/components/modals/ManageUserPasswordsMod
 import AnalyticsConfigModal from "@/components/modals/AnalyticsConfigModal"
 import { InfoSkeleton, CardSkeleton, TableSkeleton } from "@/components/Loader"
 import toast from "react-hot-toast"
-import { Plus, Edit, Trash2, Eye, EyeOff, HardDrive, Key } from "lucide-react"
+import { Plus, Edit, Trash2, Eye, EyeOff, HardDrive, Key, ArrowUpRight, LogOut, ExternalLink } from "lucide-react"
 
 import { getThemeStyles, getThemeClasses } from "@/lib/theme"
 import { useSession } from "@/lib/hooks/useSession"
@@ -33,7 +33,12 @@ import { useSession } from "@/lib/hooks/useSession"
 function AdminPageContent() {
   const params = useParams<{ code: string }>()
   const code = (params?.code as string) || ""
-  const { session } = useSession(code)
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const { session, logout: clearSession } = useSession(code)
+
+  const currentTab = searchParams?.get("tab") || "dashboard"
+  const currentSubTab = searchParams?.get("sub-tab") || ""
 
   const [festival, setFestival] = useState<Festival | null>(null)
   const [collections, setCollections] = useState<Collection[]>([])
@@ -78,17 +83,34 @@ function AdminPageContent() {
   const [isAnalyticsConfigOpen, setIsAnalyticsConfigOpen] = useState(false)
   const [currentAdmin, setCurrentAdmin] = useState<{ admin_id: string; admin_code: string; admin_name: string; admin_password_hash: string } | null>(null)
 
+  const [titleStyleSettings, setTitleStyleSettings] = useState({
+    title_size: "text-3xl",
+    title_weight: "font-bold",
+    title_align: "text-center",
+    title_color: "#000000",
+  })
+  const [isSavingTitleStyle, setIsSavingTitleStyle] = useState(false)
+
+  const [themeSettings, setThemeSettings] = useState({
+    theme_bg_color: "#f8fafc",
+    theme_bg_image_url: "",
+    theme_dark: false,
+    theme_text_color: "",
+    theme_border_color: "",
+  })
+  const [isSavingTheme, setIsSavingTheme] = useState(false)
+
+  const [allowMediaDownload, setAllowMediaDownload] = useState(true)
+  const [isSavingMediaDownload, setIsSavingMediaDownload] = useState(false)
+
   useEffect(() => {
     if (code) fetchData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code])
 
-  // Update adminId when session changes (separate effect to handle race condition)
   useEffect(() => {
     if (session?.type === "admin" && session.adminId) {
       setAdminId(session.adminId)
       
-      // Fetch admin data for password management
       const fetchAdminData = async () => {
         try {
           const { data: adminData } = await supabase
@@ -99,7 +121,6 @@ function AdminPageContent() {
 
           if (adminData) {
             setMaxUserPasswords(adminData.max_user_passwords || 3)
-            // Store current admin data for password section
             setCurrentAdmin({
               admin_id: adminData.admin_id,
               admin_code: adminData.admin_code,
@@ -107,7 +128,6 @@ function AdminPageContent() {
               admin_password_hash: adminData.admin_password_hash || ''
             })
 
-            // Get current password count
             const { count } = await supabase
               .from("user_passwords")
               .select("*", { count: "exact", head: true })
@@ -121,13 +141,11 @@ function AdminPageContent() {
       
       fetchAdminData()
     } else if (session?.type === "super_admin") {
-      // Super admin doesn't have admin_id
       setAdminId("")
       setMaxUserPasswords(3)
       setCurrentPasswordCount(0)
       setCurrentAdmin(null)
     } else if (!session || session.type !== "admin") {
-      // Session not ready or not admin - clear adminId
       setAdminId("")
       setCurrentAdmin(null)
     }
@@ -167,6 +185,24 @@ function AdminPageContent() {
       setExpenseModes(fetchedExpenseModes)
       setAlbums(albumsRes.data || [])
 
+      const other_data = fest.other_data || {}
+      setTitleStyleSettings({
+        title_size: other_data.title_size || "text-3xl",
+        title_weight: other_data.title_weight || "font-bold",
+        title_align: other_data.title_align || "text-center",
+        title_color: other_data.title_color || "#000000",
+      })
+
+      setThemeSettings({
+        theme_bg_color: fest.theme_bg_color || "#f8fafc",
+        theme_bg_image_url: fest.theme_bg_image_url || "",
+        theme_dark: fest.theme_dark || false,
+        theme_text_color: fest.theme_text_color || "",
+        theme_border_color: fest.theme_border_color || "",
+      })
+
+      setAllowMediaDownload(fest.allow_media_download !== false)
+
       const albumIds = (albumsRes.data || []).map((a: Album) => a.id)
       if (albumIds.length > 0) {
         const { data: mediaData } = await supabase.from("media_items").select("*").in("album_id", albumIds)
@@ -174,9 +210,6 @@ function AdminPageContent() {
       } else {
         setAllMediaItems([])
       }
-
-      // Admin ID is now handled in separate useEffect that watches session
-      // This prevents race condition issues
 
       const calculatedStats = calculateStats(fetchedCollections, fetchedExpenses)
       setStats(calculatedStats)
@@ -186,6 +219,20 @@ function AdminPageContent() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleTabChange = (tab: string) => {
+    router.push(`/f/${code}/admin?tab=${tab}`)
+  }
+
+  const handleSubTabChange = (subTab: string) => {
+    router.push(`/f/${code}/admin?tab=${currentTab}&sub-tab=${subTab}`)
+  }
+
+  const handleLogout = () => {
+    clearSession()
+    toast.success("Logged out successfully")
+    router.push(`/f/${code}`)
   }
 
   const handleEditCollection = (collection: Collection) => {
@@ -217,7 +264,6 @@ function AdminPageContent() {
 
       if (error) throw error
 
-      // Log activity - use session.adminId directly for admin, null for super_admin
       await supabase.rpc("log_admin_activity", {
         p_festival_id: festival?.id || "",
         p_admin_id: session?.type === "admin" ? session.adminId : null,
@@ -430,7 +476,6 @@ function AdminPageContent() {
     }
     
     try {
-      // Update admin's own password in admins table
       const { error } = await supabase
         .from("admins")
         .update({
@@ -441,7 +486,6 @@ function AdminPageContent() {
 
       if (error) throw error
 
-      // Log activity
       await supabase.rpc("log_admin_activity", {
         p_festival_id: festival.id,
         p_admin_id: session.adminId,
@@ -456,7 +500,6 @@ function AdminPageContent() {
       setNewAdminPassword("")
       setEditingAdminPassword(false)
       
-      // Refresh admin data
       const { data: adminData } = await supabase
         .from("admins")
         .select("*")
@@ -474,6 +517,94 @@ function AdminPageContent() {
     } catch (error: any) {
       console.error("Error updating admin password:", error)
       toast.error(`Failed to update password: ${error?.message || 'Unknown error'}`)
+    }
+  }
+
+  const handleSaveTitleStyle = async () => {
+    if (!festival) return
+    
+    try {
+      setIsSavingTitleStyle(true)
+      
+      const { error } = await supabase
+        .from("festivals")
+        .update({
+          other_data: {
+            ...(festival.other_data || {}),
+            title_size: titleStyleSettings.title_size,
+            title_weight: titleStyleSettings.title_weight,
+            title_align: titleStyleSettings.title_align,
+            title_color: titleStyleSettings.title_color,
+          },
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", festival.id)
+
+      if (error) throw error
+
+      toast.success("Title style settings saved")
+      fetchData()
+    } catch (error) {
+      console.error("Error saving title style:", error)
+      toast.error("Failed to save title style settings")
+    } finally {
+      setIsSavingTitleStyle(false)
+    }
+  }
+
+  const handleSaveTheme = async () => {
+    if (!festival) return
+    
+    try {
+      setIsSavingTheme(true)
+      
+      const { error } = await supabase
+        .from("festivals")
+        .update({
+          theme_bg_color: themeSettings.theme_bg_color || null,
+          theme_bg_image_url: themeSettings.theme_bg_image_url.trim() || null,
+          theme_dark: themeSettings.theme_dark,
+          theme_text_color: themeSettings.theme_text_color || null,
+          theme_border_color: themeSettings.theme_border_color || null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", festival.id)
+
+      if (error) throw error
+
+      toast.success("Theme settings saved")
+      fetchData()
+    } catch (error) {
+      console.error("Error saving theme:", error)
+      toast.error("Failed to save theme settings")
+    } finally {
+      setIsSavingTheme(false)
+    }
+  }
+
+  const handleSaveMediaDownload = async () => {
+    if (!festival) return
+    
+    try {
+      setIsSavingMediaDownload(true)
+      
+      const { error } = await supabase
+        .from("festivals")
+        .update({
+          allow_media_download: allowMediaDownload,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", festival.id)
+
+      if (error) throw error
+
+      toast.success("Media download setting saved")
+      fetchData()
+    } catch (error) {
+      console.error("Error saving media download setting:", error)
+      toast.error("Failed to save media download setting")
+    } finally {
+      setIsSavingMediaDownload(false)
     }
   }
 
@@ -498,7 +629,6 @@ function AdminPageContent() {
 
   const handleExportCollections = async () => {
     downloadJSON(collections, `${festival?.code || "fest"}-collections.json`)
-    // Log export activity
     try {
       await supabase.rpc("log_admin_activity", {
         p_festival_id: festival?.id || "",
@@ -512,6 +642,7 @@ function AdminPageContent() {
       console.error("Error logging export activity:", logError)
     }
   }
+  
   const handleExportCollectionsImportFmt = async () => {
     const data = collections.map((c) => ({
       name: c.name,
@@ -525,7 +656,6 @@ function AdminPageContent() {
       created_by_admin_id: c.created_by_admin_id || null,
     }))
     downloadJSON(data, `${festival?.code || "fest"}-collections-import.json`)
-    // Log export activity
     try {
       await supabase.rpc("log_admin_activity", {
         p_festival_id: festival?.id || "",
@@ -539,9 +669,9 @@ function AdminPageContent() {
       console.error("Error logging export activity:", logError)
     }
   }
+  
   const handleExportExpenses = async () => {
     downloadJSON(expenses, `${festival?.code || "fest"}-expenses.json`)
-    // Log export activity
     try {
       await supabase.rpc("log_admin_activity", {
         p_festival_id: festival?.id || "",
@@ -555,6 +685,7 @@ function AdminPageContent() {
       console.error("Error logging export activity:", logError)
     }
   }
+  
   const handleExportExpensesImportFmt = async () => {
     const data = expenses.map((e) => ({
       item: e.item,
@@ -570,7 +701,6 @@ function AdminPageContent() {
       created_by_admin_id: e.created_by_admin_id || null,
     }))
     downloadJSON(data, `${festival?.code || "fest"}-expenses-import.json`)
-    // Log export activity
     try {
       await supabase.rpc("log_admin_activity", {
         p_festival_id: festival?.id || "",
@@ -609,6 +739,7 @@ function AdminPageContent() {
       created_by_admin_id: null,
     },
   ]
+  
   const exampleExpenses = [
     {
       item: "Flowers",
@@ -641,7 +772,6 @@ function AdminPageContent() {
   const handleImportCollections = async () => {
     if (!festival) return
 
-    // Validate CE dates are set
     if (!festival.ce_start_date || !festival.ce_end_date) {
       toast.error("Collection/Expense date range not set. Please set it in festival settings first.")
       return
@@ -670,7 +800,6 @@ function AdminPageContent() {
       const groupMap = new Map(groups.map((g) => [normalize(g), g]))
       const modeMap = new Map(collectionModes.map((m) => [normalize(m), m]))
 
-      // Get all admins for validation
       const { data: allAdmins } = await supabase
         .from("admins")
         .select("admin_id, admin_code, admin_name")
@@ -679,19 +808,16 @@ function AdminPageContent() {
       const adminMap = new Map((allAdmins || []).map((a) => [a.admin_id, a]))
       const adminIdList = (allAdmins || []).map((a) => a.admin_id)
 
-      // Determine current admin ID based on session
       let currentAdminIdForImport: string | null = null
       if (session?.type === "admin") {
         currentAdminIdForImport = session.adminId
       } else if (session?.type === "super_admin") {
-        // Super admin can leave it null or specify
         currentAdminIdForImport = null
       }
 
       const rows = parsed.map((c: any, idx: number) => {
         const rowNum = idx + 1
 
-        // Required fields validation
         const name = String(c.name || "").trim()
         if (!name) {
           throw new Error(`Row ${rowNum}: Missing required field "name". Each collection must have a name.`)
@@ -743,7 +869,6 @@ function AdminPageContent() {
           )
         }
 
-        // Validate date is within CE range
         const dateObj = new Date(date)
         const ceStart = new Date(festival.ce_start_date!)
         const ceEnd = new Date(festival.ce_end_date!)
@@ -753,7 +878,6 @@ function AdminPageContent() {
           )
         }
 
-        // Time fields (optional, default to 0)
         let time_hour = 0
         let time_minute = 0
         if (c.time_hour != null) {
@@ -769,10 +893,8 @@ function AdminPageContent() {
           }
         }
 
-        // Admin ID validation
         let created_by_admin_id: string | null = null
         if (c.created_by_admin_id != null && c.created_by_admin_id !== "") {
-          // If provided, validate it exists
           if (adminIdList.includes(c.created_by_admin_id)) {
             created_by_admin_id = c.created_by_admin_id
           } else {
@@ -781,11 +903,9 @@ function AdminPageContent() {
             )
           }
         } else {
-          // Not provided - use current admin ID for regular admin, null for super admin
           if (session?.type === "admin") {
             created_by_admin_id = session.adminId
           } else {
-            // Super admin can leave it null
             created_by_admin_id = null
           }
         }
@@ -813,7 +933,6 @@ function AdminPageContent() {
 
       const { error } = await supabase.from("collections").insert(rows)
       if (error) {
-        // Provide specific database error messages
         if (error.code === "23505") {
           throw new Error(
             `Database error: Duplicate entry detected. This might be due to a unique constraint violation. Check if any collections already exist with the same data.`,
@@ -829,7 +948,6 @@ function AdminPageContent() {
         }
       }
 
-      // Log import activity
       await supabase.rpc("log_admin_activity", {
         p_festival_id: festival.id,
         p_admin_id: session?.type === "admin" ? session.adminId : null,
@@ -856,7 +974,6 @@ function AdminPageContent() {
   const handleImportExpenses = async () => {
     if (!festival) return
 
-    // Validate CE dates are set
     if (!festival.ce_start_date || !festival.ce_end_date) {
       toast.error("Collection/Expense date range not set. Please set it in festival settings first.")
       return
@@ -885,7 +1002,6 @@ function AdminPageContent() {
       const categoryMap = new Map(categories.map((c) => [normalize(c), c]))
       const modeMap = new Map(expenseModes.map((m) => [normalize(m), m]))
 
-      // Get all admins for validation
       const { data: allAdmins } = await supabase
         .from("admins")
         .select("admin_id, admin_code, admin_name")
@@ -894,19 +1010,16 @@ function AdminPageContent() {
       const adminMap = new Map((allAdmins || []).map((a) => [a.admin_id, a]))
       const adminIdList = (allAdmins || []).map((a) => a.admin_id)
 
-      // Determine current admin ID based on session
       let currentAdminIdForImport: string | null = null
       if (session?.type === "admin") {
         currentAdminIdForImport = session.adminId
       } else if (session?.type === "super_admin") {
-        // Super admin can leave it null or specify
         currentAdminIdForImport = null
       }
 
       const rows = parsed.map((x: any, idx: number) => {
         const rowNum = idx + 1
 
-        // Required fields validation
         const item = String(x.item || "").trim()
         if (!item) {
           throw new Error(`Row ${rowNum}: Missing required field "item". Each expense must have an item name.`)
@@ -933,9 +1046,6 @@ function AdminPageContent() {
         if (isNaN(total_amount) || total_amount <= 0) {
           throw new Error(`Row ${rowNum}: Invalid "total_amount" value "${x.total_amount}". Must be a positive number.`)
         }
-
-        // Note: total_amount can be manually edited (for discounts, rounding, etc.)
-        // So we don't enforce strict validation against pieces * price_per_piece
 
         const categoryKey = normalize(String(x.category || ""))
         if (!categoryKey) {
@@ -973,7 +1083,6 @@ function AdminPageContent() {
           )
         }
 
-        // Validate date is within CE range
         const dateObj = new Date(date)
         const ceStart = new Date(festival.ce_start_date!)
         const ceEnd = new Date(festival.ce_end_date!)
@@ -983,7 +1092,6 @@ function AdminPageContent() {
           )
         }
 
-        // Time fields (optional, default to 0)
         let time_hour = 0
         let time_minute = 0
         if (x.time_hour != null) {
@@ -999,10 +1107,8 @@ function AdminPageContent() {
           }
         }
 
-        // Admin ID validation
         let created_by_admin_id: string | null = null
         if (x.created_by_admin_id != null && x.created_by_admin_id !== "") {
-          // If provided, validate it exists
           if (adminIdList.includes(x.created_by_admin_id)) {
             created_by_admin_id = x.created_by_admin_id
           } else {
@@ -1011,11 +1117,9 @@ function AdminPageContent() {
             )
           }
         } else {
-          // Not provided - use current admin ID for regular admin, null for super admin
           if (session?.type === "admin") {
             created_by_admin_id = session.adminId
           } else {
-            // Super admin can leave it null
             created_by_admin_id = null
           }
         }
@@ -1045,7 +1149,6 @@ function AdminPageContent() {
 
       const { error } = await supabase.from("expenses").insert(rows)
       if (error) {
-        // Provide specific database error messages
         if (error.code === "23505") {
           throw new Error(
             `Database error: Duplicate entry detected. This might be due to a unique constraint violation. Check if any expenses already exist with the same data.`,
@@ -1061,7 +1164,6 @@ function AdminPageContent() {
         }
       }
 
-      // Log import activity
       await supabase.rpc("log_admin_activity", {
         p_festival_id: festival.id,
         p_admin_id: session?.type === "admin" ? session.adminId : null,
@@ -1086,542 +1188,890 @@ function AdminPageContent() {
 
   return (
     <div className={`min-h-screen pb-24 ${themeClasses}`} style={{ ...bgStyle, ...themeStyles }}>
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        {loading ? (
-          <>
-            <InfoSkeleton />
-            <CardSkeleton />
-            <TableSkeleton rows={5} />
-          </>
-        ) : !festival ? (
+      {loading ? (
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <InfoSkeleton />
+          <CardSkeleton />
+          <TableSkeleton rows={5} />
+        </div>
+      ) : !festival ? (
+        <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="theme-card bg-white rounded-lg shadow-md p-8 text-center">
             <p className="text-gray-700">Festival not found.</p>
           </div>
-        ) : (
-          <>
-            <div className="theme-card bg-white rounded-lg shadow-md p-4 mb-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Festival Code</p>
-                  <p className="text-xl font-bold text-gray-900">{festival.code}</p>
+        </div>
+      ) : (
+        <>
+          <div className="sticky top-0 z-40 bg-white border-b shadow-sm">
+            <div className="max-w-7xl mx-auto px-4">
+              <div className="py-3 border-b border-gray-200">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div>
+                      <p className="text-xs text-gray-500">Festival Code</p>
+                      <p className="text-sm font-bold text-gray-900">{festival.code}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-wrap items-center gap-2 text-sm">
+                    <span className="text-gray-600">
+                      Logged in as <span className="font-semibold">{session?.type === "super_admin" ? "Super Admin" : "Admin"}</span>
+                    </span>
+                    
+                    {session?.type === "super_admin" && (
+                      <button
+                        onClick={() => router.push(`/f/${code}/admin/sup/dashboard`)}
+                        className="flex items-center gap-1 px-3 py-1.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-xs"
+                      >
+                        Super Admin Dashboard
+                        <ExternalLink className="w-3 h-3" />
+                      </button>
+                    )}
+                    
+                    <button
+                      onClick={() => router.push(`/f/${code}/admin/activity`)}
+                      className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    >
+                      Activity
+                      <ArrowUpRight className="w-4 h-4" />
+                    </button>
+                    
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center gap-1 px-3 py-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Logout
+                    </button>
+                  </div>
                 </div>
-                <div className="flex gap-2">
+              </div>
+              
+              <div className="overflow-x-auto">
+                <div className="flex border-b border-gray-200">
                   <button
-                    onClick={() => setIsAnalyticsConfigOpen(true)}
-                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm"
+                    onClick={() => handleTabChange("dashboard")}
+                    className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
+                      currentTab === "dashboard"
+                        ? "border-blue-600 text-blue-600"
+                        : "border-transparent text-gray-600 hover:text-gray-800"
+                    }`}
                   >
-                    Analytics Config
+                    Dashboard
                   </button>
                   <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(`${window.location.origin}/f/${festival.code}`)
-                      toast.success("Festival URL copied!")
-                    }}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+                    onClick={() => handleTabChange("transaction")}
+                    className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
+                      currentTab === "transaction"
+                        ? "border-blue-600 text-blue-600"
+                        : "border-transparent text-gray-600 hover:text-gray-800"
+                    }`}
                   >
-                    Copy URL
+                    Transaction
+                  </button>
+                  <button
+                    onClick={() => handleTabChange("showcase")}
+                    className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
+                      currentTab === "showcase"
+                        ? "border-blue-600 text-blue-600"
+                        : "border-transparent text-gray-600 hover:text-gray-800"
+                    }`}
+                  >
+                    Showcase
+                  </button>
+                  <button
+                    onClick={() => handleTabChange("settings")}
+                    className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
+                      currentTab === "settings"
+                        ? "border-blue-600 text-blue-600"
+                        : "border-transparent text-gray-600 hover:text-gray-800"
+                    }`}
+                  >
+                    Settings
                   </button>
                 </div>
               </div>
             </div>
+          </div>
 
-            <BasicInfo
-              basicInfo={
-                {
-                  id: festival.id,
-                  event_name: festival.event_name,
-                  organiser: festival.organiser || "",
-                  mentor: festival.mentor || "",
-                  guide: festival.guide || "",
-                  event_start_date: festival.event_start_date,
-                  event_end_date: festival.event_end_date,
-                  location: festival.location,
-                  other_data: festival.other_data,
-                } as any
-              }
-              festival={festival}
-              showEditButton
-              onEdit={() => setIsFestivalModalOpen(true)}
-            />
-            <StatsCards stats={stats} />
-
-            <div className="space-y-8">
-              <div>
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-2xl font-bold text-gray-800">Collections</h2>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => {
-                        setEditingCollection(null)
-                        setIsCollectionModalOpen(true)
-                      }}
-                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      <Plus className="w-5 h-5" />
-                      Add Collection
-                    </button>
-                    <button
-                      onClick={handleExportCollections}
-                      className="px-3 py-2 border rounded-lg hover:bg-gray-50 text-sm"
-                    >
-                      Export JSON
-                    </button>
-                    <button
-                      onClick={handleExportCollectionsImportFmt}
-                      className="px-3 py-2 border rounded-lg hover:bg-gray-50 text-sm"
-                    >
-                      Export (Import Format)
-                    </button>
-                    <button
-                      onClick={() => {
-                        setIsImportCollectionsOpen(true)
-                        setImportText("")
-                      }}
-                      className="px-3 py-2 border rounded-lg hover:bg-gray-50 text-sm"
-                    >
-                      Import JSON
-                    </button>
-                  </div>
-                </div>
-                <CollectionTable
-                  collections={collections}
-                  groups={groups}
-                  modes={collectionModes}
-                  onEdit={handleEditCollection}
-                  onDelete={handleDeleteCollection}
-                  isAdmin
+          <div className="max-w-7xl mx-auto px-4 py-6">
+            {currentTab === "dashboard" && (
+              <div className="space-y-6">
+                <BasicInfo
+                  basicInfo={
+                    {
+                      id: festival.id,
+                      event_name: festival.event_name,
+                      organiser: festival.organiser || "",
+                      mentor: festival.mentor || "",
+                      guide: festival.guide || "",
+                      event_start_date: festival.event_start_date,
+                      event_end_date: festival.event_end_date,
+                      location: festival.location,
+                      other_data: festival.other_data,
+                    } as any
+                  }
+                  festival={festival}
+                  showEditButton
+                  onEdit={() => setIsFestivalModalOpen(true)}
                 />
-              </div>
+                
+                <StatsCards stats={stats} />
 
-              <div>
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-2xl font-bold text-gray-800">Expenses</h2>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => {
-                        setEditingExpense(null)
-                        setIsExpenseModalOpen(true)
-                      }}
-                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      <Plus className="w-5 h-5" />
-                      Add Expense
-                    </button>
-                    <button
-                      onClick={handleExportExpenses}
-                      className="px-3 py-2 border rounded-lg hover:bg-gray-50 text-sm"
-                    >
-                      Export JSON
-                    </button>
-                    <button
-                      onClick={handleExportExpensesImportFmt}
-                      className="px-3 py-2 border rounded-lg hover:bg-gray-50 text-sm"
-                    >
-                      Export (Import Format)
-                    </button>
-                    <button
-                      onClick={() => {
-                        setIsImportExpensesOpen(true)
-                        setImportText("")
-                      }}
-                      className="px-3 py-2 border rounded-lg hover:bg-gray-50 text-sm"
-                    >
-                      Import JSON
-                    </button>
-                  </div>
-                </div>
-                <ExpenseTable
-                  expenses={expenses}
-                  categories={categories}
-                  modes={expenseModes}
-                  onEdit={handleEditExpense}
-                  onDelete={handleDeleteExpense}
-                  isAdmin
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="theme-card bg-white rounded-lg shadow-md p-6">
-                  <h3 className="text-lg font-bold text-gray-800 mb-4">Collection Settings</h3>
-
-                  <div className="mb-6">
-                    <h4 className="font-semibold text-gray-700 mb-2">Groups</h4>
-                    <div className="flex gap-2 mb-3">
-                      <input
-                        type="text"
-                        value={newGroup}
-                        onChange={(e) => setNewGroup(e.target.value)}
-                        placeholder="Add new group"
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                        onKeyPress={(e) => e.key === "Enter" && handleAddGroup()}
-                      />
-                      <button
-                        onClick={handleAddGroup}
-                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
-                      >
-                        <Plus className="w-4 h-4" />
-                      </button>
-                    </div>
-                    <div className="space-y-2">
-                      {groups.map((group) => (
-                        <div key={group} className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded">
-                          <span className="text-sm text-gray-700">{group}</span>
-                          <button
-                            onClick={() => handleDeleteGroup(group)}
-                            className="p-1 hover:bg-red-100 rounded transition-colors"
-                          >
-                            <Trash2 className="w-4 h-4 text-red-600" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-bold text-gray-800">Analytics Configuration</h3>
+                    <button
+                      onClick={() => setIsAnalyticsConfigOpen(true)}
+                      className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm"
+                    >
+                      Open Analytics Config
+                    </button>
                   </div>
-
-                  <div>
-                    <h4 className="font-semibold text-gray-700 mb-2">Collection Modes</h4>
-                    <div className="flex gap-2 mb-3">
-                      <input
-                        type="text"
-                        value={newCollectionMode}
-                        onChange={(e) => setNewCollectionMode(e.target.value)}
-                        placeholder="Add new mode"
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                        onKeyPress={(e) => e.key === "Enter" && handleAddCollectionMode()}
-                      />
-                      <button
-                        onClick={handleAddCollectionMode}
-                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
-                      >
-                        <Plus className="w-4 h-4" />
-                      </button>
-                    </div>
-                    <div className="space-y-2">
-                      {collectionModes.map((mode) => (
-                        <div key={mode} className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded">
-                          <span className="text-sm text-gray-700">{mode}</span>
-                          <button
-                            onClick={() => handleDeleteCollectionMode(mode)}
-                            className="p-1 hover:bg-red-100 rounded transition-colors"
-                          >
-                            <Trash2 className="w-4 h-4 text-red-600" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  <p className="text-sm text-gray-600">
+                    Configure collection targets, donation buckets, and time-of-day analytics for better insights.
+                  </p>
                 </div>
 
                 <div className="theme-card bg-white rounded-lg shadow-md p-6">
-                  <h3 className="text-lg font-bold text-gray-800 mb-4">Expense Settings</h3>
-
-                  <div className="mb-6">
-                    <h4 className="font-semibold text-gray-700 mb-2">Categories</h4>
-                    <div className="flex gap-2 mb-3">
-                      <input
-                        type="text"
-                        value={newCategory}
-                        onChange={(e) => setNewCategory(e.target.value)}
-                        placeholder="Add new category"
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                        onKeyPress={(e) => e.key === "Enter" && handleAddCategory()}
-                      />
-                      <button
-                        onClick={handleAddCategory}
-                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
-                      >
-                        <Plus className="w-4 h-4" />
-                      </button>
-                    </div>
-                    <div className="space-y-2">
-                      {categories.map((category) => (
-                        <div key={category} className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded">
-                          <span className="text-sm text-gray-700">{category}</span>
-                          <button
-                            onClick={() => handleDeleteCategory(category)}
-                            className="p-1 hover:bg-red-100 rounded transition-colors"
-                          >
-                            <Trash2 className="w-4 h-4 text-red-600" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <h4 className="font-semibold text-gray-700 mb-2">Expense Modes</h4>
-                    <div className="flex gap-2 mb-3">
-                      <input
-                        type="text"
-                        value={newExpenseMode}
-                        onChange={(e) => setNewExpenseMode(e.target.value)}
-                        placeholder="Add new mode"
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                        onKeyPress={(e) => e.key === "Enter" && handleAddExpenseMode()}
-                      />
-                      <button
-                        onClick={handleAddExpenseMode}
-                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
-                      >
-                        <Plus className="w-4 h-4" />
-                      </button>
-                    </div>
-                    <div className="space-y-2">
-                      {expenseModes.map((mode) => (
-                        <div key={mode} className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded">
-                          <span className="text-sm text-gray-700">{mode}</span>
-                          <button
-                            onClick={() => handleDeleteExpenseMode(mode)}
-                            className="p-1 hover:bg-red-100 rounded transition-colors"
-                          >
-                            <Trash2 className="w-4 h-4 text-red-600" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Admin Own Login Password Section - Only for regular admins */}
-              {session?.type === "admin" && currentAdmin && (
-                <div className="theme-card bg-white rounded-lg shadow-md p-6">
-                  <h3 className="text-lg font-bold text-gray-800 mb-4">Your Admin Account</h3>
+                  <h3 className="text-lg font-bold text-gray-800 mb-4">Title Style Settings</h3>
                   <div className="space-y-4">
-                    {/* Admin Info */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Admin Code</label>
-                        <div className="px-4 py-2 bg-gray-50 rounded-lg font-mono text-gray-800">
-                          {currentAdmin.admin_code}
-                        </div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Title Size</label>
+                        <select
+                          value={titleStyleSettings.title_size}
+                          onChange={(e) => setTitleStyleSettings({ ...titleStyleSettings, title_size: e.target.value })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="text-2xl">Small</option>
+                          <option value="text-3xl">Medium</option>
+                          <option value="text-4xl">Large</option>
+                          <option value="text-5xl">Extra Large</option>
+                        </select>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Admin Name</label>
-                        <div className="px-4 py-2 bg-gray-50 rounded-lg text-gray-800">
-                          {currentAdmin.admin_name}
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Title Weight</label>
+                        <select
+                          value={titleStyleSettings.title_weight}
+                          onChange={(e) => setTitleStyleSettings({ ...titleStyleSettings, title_weight: e.target.value })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="font-normal">Normal</option>
+                          <option value="font-semibold">Semibold</option>
+                          <option value="font-bold">Bold</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Title Alignment</label>
+                        <select
+                          value={titleStyleSettings.title_align}
+                          onChange={(e) => setTitleStyleSettings({ ...titleStyleSettings, title_align: e.target.value })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="text-left">Left</option>
+                          <option value="text-center">Center</option>
+                          <option value="text-right">Right</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Title Color</label>
+                        <input
+                          type="color"
+                          value={titleStyleSettings.title_color}
+                          onChange={(e) => setTitleStyleSettings({ ...titleStyleSettings, title_color: e.target.value })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-10"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end">
+                      <button
+                        onClick={handleSaveTitleStyle}
+                        disabled={isSavingTitleStyle}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                      >
+                        {isSavingTitleStyle ? "Saving..." : "Save Title Style"}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {currentTab === "transaction" && (
+              <div className="space-y-6">
+                <div className="bg-white border-b border-gray-200 rounded-t-lg">
+                  <div className="flex overflow-x-auto">
+                    <button
+                      onClick={() => handleSubTabChange("collection")}
+                      className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
+                        (currentSubTab === "collection" || !currentSubTab)
+                          ? "border-blue-600 text-blue-600"
+                          : "border-transparent text-gray-600 hover:text-gray-800"
+                      }`}
+                    >
+                      Collection
+                    </button>
+                    <button
+                      onClick={() => handleSubTabChange("expenses")}
+                      className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
+                        currentSubTab === "expenses"
+                          ? "border-blue-600 text-blue-600"
+                          : "border-transparent text-gray-600 hover:text-gray-800"
+                      }`}
+                    >
+                      Expenses
+                    </button>
+                    <button
+                      onClick={() => handleSubTabChange("configs")}
+                      className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
+                        currentSubTab === "configs"
+                          ? "border-blue-600 text-blue-600"
+                          : "border-transparent text-gray-600 hover:text-gray-800"
+                      }`}
+                    >
+                      Configs
+                    </button>
+                  </div>
+                </div>
+
+                {(currentSubTab === "collection" || !currentSubTab) && (
+                  <div>
+                    <div className="flex justify-between items-center mb-4">
+                      <h2 className="text-2xl font-bold text-gray-800">Collections</h2>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <button
+                          onClick={() => {
+                            setEditingCollection(null)
+                            setIsCollectionModalOpen(true)
+                          }}
+                          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                        >
+                          <Plus className="w-5 h-5" />
+                          Add Collection
+                        </button>
+                        <button
+                          onClick={handleExportCollections}
+                          className="px-3 py-2 border rounded-lg hover:bg-gray-50 text-sm"
+                        >
+                          Export JSON
+                        </button>
+                        <button
+                          onClick={handleExportCollectionsImportFmt}
+                          className="px-3 py-2 border rounded-lg hover:bg-gray-50 text-sm"
+                        >
+                          Export (Import Format)
+                        </button>
+                        <button
+                          onClick={() => {
+                            setIsImportCollectionsOpen(true)
+                            setImportText("")
+                          }}
+                          className="px-3 py-2 border rounded-lg hover:bg-gray-50 text-sm"
+                        >
+                          Import JSON
+                        </button>
+                      </div>
+                    </div>
+                    <CollectionTable
+                      collections={collections}
+                      groups={groups}
+                      modes={collectionModes}
+                      onEdit={handleEditCollection}
+                      onDelete={handleDeleteCollection}
+                      isAdmin
+                    />
+                  </div>
+                )}
+
+                {currentSubTab === "expenses" && (
+                  <div>
+                    <div className="flex justify-between items-center mb-4">
+                      <h2 className="text-2xl font-bold text-gray-800">Expenses</h2>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <button
+                          onClick={() => {
+                            setEditingExpense(null)
+                            setIsExpenseModalOpen(true)
+                          }}
+                          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                        >
+                          <Plus className="w-5 h-5" />
+                          Add Expense
+                        </button>
+                        <button
+                          onClick={handleExportExpenses}
+                          className="px-3 py-2 border rounded-lg hover:bg-gray-50 text-sm"
+                        >
+                          Export JSON
+                        </button>
+                        <button
+                          onClick={handleExportExpensesImportFmt}
+                          className="px-3 py-2 border rounded-lg hover:bg-gray-50 text-sm"
+                        >
+                          Export (Import Format)
+                        </button>
+                        <button
+                          onClick={() => {
+                            setIsImportExpensesOpen(true)
+                            setImportText("")
+                          }}
+                          className="px-3 py-2 border rounded-lg hover:bg-gray-50 text-sm"
+                        >
+                          Import JSON
+                        </button>
+                      </div>
+                    </div>
+                    <ExpenseTable
+                      expenses={expenses}
+                      categories={categories}
+                      modes={expenseModes}
+                      onEdit={handleEditExpense}
+                      onDelete={handleDeleteExpense}
+                      isAdmin
+                    />
+                  </div>
+                )}
+
+                {currentSubTab === "configs" && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                      <h3 className="text-lg font-bold text-gray-800 mb-4">Collection Settings</h3>
+
+                      <div className="mb-6">
+                        <h4 className="font-semibold text-gray-700 mb-2">Groups</h4>
+                        <div className="flex gap-2 mb-3">
+                          <input
+                            type="text"
+                            value={newGroup}
+                            onChange={(e) => setNewGroup(e.target.value)}
+                            placeholder="Add new group"
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                            onKeyPress={(e) => e.key === "Enter" && handleAddGroup()}
+                          />
+                          <button
+                            onClick={handleAddGroup}
+                            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
+                          >
+                            <Plus className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <div className="space-y-2 max-h-60 overflow-y-auto">
+                          {groups.map((group) => (
+                            <div key={group} className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded">
+                              <span className="text-sm text-gray-700">{group}</span>
+                              <button
+                                onClick={() => handleDeleteGroup(group)}
+                                className="p-1 hover:bg-red-100 rounded transition-colors"
+                              >
+                                <Trash2 className="w-4 h-4 text-red-600" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <h4 className="font-semibold text-gray-700 mb-2">Collection Modes</h4>
+                        <div className="flex gap-2 mb-3">
+                          <input
+                            type="text"
+                            value={newCollectionMode}
+                            onChange={(e) => setNewCollectionMode(e.target.value)}
+                            placeholder="Add new mode"
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                            onKeyPress={(e) => e.key === "Enter" && handleAddCollectionMode()}
+                          />
+                          <button
+                            onClick={handleAddCollectionMode}
+                            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
+                          >
+                            <Plus className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <div className="space-y-2 max-h-60 overflow-y-auto">
+                          {collectionModes.map((mode) => (
+                            <div key={mode} className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded">
+                              <span className="text-sm text-gray-700">{mode}</span>
+                              <button
+                                onClick={() => handleDeleteCollectionMode(mode)}
+                                className="p-1 hover:bg-red-100 rounded transition-colors"
+                              >
+                                <Trash2 className="w-4 h-4 text-red-600" />
+                              </button>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     </div>
 
-                    {/* Admin Password */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Your Login Password</label>
-                      <p className="text-xs text-gray-600 mb-3">This is your password for logging into the admin dashboard</p>
-                      {editingAdminPassword ? (
-                        <div className="space-y-3">
+                    <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                      <h3 className="text-lg font-bold text-gray-800 mb-4">Expense Settings</h3>
+
+                      <div className="mb-6">
+                        <h4 className="font-semibold text-gray-700 mb-2">Categories</h4>
+                        <div className="flex gap-2 mb-3">
                           <input
-                            type={showAdminPassword ? "text" : "password"}
-                            value={newAdminPassword}
-                            onChange={(e) => setNewAdminPassword(e.target.value)}
-                            placeholder="Enter new password"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            type="text"
+                            value={newCategory}
+                            onChange={(e) => setNewCategory(e.target.value)}
+                            placeholder="Add new category"
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                            onKeyPress={(e) => e.key === "Enter" && handleAddCategory()}
                           />
-                          <div className="flex gap-2">
+                          <button
+                            onClick={handleAddCategory}
+                            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
+                          >
+                            <Plus className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <div className="space-y-2 max-h-60 overflow-y-auto">
+                          {categories.map((category) => (
+                            <div key={category} className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded">
+                              <span className="text-sm text-gray-700">{category}</span>
+                              <button
+                                onClick={() => handleDeleteCategory(category)}
+                                className="p-1 hover:bg-red-100 rounded transition-colors"
+                              >
+                                <Trash2 className="w-4 h-4 text-red-600" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <h4 className="font-semibold text-gray-700 mb-2">Expense Modes</h4>
+                        <div className="flex gap-2 mb-3">
+                          <input
+                            type="text"
+                            value={newExpenseMode}
+                            onChange={(e) => setNewExpenseMode(e.target.value)}
+                            placeholder="Add new mode"
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                            onKeyPress={(e) => e.key === "Enter" && handleAddExpenseMode()}
+                          />
+                          <button
+                            onClick={handleAddExpenseMode}
+                            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
+                          >
+                            <Plus className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <div className="space-y-2 max-h-60 overflow-y-auto">
+                          {expenseModes.map((mode) => (
+                            <div key={mode} className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded">
+                              <span className="text-sm text-gray-700">{mode}</span>
+                              <button
+                                onClick={() => handleDeleteExpenseMode(mode)}
+                                className="p-1 hover:bg-red-100 rounded transition-colors"
+                              >
+                                <Trash2 className="w-4 h-4 text-red-600" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {currentTab === "showcase" && (
+              <div className="space-y-6">
+                <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                  <h3 className="text-lg font-bold text-gray-800 mb-4">Media Download Control</h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={allowMediaDownload}
+                            onChange={(e) => setAllowMediaDownload(e.target.checked)}
+                            className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                          />
+                          <span className="text-sm font-medium text-gray-700">Allow visitors to download media (festival-wide)</span>
+                        </label>
+                        <p className="text-xs text-gray-500 mt-1 ml-6">When disabled, visitors cannot download any media from showcase</p>
+                      </div>
+                      <button
+                        onClick={handleSaveMediaDownload}
+                        disabled={isSavingMediaDownload}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                      >
+                        {isSavingMediaDownload ? "Saving..." : "Save"}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                  <h3 className="text-lg font-bold text-gray-800 mb-4">Showcase Albums</h3>
+                  
+                  {allMediaItems.length > 0 &&
+                    (() => {
+                      const storageStats = calculateStorageStats(allMediaItems, festival?.max_storage_mb)
+                      return (
+                        <div className="mb-4 p-4 rounded-lg border bg-gray-50">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <HardDrive className="w-5 h-5 text-gray-600" />
+                              <span className="text-sm font-medium text-gray-800">Storage Usage</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm text-gray-600">
+                                {formatFileSize(storageStats.totalBytes)} / {formatFileSize(storageStats.maxBytes)}
+                                <span className="ml-2 text-xs">({storageStats.percentage.toFixed(1)}%)</span>
+                              </span>
+                              <button
+                                onClick={() => setIsStorageStatsOpen(true)}
+                                className="p-1 hover:bg-gray-200 rounded transition-colors"
+                                title="View detailed storage breakdown"
+                              >
+                                <Eye className="w-4 h-4 text-gray-600" />
+                              </button>
+                            </div>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                            <div
+                              className={`h-full rounded-full transition-all ${
+                                storageStats.percentage > 90
+                                  ? "bg-red-500"
+                                  : storageStats.percentage > 75
+                                    ? "bg-yellow-500"
+                                    : "bg-blue-500"
+                              }`}
+                              style={{ width: `${storageStats.percentage}%` }}
+                            />
+                          </div>
+                        </div>
+                      )
+                    })()}
+                  
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-sm text-gray-600">
+                      Create albums and upload photos, videos, audio, and PDFs. Users can view under Showcase.
+                    </p>
+                    <button
+                      onClick={() => {
+                        setEditingAlbum(null)
+                        setIsAlbumModalOpen(true)
+                      }}
+                      className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+                    >
+                      Add Album
+                    </button>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {albums.map((a) => (
+                      <div key={a.id} className="border rounded-lg overflow-hidden bg-white">
+                        {a.cover_url && (
+                          <img
+                            src={a.cover_url || "/placeholder.svg"}
+                            alt={a.title}
+                            className="w-full h-32 object-cover"
+                          />
+                        )}
+                        <div className="p-3">
+                          <div className="font-semibold text-gray-800 truncate">{a.title}</div>
+                          <div className="text-xs text-gray-500">{a.year || "Year N/A"}</div>
+                          <div className="text-sm text-gray-600 mt-1 line-clamp-2">{a.description}</div>
+                          <div className="flex gap-2 mt-3">
                             <button
-                              onClick={handleUpdateAdminPassword}
-                              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                              onClick={() => {
+                                setEditingAlbum(a)
+                                setIsAlbumModalOpen(true)
+                              }}
+                              className="px-3 py-1 border rounded text-sm hover:bg-gray-50"
                             >
-                              Save Password
+                              Edit
+                            </button>
+                            <button
+                              onClick={async () => {
+                                await supabase.from("albums").delete().eq("id", a.id)
+                                await supabase.rpc("log_admin_activity", {
+                                  p_festival_id: festival?.id || "",
+                                  p_admin_id: session?.type === "admin" ? session.adminId : null,
+                                  p_action_type: "delete_album",
+                                  p_action_details: { album_id: a.id, title: a.title },
+                                })
+                                toast.success("Album deleted")
+                                fetchData()
+                              }}
+                              className="px-3 py-1 border rounded text-sm hover:bg-gray-50"
+                            >
+                              Delete
                             </button>
                             <button
                               onClick={() => {
-                                setEditingAdminPassword(false)
-                                setNewAdminPassword("")
+                                setActiveAlbumId(a.id)
+                                setIsManageMediaOpen(true)
                               }}
-                              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                              className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
                             >
-                              Cancel
+                              Manage Media
                             </button>
                           </div>
                         </div>
-                      ) : (
-                        <div className="flex items-center gap-3">
-                          <div className="flex-1 px-4 py-2 bg-gray-50 rounded-lg font-mono text-gray-800">
-                            {showAdminPassword 
-                              ? (currentAdmin.admin_password_hash || "Not set") 
-                              : "•".repeat(currentAdmin.admin_password_hash?.length || 8)}
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => setShowAdminPassword(!showAdminPassword)}
-                            className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                            title={showAdminPassword ? "Hide password" : "Show password"}
-                          >
-                            {showAdminPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setEditingAdminPassword(true)
-                              setNewAdminPassword("")
-                            }}
-                            className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                            title="Change password"
-                          >
-                            <Edit className="w-5 h-5" />
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* User Password Management - Only for regular admins */}
-              {session?.type === "admin" && adminId && adminId.trim() && (
-                <div className="theme-card bg-white rounded-lg shadow-md p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <h3 className="text-lg font-bold text-gray-800">User Password Management</h3>
-                      <p className="text-sm text-gray-600 mt-1">Manage passwords for visitors to access the festival</p>
-                    </div>
-                    <button
-                      onClick={() => setIsManagePasswordsOpen(true)}
-                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      <Key className="w-5 h-5" />
-                      Manage Passwords
-                    </button>
-                  </div>
-
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm font-medium text-gray-700">Password Usage:</span>
-                      <span className="text-sm text-gray-600">
-                        {currentPasswordCount} of {maxUserPasswords} passwords created
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className={`h-2 rounded-full transition-all ${
-                          currentPasswordCount >= maxUserPasswords
-                            ? "bg-red-500"
-                            : currentPasswordCount >= maxUserPasswords * 0.75
-                              ? "bg-yellow-500"
-                              : "bg-blue-500"
-                        }`}
-                        style={{ width: `${(currentPasswordCount / maxUserPasswords) * 100}%` }}
-                      />
-                    </div>
-                    {currentPasswordCount === 0 && (
-                      <p className="text-xs text-gray-500 mt-2">
-                        No user passwords created yet. Click "Manage Passwords" to create one.
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              <div className="theme-card bg-white rounded-lg shadow-md p-6 mt-8">
-                <h3 className="text-lg font-bold text-gray-800 mb-4">Showcase</h3>
-                {allMediaItems.length > 0 &&
-                  (() => {
-                    const storageStats = calculateStorageStats(allMediaItems, festival?.max_storage_mb)
-                    return (
-                      <div
-                        className="mb-4 cursor-pointer hover:bg-gray-50 p-4 rounded-lg border transition-colors"
-                        onClick={() => setIsStorageStatsOpen(true)}
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <HardDrive className="w-5 h-5 text-gray-600" />
-                            <span className="text-sm font-medium text-gray-800">Storage Usage</span>
-                          </div>
-                          <span className="text-sm text-gray-600">
-                            {formatFileSize(storageStats.totalBytes)} / {formatFileSize(storageStats.maxBytes)}
-                            <span className="ml-2 text-xs">({storageStats.percentage.toFixed(1)}%)</span>
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                          <div
-                            className={`h-full rounded-full transition-all ${
-                              storageStats.percentage > 90
-                                ? "bg-red-500"
-                                : storageStats.percentage > 75
-                                  ? "bg-yellow-500"
-                                  : "bg-blue-500"
-                            }`}
-                            style={{ width: `${storageStats.percentage}%` }}
-                          />
-                        </div>
-                        <div className="text-xs text-gray-500 mt-1">Click to view detailed storage breakdown</div>
                       </div>
-                    )
-                  })()}
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-sm text-gray-600">
-                    Create albums and upload photos, videos, audio, and PDFs. Users can view under Showcase.
-                  </p>
-                  <button
-                    onClick={() => {
-                      setEditingAlbum(null)
-                      setIsAlbumModalOpen(true)
-                    }}
-                    className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
-                  >
-                    Add Album
-                  </button>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {albums.map((a) => (
-                    <div key={a.id} className="border rounded-lg overflow-hidden bg-white">
-                      {a.cover_url && (
-                        <img
-                          src={a.cover_url || "/placeholder.svg"}
-                          alt={a.title}
-                          className="w-full h-32 object-cover"
-                        />
-                      )}
-                      <div className="p-3">
-                        <div className="font-semibold text-gray-800 truncate">{a.title}</div>
-                        <div className="text-xs text-gray-500">{a.year || "Year N/A"}</div>
-                        <div className="text-sm text-gray-600 mt-1 line-clamp-2">{a.description}</div>
-                        <div className="flex gap-2 mt-3">
-                          <button
-                            onClick={() => {
-                              setEditingAlbum(a)
-                              setIsAlbumModalOpen(true)
-                            }}
-                            className="px-3 py-1 border rounded text-sm hover:bg-gray-50"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={async () => {
-                              await supabase.from("albums").delete().eq("id", a.id)
-                              await supabase.rpc("log_admin_activity", {
-                                p_festival_id: festival?.id || "",
-                                p_admin_id: session?.type === "admin" ? session.adminId : null,
-                                p_action_type: "delete_album",
-                                p_action_details: { album_id: a.id, title: a.title },
-                              })
-                              toast.success("Album deleted")
-                              fetchData()
-                            }}
-                            className="px-3 py-1 border rounded text-sm hover:bg-gray-50"
-                          >
-                            Delete
-                          </button>
-                          <button
-                            onClick={() => {
-                              setActiveAlbumId(a.id)
-                              setIsManageMediaOpen(true)
-                            }}
-                            className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
-                          >
-                            Manage Media
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  {albums.length === 0 && <div className="text-sm text-gray-600">No albums yet.</div>}
+                    ))}
+                    {albums.length === 0 && <div className="text-sm text-gray-600">No albums yet.</div>}
+                  </div>
                 </div>
               </div>
-            </div>
-          </>
-        )}
-      </div>
+            )}
+
+            {currentTab === "settings" && (
+              <div className="space-y-6">
+                <div className="bg-white border-b border-gray-200 rounded-t-lg">
+                  <div className="flex overflow-x-auto">
+                    {session?.type === "admin" && (
+                      <>
+                        <button
+                          onClick={() => handleSubTabChange("personal")}
+                          className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
+                            (currentSubTab === "personal" || !currentSubTab)
+                              ? "border-blue-600 text-blue-600"
+                              : "border-transparent text-gray-600 hover:text-gray-800"
+                          }`}
+                        >
+                          Personal
+                        </button>
+                        <button
+                          onClick={() => handleSubTabChange("user")}
+                          className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
+                            currentSubTab === "user"
+                              ? "border-blue-600 text-blue-600"
+                              : "border-transparent text-gray-600 hover:text-gray-800"
+                          }`}
+                        >
+                          User
+                        </button>
+                      </>
+                    )}
+                    <button
+                      onClick={() => handleSubTabChange("theme")}
+                      className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
+                        currentSubTab === "theme" || (session?.type === "super_admin" && !currentSubTab)
+                          ? "border-blue-600 text-blue-600"
+                          : "border-transparent text-gray-600 hover:text-gray-800"
+                      }`}
+                    >
+                      Theme
+                    </button>
+                  </div>
+                </div>
+
+                {session?.type === "admin" && (currentSubTab === "personal" || !currentSubTab) && currentAdmin && (
+                  <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                    <h3 className="text-lg font-bold text-gray-800 mb-4">Your Admin Account</h3>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Admin Code</label>
+                          <div className="px-4 py-2 bg-gray-50 rounded-lg font-mono text-gray-800">
+                            {currentAdmin.admin_code}
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Admin Name</label>
+                          <div className="px-4 py-2 bg-gray-50 rounded-lg text-gray-800">
+                            {currentAdmin.admin_name}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Your Login Password</label>
+                        <p className="text-xs text-gray-600 mb-3">This is your password for logging into the admin dashboard</p>
+                        {editingAdminPassword ? (
+                          <div className="space-y-3">
+                            <input
+                              type={showAdminPassword ? "text" : "password"}
+                              value={newAdminPassword}
+                              onChange={(e) => setNewAdminPassword(e.target.value)}
+                              placeholder="Enter new password"
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            <div className="flex gap-2">
+                              <button
+                                onClick={handleUpdateAdminPassword}
+                                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                              >
+                                Save Password
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setEditingAdminPassword(false)
+                                  setNewAdminPassword("")
+                                }}
+                                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-3">
+                            <div className="flex-1 px-4 py-2 bg-gray-50 rounded-lg font-mono text-gray-800">
+                              {showAdminPassword 
+                                ? (currentAdmin.admin_password_hash || "Not set") 
+                                : "•".repeat(currentAdmin.admin_password_hash?.length || 8)}
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setShowAdminPassword(!showAdminPassword)}
+                              className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                              title={showAdminPassword ? "Hide password" : "Show password"}
+                            >
+                              {showAdminPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditingAdminPassword(true)
+                                setNewAdminPassword("")
+                              }}
+                              className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                              title="Change password"
+                            >
+                              <Edit className="w-5 h-5" />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {session?.type === "admin" && currentSubTab === "user" && adminId && adminId.trim() && (
+                  <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-800">User Password Management</h3>
+                        <p className="text-sm text-gray-600 mt-1">Manage passwords for visitors to access the festival</p>
+                      </div>
+                      <button
+                        onClick={() => setIsManagePasswordsOpen(true)}
+                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        <Key className="w-5 h-5" />
+                        Manage Passwords
+                      </button>
+                    </div>
+
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm font-medium text-gray-700">Password Usage:</span>
+                        <span className="text-sm text-gray-600">
+                          {currentPasswordCount} of {maxUserPasswords} passwords created
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className={`h-2 rounded-full transition-all ${
+                            currentPasswordCount >= maxUserPasswords
+                              ? "bg-red-500"
+                              : currentPasswordCount >= maxUserPasswords * 0.75
+                                ? "bg-yellow-500"
+                                : "bg-blue-500"
+                          }`}
+                          style={{ width: `${(currentPasswordCount / maxUserPasswords) * 100}%` }}
+                        />
+                      </div>
+                      {currentPasswordCount === 0 && (
+                        <p className="text-xs text-gray-500 mt-2">
+                          No user passwords created yet. Click "Manage Passwords" to create one.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {(currentSubTab === "theme" || (session?.type === "super_admin" && !currentSubTab)) && (
+                  <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                    <h3 className="text-lg font-bold text-gray-800 mb-4">Theme Settings</h3>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Background Color</label>
+                          <input
+                            type="color"
+                            value={themeSettings.theme_bg_color}
+                            onChange={(e) => setThemeSettings({ ...themeSettings, theme_bg_color: e.target.value })}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-10"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Background Image URL</label>
+                          <input
+                            type="text"
+                            value={themeSettings.theme_bg_image_url}
+                            onChange={(e) => setThemeSettings({ ...themeSettings, theme_bg_image_url: e.target.value })}
+                            placeholder="https://example.com/image.jpg"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Text Color</label>
+                          <input
+                            type="color"
+                            value={themeSettings.theme_text_color}
+                            onChange={(e) => setThemeSettings({ ...themeSettings, theme_text_color: e.target.value })}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-10"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Border Color</label>
+                          <input
+                            type="color"
+                            value={themeSettings.theme_border_color}
+                            onChange={(e) => setThemeSettings({ ...themeSettings, theme_border_color: e.target.value })}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-10"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={themeSettings.theme_dark}
+                            onChange={(e) => setThemeSettings({ ...themeSettings, theme_dark: e.target.checked })}
+                            className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                          />
+                          <span className="text-sm font-medium text-gray-700">Enable Dark Mode</span>
+                        </label>
+                      </div>
+
+                      <div className="flex justify-end">
+                        <button
+                          onClick={handleSaveTheme}
+                          disabled={isSavingTheme}
+                          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                        >
+                          {isSavingTheme ? "Saving..." : "Save Theme Settings"}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </>
+      )}
 
       <BottomNav code={code} />
       <GlobalSessionBar festivalCode={code} currentPage="admin" />
@@ -1688,15 +2138,12 @@ function AdminPageContent() {
         festivalEndDate={festival?.ce_end_date}
       />
 
-      {/* Import Collections Modal */}
       {isImportCollectionsOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-            {/* Sticky Header */}
             <div className="sticky top-0 bg-white border-b border-gray-200 p-6 pb-4 z-10">
               <h3 className="text-lg font-bold text-gray-800">Import Collections (JSON)</h3>
             </div>
-            {/* Scrollable Content */}
             <div className="flex-1 overflow-y-auto p-6 pt-4">
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
                 <p className="text-sm font-semibold text-blue-900 mb-2">Required Fields:</p>
@@ -1727,30 +2174,7 @@ function AdminPageContent() {
                 date range.
               </p>
               <div className="bg-gray-50 p-3 rounded border text-xs mb-3 font-mono overflow-x-auto">
-                {`[
-  {
-    "name": "John Doe",
-    "amount": 500,
-    "group_name": "Group A",
-    "mode": "Cash",
-    "note": "Blessings",
-    "date": "2025-10-21",
-    "time_hour": 14,
-    "time_minute": 30,
-    "created_by_admin_id": null
-  },
-  {
-    "name": "Jane",
-    "amount": 1000,
-    "group_name": "Group B",
-    "mode": "UPI",
-    "note": "",
-    "date": "2025-10-22",
-    "time_hour": 15,
-    "time_minute": 0,
-    "created_by_admin_id": null
-  }
-]`}
+                {JSON.stringify(exampleCollections, null, 2)}
               </div>
               <textarea
                 value={importText}
@@ -1759,7 +2183,6 @@ function AdminPageContent() {
                 placeholder="Paste your JSON array here..."
               />
             </div>
-            {/* Sticky Footer with Buttons */}
             <div className="sticky bottom-0 bg-white border-t border-gray-200 p-6 pt-4 flex justify-end gap-2 z-10">
               <button
                 onClick={() => setImportText(JSON.stringify(exampleCollections, null, 2))}
@@ -1784,15 +2207,12 @@ function AdminPageContent() {
         </div>
       )}
 
-      {/* Import Expenses Modal */}
       {isImportExpensesOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-            {/* Sticky Header */}
             <div className="sticky top-0 bg-white border-b border-gray-200 p-6 pb-4 z-10">
               <h3 className="text-lg font-bold text-gray-800">Import Expenses (JSON)</h3>
             </div>
-            {/* Scrollable Content */}
             <div className="flex-1 overflow-y-auto p-6 pt-4">
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
                 <p className="text-sm font-semibold text-blue-900 mb-2">Required Fields:</p>
@@ -1827,34 +2247,7 @@ function AdminPageContent() {
                 date range. Total amount can be manually adjusted (e.g., for discounts or rounding).
               </p>
               <div className="bg-gray-50 p-3 rounded border text-xs mb-3 font-mono overflow-x-auto">
-                {`[
-  {
-    "item": "Flowers",
-    "pieces": 5,
-    "price_per_piece": 50,
-    "total_amount": 250,
-    "category": "Decoration",
-    "mode": "Cash",
-    "note": "",
-    "date": "2025-10-21",
-    "time_hour": 10,
-    "time_minute": 0,
-    "created_by_admin_id": null
-  },
-  {
-    "item": "Lights",
-    "pieces": 2,
-    "price_per_piece": 300,
-    "total_amount": 600,
-    "category": "Decoration",
-    "mode": "UPI",
-    "note": "extra cable",
-    "date": "2025-10-22",
-    "time_hour": 11,
-    "time_minute": 30,
-    "created_by_admin_id": null
-  }
-]`}
+                {JSON.stringify(exampleExpenses, null, 2)}
               </div>
               <textarea
                 value={importText}
@@ -1863,7 +2256,6 @@ function AdminPageContent() {
                 placeholder="Paste your JSON array here..."
               />
             </div>
-            {/* Sticky Footer with Buttons */}
             <div className="sticky bottom-0 bg-white border-t border-gray-200 p-6 pt-4 flex justify-end gap-2 z-10">
               <button
                 onClick={() => setImportText(JSON.stringify(exampleExpenses, null, 2))}
