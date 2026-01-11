@@ -9,12 +9,13 @@ interface StorageStatsModalProps {
   onClose: () => void;
   allMediaItems: MediaItem[];
   albums: Album[];
+  maxStorageMB?: number;
 }
 
-export default function StorageStatsModal({ isOpen, onClose, allMediaItems, albums }: StorageStatsModalProps) {
+export default function StorageStatsModal({ isOpen, onClose, allMediaItems, albums, maxStorageMB }: StorageStatsModalProps) {
   if (!isOpen) return null;
 
-  const stats = calculateStorageStats(allMediaItems);
+  const stats = calculateStorageStats(allMediaItems, maxStorageMB);
   
   const albumStats = albums.map(album => {
     const albumMedia = allMediaItems.filter(item => item.album_id === album.id);

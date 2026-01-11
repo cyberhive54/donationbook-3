@@ -5,13 +5,14 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { resolveCurrentFestivalCode } from '@/lib/festivalCodeRedirect';
 import toast from 'react-hot-toast';
-import { AlertCircle, CheckCircle } from 'lucide-react';
+import { AlertCircle, CheckCircle, Users, Shield } from 'lucide-react';
 
 export default function ViewFestival() {
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [redirectTo, setRedirectTo] = useState<'visitor' | 'admin'>('visitor');
   const router = useRouter();
 
   // Validate code format: 6-12 chars, alphanumeric and dash only
@@ -87,13 +88,21 @@ export default function ViewFestival() {
         
         // Wait 1.5 seconds to show the message, then redirect
         setTimeout(() => {
-          router.push(`/f/${resolvedCode}`);
+          if (redirectTo === 'admin') {
+            router.push(`/f/${resolvedCode}/admin/login`);
+          } else {
+            router.push(`/f/${resolvedCode}`);
+          }
         }, 1500);
         return;
       }
 
-      // Code is current, redirect normally
-      router.push(`/f/${resolvedCode}`);
+      // Code is current, redirect based on user selection
+      if (redirectTo === 'admin') {
+        router.push(`/f/${resolvedCode}/admin/login`);
+      } else {
+        router.push(`/f/${resolvedCode}`);
+      }
     } catch (err) {
       console.error('Error:', err);
       setError('An error occurred. Please try again.');
@@ -106,8 +115,8 @@ export default function ViewFestival() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-md w-full max-w-md p-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2 text-center">View a Festival</h1>
-        <p className="text-sm text-gray-600 mb-6 text-center">Enter the festival code shared by your admin</p>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2 text-center">Access Festival</h1>
+        <p className="text-sm text-gray-600 mb-6 text-center">Enter the festival code to continue</p>
         
         {success && (
           <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3">
@@ -128,6 +137,43 @@ export default function ViewFestival() {
             </div>
           </div>
         )}
+
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 mb-3">I want to access as:</label>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setRedirectTo('visitor')}
+              className={`flex flex-col items-center justify-center p-4 rounded-lg border-2 transition-all ${
+                redirectTo === 'visitor'
+                  ? 'border-blue-500 bg-blue-50 shadow-md'
+                  : 'border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50/50'
+              }`}
+            >
+              <Users className={`w-8 h-8 mb-2 ${redirectTo === 'visitor' ? 'text-blue-600' : 'text-gray-400'}`} />
+              <span className={`text-sm font-medium ${redirectTo === 'visitor' ? 'text-blue-900' : 'text-gray-600'}`}>
+                Visitor
+              </span>
+              <span className="text-xs text-gray-500 mt-1 text-center">View festival data</span>
+            </button>
+            
+            <button
+              type="button"
+              onClick={() => setRedirectTo('admin')}
+              className={`flex flex-col items-center justify-center p-4 rounded-lg border-2 transition-all ${
+                redirectTo === 'admin'
+                  ? 'border-purple-500 bg-purple-50 shadow-md'
+                  : 'border-gray-200 bg-white hover:border-purple-300 hover:bg-purple-50/50'
+              }`}
+            >
+              <Shield className={`w-8 h-8 mb-2 ${redirectTo === 'admin' ? 'text-purple-600' : 'text-gray-400'}`} />
+              <span className={`text-sm font-medium ${redirectTo === 'admin' ? 'text-purple-900' : 'text-gray-600'}`}>
+                Admin
+              </span>
+              <span className="text-xs text-gray-500 mt-1 text-center">Manage festival</span>
+            </button>
+          </div>
+        </div>
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -160,8 +206,12 @@ export default function ViewFestival() {
           </div>
           <button 
             type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+            disabled={loading || !!validationError}
+            className={`w-full py-3 rounded-lg font-semibold transition-colors ${
+              redirectTo === 'admin'
+                ? 'bg-purple-600 text-white hover:bg-purple-700 disabled:bg-gray-400'
+                : 'bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-400'
+            } disabled:cursor-not-allowed`}
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">
@@ -169,7 +219,10 @@ export default function ViewFestival() {
                 Verifying...
               </span>
             ) : (
-              'Continue'
+              <span className="flex items-center justify-center gap-2">
+                {redirectTo === 'admin' ? <Shield className="w-5 h-5" /> : <Users className="w-5 h-5" />}
+                {redirectTo === 'admin' ? 'Continue to Admin Login' : 'Continue as Visitor'}
+              </span>
             )}
           </button>
         </form>
