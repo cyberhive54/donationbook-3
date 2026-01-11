@@ -32,6 +32,7 @@ import HorizontalBarChart from "@/components/charts/HorizontalBarChart"
 import DonutChart from "@/components/charts/DonutChart"
 import TreemapChart from "@/components/charts/TreemapChart"
 import RadialBarChart from "@/components/charts/RadialBarChart"
+import BidirectionalBarChart from "@/components/charts/BidirectionalBarChart"
 
 function PublicAnalyticsContent() {
   const params = useParams<{ code: string }>()
@@ -635,6 +636,17 @@ function PublicAnalyticsContent() {
                 </ChartContainer>
               </CardContent>
             </Card>
+          </div>
+        )
+
+      case 'daily_collection_expense_bidirectional':
+        if (collectionVsExpenseData.length === 0) return null
+        return (
+          <div key={card.id} className="col-span-full lg:col-span-1">
+            <BidirectionalBarChart 
+              data={collectionVsExpenseData} 
+              title="Daily Collection & Expense" 
+            />
           </div>
         )
 

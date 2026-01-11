@@ -199,6 +199,8 @@ export default function AnalyticsConfigModal({ isOpen, onClose, onSuccess, festi
         return
       }
 
+      await fetchAnalyticsConfig()
+      
       toast.success("Analytics configuration saved")
       onSuccess()
     } catch (error: any) {

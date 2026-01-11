@@ -28,6 +28,7 @@ const CARD_LABELS: Record<AnalyticsCardType, string> = {
   'top_donators': 'Top Donators Chart',
   'average_donation_per_donor': 'Average Donation Per Donor',
   'collection_vs_expense_comparison': 'Collection vs Expense Comparison',
+  'daily_collection_expense_bidirectional': 'Daily Collection & Expense (Bidirectional)',
 };
 
 const CARD_DESCRIPTIONS: Record<AnalyticsCardType, string> = {
@@ -46,6 +47,7 @@ const CARD_DESCRIPTIONS: Record<AnalyticsCardType, string> = {
   'top_donators': 'Bar chart showing top 5 donators',
   'average_donation_per_donor': 'Shows average donation amount per unique donor with statistics',
   'collection_vs_expense_comparison': 'Line chart comparing daily collections and expenses over date range',
+  'daily_collection_expense_bidirectional': 'Bidirectional bar chart with collections above (green) and expenses below (red) the baseline',
 };
 
 export default function AnalyticsCardsManagementModal({ isOpen, onClose, festivalId }: AnalyticsCardsManagementModalProps) {
