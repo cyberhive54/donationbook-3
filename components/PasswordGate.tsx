@@ -326,6 +326,7 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
         p_access_method: 'password_modal',
         p_password_used: password.trim(),
         p_session_id: visitorSession.sessionId,
+        p_admin_id: passwordData.admin_id,
         p_user_password_id: passwordData.password_id
       });
 
