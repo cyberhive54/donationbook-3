@@ -27,7 +27,6 @@ import { InfoSkeleton, CardSkeleton, TableSkeleton } from "@/components/Loader"
 import toast from "react-hot-toast"
 import { Plus, Edit, Trash2, Eye, EyeOff, HardDrive, Key, LogOut, ExternalLink, Search, ChevronLeft, ChevronRight, HelpCircle, ChevronDown, ChevronUp } from "lucide-react"
 import { useMemo } from "react"
-import { Switch } from "@/components/ui/switch"
 
 import { getThemeStyles, getThemeClasses } from "@/lib/theme"
 import { useSession } from "@/lib/hooks/useSession"
@@ -331,14 +330,7 @@ function HelpSuperAdminStructure({ festivalCode }: { festivalCode: string }) {
         }
       ]
     },
-    {
-      title: "Navigation",
-      icon: "🧭",
-      url: `/f/${festivalCode}/admin/sup/dashboard?tab=navigation`,
-      sections: [
-        { name: "Quick Navigation", desc: "Coming soon - Quick access to important pages" }
-      ]
-    }
+
   ]
 
   return (
@@ -2349,14 +2341,16 @@ function AdminPageContent() {
                   <h3 className="text-lg font-bold text-gray-800 mb-4">Media Download Control</h3>
                   <div className="space-y-4">
                     <div className="flex flex-col gap-4">
-                      <div className="flex items-start gap-4">
-                        <Switch
+                      <div className="flex items-start gap-3">
+                        <input
+                          type="checkbox"
+                          id="allow-media-download"
                           checked={allowMediaDownload}
-                          onCheckedChange={setAllowMediaDownload}
-                          className="mt-1"
+                          onChange={(e) => setAllowMediaDownload(e.target.checked)}
+                          className="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                         />
                         <div className="flex-1">
-                          <label className="text-sm font-medium text-gray-700 block mb-1">
+                          <label htmlFor="allow-media-download" className="text-sm font-medium text-gray-700 block mb-1 cursor-pointer">
                             Allow visitors to download media (festival-wide)
                           </label>
                           <p className="text-xs text-gray-500">

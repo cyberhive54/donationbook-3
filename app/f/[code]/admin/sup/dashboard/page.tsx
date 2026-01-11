@@ -667,14 +667,14 @@ function SuperAdminDashboardContent() {
                     Activity
                   </button>
                   <button
-                    onClick={() => handleTabChange("navigation")}
+                    onClick={() => handleTabChange("help")}
                     className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
-                      currentTab === "navigation"
+                      currentTab === "help"
                         ? "border-purple-600 text-purple-600"
                         : "border-transparent text-gray-600 hover:text-gray-800"
                     }`}
                   >
-                    Navigation
+                    Help
                   </button>
                 </div>
               </div>
@@ -1915,14 +1915,250 @@ function SuperAdminDashboardContent() {
             )}
 
             {/* NAVIGATION TAB */}
-            {currentTab === "navigation" && (
-              <div className="space-y-6">
-                <div className="theme-card bg-white rounded-lg shadow-md p-6">
-                  <h3 className="text-lg font-bold text-gray-800 mb-4">Quick Navigation</h3>
-                  <p className="text-sm text-gray-600 mb-4">Coming soon - Quick access to important pages</p>
-                  <div className="text-center py-12 text-gray-500">
-                    <ExternalLink className="w-12 h-12 mx-auto mb-2 text-gray-400" />
-                    <p>Navigation shortcuts will be implemented here</p>
+            {currentTab === "help" && (
+              <div className="space-y-4">
+                <div className="bg-white rounded-lg shadow-md p-6">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Super Admin Dashboard Structure</h2>
+                  <p className="text-sm text-gray-600 mb-4">Navigate the super admin dashboard with this visual guide. Click links to open sections in a new tab.</p>
+                  
+                  {/* Home Tab */}
+                  <div className="mb-4 border border-gray-200 rounded-lg overflow-hidden">
+                    <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4">
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">🏠</span>
+                        <h3 className="text-lg font-bold text-gray-900">Home</h3>
+                      </div>
+                    </div>
+                    <div className="p-4 bg-white">
+                      <div className="mb-3 ml-4 border-l-2 border-purple-300 pl-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h4 className="font-semibold text-gray-800">Info</h4>
+                          <a href={`/f/${code}/admin/sup/dashboard?tab=home&sub-tab=info`} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800">
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        </div>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                          <p className="text-sm font-medium text-gray-700">Festival Information</p>
+                          <p className="text-xs text-gray-500 mt-1">View-only festival details (edit via Admin Dashboard)</p>
+                        </div>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                          <p className="text-sm font-medium text-gray-700">Statistics Cards</p>
+                          <p className="text-xs text-gray-500 mt-1">Total collection, expenses, donations, and balance</p>
+                        </div>
+                      </div>
+                      <div className="mb-3 ml-4 border-l-2 border-purple-300 pl-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h4 className="font-semibold text-gray-800">Banner</h4>
+                          <a href={`/f/${code}/admin/sup/dashboard?tab=home&sub-tab=banner`} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800">
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        </div>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                          <p className="text-sm font-medium text-gray-700">Banner Visibility Settings</p>
+                          <p className="text-xs text-gray-500 mt-1">Toggle visibility of organiser, guide, mentor, location, dates, duration</p>
+                        </div>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                          <p className="text-sm font-medium text-gray-700">Admin Display Preference</p>
+                          <p className="text-xs text-gray-500 mt-1">Choose to display admin code or admin name</p>
+                        </div>
+                      </div>
+                      <div className="mb-3 ml-4 border-l-2 border-purple-300 pl-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h4 className="font-semibold text-gray-800">Festival Code</h4>
+                          <a href={`/f/${code}/admin/sup/dashboard?tab=home&sub-tab=festival-code`} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800">
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        </div>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                          <p className="text-sm font-medium text-gray-700">Festival Code Management</p>
+                          <p className="text-xs text-gray-500 mt-1">View and update festival code (6-12 characters)</p>
+                        </div>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                          <p className="text-sm font-medium text-gray-700">Automatic Redirect</p>
+                          <p className="text-xs text-gray-500 mt-1">Old code links automatically redirect to new code</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Settings Tab */}
+                  <div className="mb-4 border border-gray-200 rounded-lg overflow-hidden">
+                    <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4">
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">⚙️</span>
+                        <h3 className="text-lg font-bold text-gray-900">Settings</h3>
+                      </div>
+                    </div>
+                    <div className="p-4 bg-white">
+                      <div className="mb-3 ml-4 border-l-2 border-purple-300 pl-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h4 className="font-semibold text-gray-800">Personal</h4>
+                          <a href={`/f/${code}/admin/sup/dashboard?tab=settings&sub-tab=personal`} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800">
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        </div>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                          <p className="text-sm font-medium text-gray-700">Super Admin Password</p>
+                          <p className="text-xs text-gray-500 mt-1">Update super admin dashboard access password</p>
+                        </div>
+                      </div>
+                      <div className="mb-3 ml-4 border-l-2 border-purple-300 pl-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h4 className="font-semibold text-gray-800">Admin Management</h4>
+                          <a href={`/f/${code}/admin/sup/dashboard?tab=settings&sub-tab=admin-management`} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800">
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        </div>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                          <p className="text-sm font-medium text-gray-700">Create Admin</p>
+                          <p className="text-xs text-gray-500 mt-1">Add new admin accounts with custom codes and passwords</p>
+                        </div>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                          <p className="text-sm font-medium text-gray-700">Admin Search & Filters</p>
+                          <p className="text-xs text-gray-500 mt-1">Search by code/name, filter by status, sort by various fields</p>
+                        </div>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                          <p className="text-sm font-medium text-gray-700">Admin Table</p>
+                          <p className="text-xs text-gray-500 mt-1">View all admins with type (Default/Super Admin/Regular), status, and actions</p>
+                        </div>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                          <p className="text-sm font-medium text-gray-700">Edit/Delete Admins</p>
+                          <p className="text-xs text-gray-500 mt-1">Modify admin details or remove admin accounts</p>
+                        </div>
+                      </div>
+                      <div className="mb-3 ml-4 border-l-2 border-purple-300 pl-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h4 className="font-semibold text-gray-800">Media Storage</h4>
+                          <a href={`/f/${code}/admin/sup/dashboard?tab=settings&sub-tab=media-storage`} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800">
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        </div>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                          <p className="text-sm font-medium text-gray-700">Total Storage Limit</p>
+                          <p className="text-xs text-gray-500 mt-1">Set festival-wide storage limit (100-10000 MB)</p>
+                        </div>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                          <p className="text-sm font-medium text-gray-700">Max Video File Size</p>
+                          <p className="text-xs text-gray-500 mt-1">Configure maximum video upload size (10-500 MB)</p>
+                        </div>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                          <p className="text-sm font-medium text-gray-700">Max File Size</p>
+                          <p className="text-xs text-gray-500 mt-1">Set limit for images, audio, PDFs (1-100 MB)</p>
+                        </div>
+                      </div>
+                      <div className="mb-3 ml-4 border-l-2 border-purple-300 pl-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h4 className="font-semibold text-gray-800">Analytics</h4>
+                          <a href={`/f/${code}/admin/sup/dashboard?tab=settings&sub-tab=analytics`} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800">
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        </div>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                          <p className="text-sm font-medium text-gray-700">Analytics Cards Configuration</p>
+                          <p className="text-xs text-gray-500 mt-1">Manage visibility and order of analytics cards for visitors</p>
+                        </div>
+                      </div>
+                      <div className="mb-3 ml-4 border-l-2 border-purple-300 pl-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h4 className="font-semibold text-gray-800">Danger</h4>
+                          <a href={`/f/${code}/admin/sup/dashboard?tab=settings&sub-tab=danger`} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800">
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        </div>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                          <p className="text-sm font-medium text-gray-700">Delete Festival</p>
+                          <p className="text-xs text-gray-500 mt-1">Permanently delete festival and all associated data (irreversible)</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Activity Tab */}
+                  <div className="mb-4 border border-gray-200 rounded-lg overflow-hidden">
+                    <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4">
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">📝</span>
+                        <h3 className="text-lg font-bold text-gray-900">Activity</h3>
+                      </div>
+                    </div>
+                    <div className="p-4 bg-white">
+                      <div className="mb-3 ml-4 border-l-2 border-purple-300 pl-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h4 className="font-semibold text-gray-800">My Activity</h4>
+                          <a href={`/f/${code}/admin/sup/dashboard?tab=activity&sub-tab=own`} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800">
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        </div>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                          <p className="text-sm font-medium text-gray-700">Super Admin Actions</p>
+                          <p className="text-xs text-gray-500 mt-1">Track your super admin activities with search and filtering</p>
+                        </div>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                          <p className="text-sm font-medium text-gray-700">System Activities</p>
+                          <p className="text-xs text-gray-500 mt-1">View system-level operations and changes</p>
+                        </div>
+                      </div>
+                      <div className="mb-3 ml-4 border-l-2 border-purple-300 pl-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h4 className="font-semibold text-gray-800">All Transactions</h4>
+                          <a href={`/f/${code}/admin/sup/dashboard?tab=activity&sub-tab=transactions`} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800">
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        </div>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                          <p className="text-sm font-medium text-gray-700">Combined View</p>
+                          <p className="text-xs text-gray-500 mt-1">See all collections and expenses in one place</p>
+                        </div>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                          <p className="text-sm font-medium text-gray-700">Admin Attribution</p>
+                          <p className="text-xs text-gray-500 mt-1">Track which admin created each transaction</p>
+                        </div>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                          <p className="text-sm font-medium text-gray-700">Transaction Management</p>
+                          <p className="text-xs text-gray-500 mt-1">Edit or delete any transaction with confirmation</p>
+                        </div>
+                      </div>
+                      <div className="mb-3 ml-4 border-l-2 border-purple-300 pl-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h4 className="font-semibold text-gray-800">All Visitors</h4>
+                          <a href={`/f/${code}/admin/sup/dashboard?tab=activity&sub-tab=visitors`} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800">
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        </div>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                          <p className="text-sm font-medium text-gray-700">Visitor Access Log</p>
+                          <p className="text-xs text-gray-500 mt-1">Complete history of visitor logins</p>
+                        </div>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                          <p className="text-sm font-medium text-gray-700">Authentication Details</p>
+                          <p className="text-xs text-gray-500 mt-1">See which admin/password was used for access</p>
+                        </div>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                          <p className="text-sm font-medium text-gray-700">Access Method</p>
+                          <p className="text-xs text-gray-500 mt-1">Track login page vs direct link access</p>
+                        </div>
+                      </div>
+                      <div className="mb-3 ml-4 border-l-2 border-purple-300 pl-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h4 className="font-semibold text-gray-800">Admin Activity</h4>
+                          <a href={`/f/${code}/admin/sup/dashboard?tab=activity&sub-tab=admins`} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800">
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        </div>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                          <p className="text-sm font-medium text-gray-700">All Admin Actions</p>
+                          <p className="text-xs text-gray-500 mt-1">Monitor actions from all admin accounts</p>
+                        </div>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                          <p className="text-sm font-medium text-gray-700">Multi-level Filtering</p>
+                          <p className="text-xs text-gray-500 mt-1">Filter by action type and specific admin</p>
+                        </div>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                          <p className="text-sm font-medium text-gray-700">Accountability Tracking</p>
+                          <p className="text-xs text-gray-500 mt-1">Full audit trail of admin operations</p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
