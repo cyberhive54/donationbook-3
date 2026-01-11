@@ -530,7 +530,7 @@ function PublicAnalyticsContent() {
         if (expensesByCategory.length === 0) return null
         return (
           <div key={card.id} className="col-span-full lg:col-span-1">
-            <TreemapChart data={expensesByCategory} title="Expenses by Category" colors={COLORS} />
+            <PieChart data={expensesByCategory} title="Expenses by Category" colors={COLORS} />
           </div>
         )
 

@@ -23,7 +23,7 @@ const CARD_LABELS: Record<AnalyticsCardType, string> = {
   'transaction_count_by_day': 'Daily Transaction Count',
   'collections_by_group': 'Collections by Group (Donut)',
   'collections_by_mode': 'Collections by Mode (Horizontal Bar)',
-  'expenses_by_category': 'Expenses by Category (Treemap)',
+  'expenses_by_category': 'Expenses by Category (Pie)',
   'expenses_by_mode': 'Expenses by Mode (Radial Bar)',
   'top_donators': 'Top Donators Chart',
   'average_donation_per_donor': 'Average Donation Per Donor',
@@ -41,11 +41,11 @@ const CARD_DESCRIPTIONS: Record<AnalyticsCardType, string> = {
   'transaction_count_by_day': 'Bar chart showing daily transaction counts',
   'collections_by_group': 'Donut chart showing collection distribution by group with center total',
   'collections_by_mode': 'Horizontal bar chart showing collection distribution by payment mode',
-  'expenses_by_category': 'Treemap chart showing expense distribution by category with visual blocks',
+  'expenses_by_category': 'Pie chart showing expense distribution by category',
   'expenses_by_mode': 'Radial bar chart showing expense distribution by payment mode',
   'top_donators': 'Bar chart showing top 5 donators',
   'average_donation_per_donor': 'Shows average donation amount per unique donor with statistics',
-  'collection_vs_expense_comparison': 'Line chart comparing daily collections and expenses over extended date range',
+  'collection_vs_expense_comparison': 'Line chart comparing daily collections and expenses over date range',
 };
 
 export default function AnalyticsCardsManagementModal({ isOpen, onClose, festivalId }: AnalyticsCardsManagementModalProps) {

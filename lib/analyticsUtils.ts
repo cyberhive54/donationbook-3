@@ -57,32 +57,22 @@ export function getDailyNetBalance(
   startDate: string,
   endDate: string,
 ): Array<{ date: string; collection_total: number; expense_total: number; net_balance: number }> {
-  const start = new Date(startDate)
-  start.setDate(start.getDate() - 2)
-  const end = new Date(endDate)
-  end.setDate(end.getDate() + 2)
-
   const dateMap = new Map<string, { collection: number; expense: number }>()
 
-  const current = new Date(start)
-  while (current <= end) {
-    const dateStr = current.toISOString().split('T')[0]
-    dateMap.set(dateStr, { collection: 0, expense: 0 })
-    current.setDate(current.getDate() + 1)
-  }
-
   collections.forEach((c) => {
-    if (dateMap.has(c.date)) {
-      const entry = dateMap.get(c.date)!
-      entry.collection += c.amount || 0
+    if (!dateMap.has(c.date)) {
+      dateMap.set(c.date, { collection: 0, expense: 0 })
     }
+    const entry = dateMap.get(c.date)!
+    entry.collection += c.amount || 0
   })
 
   expenses.forEach((e) => {
-    if (dateMap.has(e.date)) {
-      const entry = dateMap.get(e.date)!
-      entry.expense += e.total_amount || 0
+    if (!dateMap.has(e.date)) {
+      dateMap.set(e.date, { collection: 0, expense: 0 })
     }
+    const entry = dateMap.get(e.date)!
+    entry.expense += e.total_amount || 0
   })
 
   const result = Array.from(dateMap.entries())
@@ -103,32 +93,22 @@ export function getTransactionCountByDay(
   startDate: string,
   endDate: string,
 ): Array<{ date: string; collection_count: number; expense_count: number; total_count: number }> {
-  const start = new Date(startDate)
-  start.setDate(start.getDate() - 2)
-  const end = new Date(endDate)
-  end.setDate(end.getDate() + 2)
-
   const dateMap = new Map<string, { collection: number; expense: number }>()
 
-  const current = new Date(start)
-  while (current <= end) {
-    const dateStr = current.toISOString().split('T')[0]
-    dateMap.set(dateStr, { collection: 0, expense: 0 })
-    current.setDate(current.getDate() + 1)
-  }
-
   collections.forEach((c) => {
-    if (dateMap.has(c.date)) {
-      const entry = dateMap.get(c.date)!
-      entry.collection += 1
+    if (!dateMap.has(c.date)) {
+      dateMap.set(c.date, { collection: 0, expense: 0 })
     }
+    const entry = dateMap.get(c.date)!
+    entry.collection += 1
   })
 
   expenses.forEach((e) => {
-    if (dateMap.has(e.date)) {
-      const entry = dateMap.get(e.date)!
-      entry.expense += 1
+    if (!dateMap.has(e.date)) {
+      dateMap.set(e.date, { collection: 0, expense: 0 })
     }
+    const entry = dateMap.get(e.date)!
+    entry.expense += 1
   })
 
   const result = Array.from(dateMap.entries())
@@ -186,32 +166,22 @@ export function getCollectionVsExpenseComparison(
   startDate: string,
   endDate: string,
 ): Array<{ date: string; collection: number; expense: number }> {
-  const start = new Date(startDate)
-  start.setDate(start.getDate() - 2)
-  const end = new Date(endDate)
-  end.setDate(end.getDate() + 2)
-
   const dateMap = new Map<string, { collection: number; expense: number }>()
 
-  const current = new Date(start)
-  while (current <= end) {
-    const dateStr = current.toISOString().split('T')[0]
-    dateMap.set(dateStr, { collection: 0, expense: 0 })
-    current.setDate(current.getDate() + 1)
-  }
-
   collections.forEach((c) => {
-    if (dateMap.has(c.date)) {
-      const entry = dateMap.get(c.date)!
-      entry.collection += c.amount || 0
+    if (!dateMap.has(c.date)) {
+      dateMap.set(c.date, { collection: 0, expense: 0 })
     }
+    const entry = dateMap.get(c.date)!
+    entry.collection += c.amount || 0
   })
 
   expenses.forEach((e) => {
-    if (dateMap.has(e.date)) {
-      const entry = dateMap.get(e.date)!
-      entry.expense += e.total_amount || 0
+    if (!dateMap.has(e.date)) {
+      dateMap.set(e.date, { collection: 0, expense: 0 })
     }
+    const entry = dateMap.get(e.date)!
+    entry.expense += e.total_amount || 0
   })
 
   const result = Array.from(dateMap.entries())
