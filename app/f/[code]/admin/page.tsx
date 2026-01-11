@@ -548,15 +548,66 @@ function AdminPageContent() {
       
       fetchAdminData()
     } else if (session?.type === "super_admin") {
-      setAdminId("")
-      setMaxUserPasswords(3)
-      setCurrentPasswordCount(0)
-      setCurrentAdmin(null)
+      const fetchDefaultAdmin = async () => {
+        try {
+          const { data: fest } = await supabase
+            .from("festivals")
+            .select("id")
+            .eq("code", code)
+            .single()
+          
+          if (!fest) return
+
+          const { data: allAdmins } = await supabase
+            .from("admins")
+            .select("*")
+            .eq("festival_id", fest.id)
+            .order("created_at", { ascending: true })
+          
+          if (!allAdmins || allAdmins.length === 0) {
+            setAdminId("")
+            setCurrentAdmin(null)
+            setMaxUserPasswords(3)
+            setCurrentPasswordCount(0)
+            return
+          }
+
+          const nullCreatedByAdmins = allAdmins.filter((a: Admin) => !a.created_by || a.created_by === null || a.created_by === '')
+          const defaultAdmin = nullCreatedByAdmins.length > 0 
+            ? nullCreatedByAdmins.reduce((oldest: Admin, current: Admin) => 
+                new Date(current.created_at) < new Date(oldest.created_at) ? current : oldest
+              )
+            : allAdmins[0]
+          
+          setAdminId(defaultAdmin.admin_id)
+          setMaxUserPasswords(defaultAdmin.max_user_passwords || 3)
+          setCurrentAdmin({
+            admin_id: defaultAdmin.admin_id,
+            admin_code: defaultAdmin.admin_code,
+            admin_name: defaultAdmin.admin_name,
+            admin_password_hash: defaultAdmin.admin_password_hash || ''
+          })
+
+          const { count } = await supabase
+            .from("user_passwords")
+            .select("*", { count: "exact", head: true })
+            .eq("admin_id", defaultAdmin.admin_id)
+          setCurrentPasswordCount(count || 0)
+        } catch (error) {
+          console.error("Error fetching default admin data:", error)
+          setAdminId("")
+          setCurrentAdmin(null)
+          setMaxUserPasswords(3)
+          setCurrentPasswordCount(0)
+        }
+      }
+      
+      fetchDefaultAdmin()
     } else if (!session || session.type !== "admin") {
       setAdminId("")
       setCurrentAdmin(null)
     }
-  }, [session])
+  }, [session, code])
 
   const fetchData = async () => {
     try {
@@ -943,8 +994,13 @@ function AdminPageContent() {
   }
 
   const handleUpdateAdminPassword = async () => {
-    if (!newAdminPassword.trim() || !currentAdmin || !festival || session?.type !== "admin") {
+    if (!newAdminPassword.trim() || !currentAdmin || !festival) {
       toast.error("Cannot update password: Admin information not available")
+      return
+    }
+
+    if (session?.type !== "admin" && session?.type !== "super_admin") {
+      toast.error("Cannot update password: Invalid session")
       return
     }
     
@@ -961,22 +1017,23 @@ function AdminPageContent() {
 
       await supabase.rpc("log_admin_activity", {
         p_festival_id: festival.id,
-        p_admin_id: session.adminId,
-        p_action_type: "update_admin_password",
+        p_admin_id: session.type === "admin" ? session.adminId : null,
+        p_action_type: session.type === "super_admin" ? "update_default_admin_password" : "update_admin_password",
         p_action_details: {
           admin_code: currentAdmin.admin_code,
-          admin_name: currentAdmin.admin_name
+          admin_name: currentAdmin.admin_name,
+          updated_by: session.type === "super_admin" ? "super_admin" : "self"
         },
       })
 
-      toast.success("Admin password updated successfully")
+      toast.success(session.type === "super_admin" ? "Default admin password updated successfully" : "Admin password updated successfully")
       setNewAdminPassword("")
       setEditingAdminPassword(false)
       
       const { data: adminData } = await supabase
         .from("admins")
         .select("*")
-        .eq("admin_id", session.adminId)
+        .eq("admin_id", currentAdmin.admin_id)
         .single()
       
       if (adminData) {
@@ -2476,7 +2533,13 @@ function AdminPageContent() {
 
                 {(currentSubTab === "personal" || (!currentSubTab && session?.type === "admin")) && currentAdmin && (
                   <div className="theme-card bg-white rounded-lg shadow-md p-6">
-                    <h3 className="text-lg font-bold text-gray-800 mb-4">Your Admin Account</h3>
+                    {session?.type === "super_admin" && (
+                      <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
+                        <p className="text-sm text-purple-800 font-medium">Super Admin Mode</p>
+                        <p className="text-xs text-purple-600 mt-1">Managing default admin account for password operations</p>
+                      </div>
+                    )}
+                    <h3 className="text-lg font-bold text-gray-800 mb-4">{session?.type === "super_admin" ? "Default Admin Account" : "Your Admin Account"}</h3>
                     <div className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
@@ -2494,8 +2557,8 @@ function AdminPageContent() {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Your Login Password</label>
-                        <p className="text-xs text-gray-600 mb-3">This is your password for logging into the admin dashboard</p>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">{session?.type === "super_admin" ? "Default Admin Login Password" : "Your Login Password"}</label>
+                        <p className="text-xs text-gray-600 mb-3">{session?.type === "super_admin" ? "This is the password for the default admin to login to the admin dashboard" : "This is your password for logging into the admin dashboard"}</p>
                         {editingAdminPassword ? (
                           <div className="space-y-3">
                             <input
@@ -2600,33 +2663,7 @@ function AdminPageContent() {
                   </div>
                 )}
 
-                {currentSubTab === "personal" && !currentAdmin && session?.type === "super_admin" && (
-                  <div className="theme-card bg-white rounded-lg shadow-md p-6">
-                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 text-center">
-                      <h3 className="text-lg font-semibold text-purple-900 mb-2">Super Admin Account</h3>
-                      <p className="text-sm text-purple-700 mb-3">
-                        You're logged in as Super Admin. This section is for managing individual admin accounts.
-                      </p>
-                      <p className="text-xs text-purple-600">
-                        To manage your super admin password, go to: Super Admin Dashboard → Settings → Personal
-                      </p>
-                    </div>
-                  </div>
-                )}
 
-                {currentSubTab === "user" && (!adminId || !adminId.trim()) && session?.type === "super_admin" && (
-                  <div className="theme-card bg-white rounded-lg shadow-md p-6">
-                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 text-center">
-                      <h3 className="text-lg font-semibold text-purple-900 mb-2">Super Admin Account</h3>
-                      <p className="text-sm text-purple-700 mb-3">
-                        You're logged in as Super Admin. Visitor password management is tied to individual admin accounts.
-                      </p>
-                      <p className="text-xs text-purple-600">
-                        Super Admin doesn't have associated visitor passwords. Each admin manages their own visitor passwords.
-                      </p>
-                    </div>
-                  </div>
-                )}
 
                 {(currentSubTab === "theme" || (session?.type === "super_admin" && !currentSubTab)) && (
                   <div className="theme-card bg-white rounded-lg shadow-md p-6">

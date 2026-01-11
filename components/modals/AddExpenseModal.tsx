@@ -111,8 +111,14 @@ export default function AddExpenseModal({
             expense_by_admin_id: session.adminId || ''
           })));
         } else if (session?.type === 'super_admin') {
-          // Super admin can select any admin, default to first
-          const defaultAdminId = adminsData?.[0]?.admin_id || '';
+          // Super admin can select any admin, default to the default admin (oldest with created_by = null)
+          const nullCreatedByAdmins = (adminsData || []).filter((a: Admin) => !a.created_by || a.created_by === null || a.created_by === '');
+          const defaultAdmin = nullCreatedByAdmins.length > 0 
+            ? nullCreatedByAdmins.reduce((oldest: Admin, current: Admin) => 
+                new Date(current.created_at) < new Date(oldest.created_at) ? current : oldest
+              )
+            : adminsData?.[0];
+          const defaultAdminId = defaultAdmin?.admin_id || '';
           setCurrentAdminId(defaultAdminId);
           // Set default for expense_by_admin_id in forms
           setForms(prevForms => prevForms.map(form => ({
