@@ -1142,8 +1142,17 @@ function SuperAdminDashboardContent() {
                           </thead>
                           <tbody className="divide-y divide-gray-200">
                             {filteredAdmins.map((admin) => {
-                              const isDefaultAdmin = !admin.created_by || admin.created_by === null || admin.created_by === '';
-                              const isSuperAdminCreated = admin.created_by === 'SUPER_ADMIN';
+                              // Find the oldest admin with null created_by - that's the default admin
+                              const nullCreatedByAdmins = admins.filter(a => !a.created_by || a.created_by === null || a.created_by === '');
+                              const oldestNullAdmin = nullCreatedByAdmins.length > 0 
+                                ? nullCreatedByAdmins.reduce((oldest, current) => 
+                                    new Date(current.created_at) < new Date(oldest.created_at) ? current : oldest
+                                  )
+                                : null;
+                              
+                              const isDefaultAdmin = oldestNullAdmin?.admin_id === admin.admin_id;
+                              const isSuperAdminCreated = (!admin.created_by || admin.created_by === null || admin.created_by === '') && !isDefaultAdmin;
+                              
                               return (
                                 <tr key={admin.admin_id} className="hover:bg-gray-50">
                                   <td className="px-4 py-3 text-sm font-mono text-gray-900">{admin.admin_code}</td>
@@ -1941,7 +1950,6 @@ function SuperAdminDashboardContent() {
         onSuccess={fetchData}
         festivalId={festival?.id || ""}
         festivalCode={festival?.code || ""}
-        superAdminId="SUPER_ADMIN"
       />
 
       <EditAdminModal
