@@ -124,8 +124,11 @@ function AdminPageContent() {
   const [visitorRecordsPerPage] = useState(10)
 
   useEffect(() => {
-    if (code) fetchData()
-  }, [code])
+    if (code) {
+      fetchData()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [code, session])
 
   useEffect(() => {
     if (session?.type === "admin" && session.adminId) {
@@ -224,6 +227,12 @@ function AdminPageContent() {
       setAllowMediaDownload(fest.allow_media_download !== false)
 
       if (session?.type === "admin" && session.adminId) {
+        console.log('[Admin Page] Fetching admin activity:', {
+          festival_id: fest.id,
+          admin_id: session.adminId,
+          session_type: session.type
+        })
+        
         const { data: activityData, error: activityErr } = await supabase
           .from("admin_activity_log")
           .select("*")
@@ -231,11 +240,22 @@ function AdminPageContent() {
           .eq("admin_id", session.adminId)
           .order("timestamp", { ascending: false })
         
+        console.log('[Admin Page] Activity data fetched:', {
+          count: activityData?.length || 0,
+          error: activityErr,
+          sample: activityData?.slice(0, 2)
+        })
+        
         if (activityErr) {
           console.error("Error fetching admin activity:", activityErr)
           toast.error("Failed to fetch activity logs")
         }
         setOwnActivity(activityData || [])
+      } else {
+        console.log('[Admin Page] Skipping activity fetch:', {
+          session_type: session?.type,
+          has_admin_id: !!session?.adminId
+        })
       }
 
       const { data: adminsData } = await supabase
@@ -1842,7 +1862,7 @@ function AdminPageContent() {
                 <div className="theme-card bg-white rounded-lg shadow-md p-6">
                   <h3 className="text-lg font-bold text-gray-800 mb-4">Media Download Control</h3>
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                       <div className="flex-1">
                         <div className="flex items-center gap-3">
                           <Switch
@@ -1856,7 +1876,7 @@ function AdminPageContent() {
                       <button
                         onClick={handleSaveMediaDownload}
                         disabled={isSavingMediaDownload}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex-shrink-0 self-start sm:self-auto"
                       >
                         {isSavingMediaDownload ? "Saving..." : "Save"}
                       </button>
