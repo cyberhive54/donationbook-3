@@ -284,22 +284,24 @@ export default function GlobalSessionBar({ festivalCode, currentPage = 'other' }
               </button>
             )}
 
-            {currentPage === 'activity' ? (
-              <button
-                onClick={handleGoHome}
-                className="flex items-center gap-1 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                <Home className="w-4 h-4" />
-                <span className="hidden sm:inline">Go to Home</span>
-              </button>
-            ) : (
-              <button
-                onClick={handleViewActivity}
-                className="flex items-center gap-1 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                <Activity className="w-4 h-4" />
-                <span className="hidden sm:inline">View Activity</span>
-              </button>
+            {currentPage !== 'admin' && (
+              currentPage === 'activity' ? (
+                <button
+                  onClick={handleGoHome}
+                  className="flex items-center gap-1 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <Home className="w-4 h-4" />
+                  <span className="hidden sm:inline">Go to Home</span>
+                </button>
+              ) : (
+                <button
+                  onClick={handleViewActivity}
+                  className="flex items-center gap-1 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <Activity className="w-4 h-4" />
+                  <span className="hidden sm:inline">View Activity</span>
+                </button>
+              )
             )}
 
             <button

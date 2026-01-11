@@ -5,8 +5,8 @@ import type React from "react"
 import { useEffect, useState, Suspense } from "react"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { supabase } from "@/lib/supabase"
-import type { Festival, Collection, Expense, Stats, Album, MediaItem } from "@/types"
-import { calculateStats, calculateStorageStats, formatFileSize } from "@/lib/utils"
+import type { Festival, Collection, Expense, Stats, Album, MediaItem, AdminActivityLog, AccessLog, Admin } from "@/types"
+import { calculateStats, calculateStorageStats, formatFileSize, formatDate, formatCurrency } from "@/lib/utils"
 import AdminPasswordGate from "@/components/AdminPasswordGate"
 import BasicInfo from "@/components/BasicInfo"
 import StatsCards from "@/components/StatsCards"
@@ -25,7 +25,8 @@ import ManageUserPasswordsModal from "@/components/modals/ManageUserPasswordsMod
 import AnalyticsConfigModal from "@/components/modals/AnalyticsConfigModal"
 import { InfoSkeleton, CardSkeleton, TableSkeleton } from "@/components/Loader"
 import toast from "react-hot-toast"
-import { Plus, Edit, Trash2, Eye, EyeOff, HardDrive, Key, ArrowUpRight, LogOut, ExternalLink } from "lucide-react"
+import { Plus, Edit, Trash2, Eye, EyeOff, HardDrive, Key, LogOut, ExternalLink, Search, ChevronLeft, ChevronRight } from "lucide-react"
+import { useMemo } from "react"
 
 import { getThemeStyles, getThemeClasses } from "@/lib/theme"
 import { useSession } from "@/lib/hooks/useSession"
@@ -102,6 +103,24 @@ function AdminPageContent() {
 
   const [allowMediaDownload, setAllowMediaDownload] = useState(true)
   const [isSavingMediaDownload, setIsSavingMediaDownload] = useState(false)
+
+  const [ownActivity, setOwnActivity] = useState<AdminActivityLog[]>([])
+  const [ownSearchTerm, setOwnSearchTerm] = useState("")
+  const [ownActionFilter, setOwnActionFilter] = useState("all")
+  const [ownCurrentPage, setOwnCurrentPage] = useState(1)
+  const [ownRecordsPerPage] = useState(10)
+
+  const [transactions, setTransactions] = useState<(Collection & Expense & { type: "collection" | "expense"; admin_code?: string; admin_name?: string })[]>([])
+  const [admins, setAdmins] = useState<Admin[]>([])
+  const [txnSearchTerm, setTxnSearchTerm] = useState("")
+  const [txnTypeFilter, setTxnTypeFilter] = useState<"all" | "collection" | "expense">("all")
+  const [txnCurrentPage, setTxnCurrentPage] = useState(1)
+  const [txnRecordsPerPage] = useState(10)
+
+  const [visitors, setVisitors] = useState<AccessLog[]>([])
+  const [visitorSearchTerm, setVisitorSearchTerm] = useState("")
+  const [visitorCurrentPage, setVisitorCurrentPage] = useState(1)
+  const [visitorRecordsPerPage] = useState(10)
 
   useEffect(() => {
     if (code) fetchData()
@@ -202,6 +221,50 @@ function AdminPageContent() {
       })
 
       setAllowMediaDownload(fest.allow_media_download !== false)
+
+      if (session?.type === "admin" && session.adminId) {
+        const { data: activityData } = await supabase
+          .from("admin_activity_log")
+          .select("*")
+          .eq("festival_id", fest.id)
+          .eq("admin_id", session.adminId)
+          .order("timestamp", { ascending: false })
+        setOwnActivity(activityData || [])
+      }
+
+      const { data: adminsData } = await supabase
+        .from("admins")
+        .select("*")
+        .eq("festival_id", fest.id)
+      setAdmins(adminsData || [])
+
+      const adminMap = new Map(adminsData?.map((a: Admin) => [a.admin_id, a]) || [])
+      
+      const enrichedCollections = fetchedCollections.map((c: Collection) => ({
+        ...c,
+        type: "collection" as const,
+        admin_code: c.created_by_admin_id ? adminMap.get(c.created_by_admin_id)?.admin_code : undefined,
+        admin_name: c.created_by_admin_id ? adminMap.get(c.created_by_admin_id)?.admin_name : undefined,
+      }))
+
+      const enrichedExpenses = fetchedExpenses.map((e: Expense) => ({
+        ...e,
+        type: "expense" as const,
+        admin_code: e.created_by_admin_id ? adminMap.get(e.created_by_admin_id)?.admin_code : undefined,
+        admin_name: e.created_by_admin_id ? adminMap.get(e.created_by_admin_id)?.admin_name : undefined,
+      }))
+
+      const combined = [...enrichedCollections, ...enrichedExpenses].sort((a: any, b: any) => 
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      )
+      setTransactions(combined as any)
+
+      const { data: visitorsData } = await supabase
+        .from("access_logs")
+        .select("*")
+        .eq("festival_id", fest.id)
+        .order("accessed_at", { ascending: false })
+      setVisitors(visitorsData || [])
 
       const albumIds = (albumsRes.data || []).map((a: Album) => a.id)
       if (albumIds.length > 0) {
@@ -626,6 +689,89 @@ function AdminPageContent() {
     a.click()
     URL.revokeObjectURL(url)
   }
+
+  const formatTime = (hour?: number, minute?: number) => {
+    if (hour === undefined || minute === undefined) return ""
+    return `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`
+  }
+
+  const getAdminDisplay = (adminCode?: string, adminName?: string) => {
+    if (!adminCode && !adminName) return "N/A"
+    const preference = festival?.admin_display_preference || "code"
+    return preference === "code" ? adminCode : adminName
+  }
+
+  const filteredOwnActivity = useMemo(() => {
+    let result = [...ownActivity]
+
+    if (ownSearchTerm) {
+      result = result.filter(log => 
+        log.action_type.toLowerCase().includes(ownSearchTerm.toLowerCase()) ||
+        log.target_type?.toLowerCase().includes(ownSearchTerm.toLowerCase())
+      )
+    }
+
+    if (ownActionFilter !== "all") {
+      result = result.filter(log => log.action_type === ownActionFilter)
+    }
+
+    return result
+  }, [ownActivity, ownSearchTerm, ownActionFilter])
+
+  const paginatedOwnActivity = useMemo(() => {
+    const startIndex = (ownCurrentPage - 1) * ownRecordsPerPage
+    return filteredOwnActivity.slice(startIndex, startIndex + ownRecordsPerPage)
+  }, [filteredOwnActivity, ownCurrentPage, ownRecordsPerPage])
+
+  const ownTotalPages = Math.ceil(filteredOwnActivity.length / ownRecordsPerPage)
+
+  const actionTypes = useMemo(() => {
+    return Array.from(new Set(ownActivity.map(a => a.action_type)))
+  }, [ownActivity])
+
+  const filteredTransactions = useMemo(() => {
+    let result = [...transactions]
+
+    if (txnSearchTerm) {
+      result = result.filter(txn => 
+        (txn.type === "collection" ? txn.name : txn.item)?.toLowerCase().includes(txnSearchTerm.toLowerCase()) ||
+        txn.admin_code?.toLowerCase().includes(txnSearchTerm.toLowerCase()) ||
+        txn.admin_name?.toLowerCase().includes(txnSearchTerm.toLowerCase())
+      )
+    }
+
+    if (txnTypeFilter !== "all") {
+      result = result.filter(txn => txn.type === txnTypeFilter)
+    }
+
+    return result
+  }, [transactions, txnSearchTerm, txnTypeFilter])
+
+  const paginatedTransactions = useMemo(() => {
+    const startIndex = (txnCurrentPage - 1) * txnRecordsPerPage
+    return filteredTransactions.slice(startIndex, startIndex + txnRecordsPerPage)
+  }, [filteredTransactions, txnCurrentPage, txnRecordsPerPage])
+
+  const txnTotalPages = Math.ceil(filteredTransactions.length / txnRecordsPerPage)
+
+  const filteredVisitors = useMemo(() => {
+    let result = [...visitors]
+
+    if (visitorSearchTerm) {
+      result = result.filter(log => 
+        log.visitor_name.toLowerCase().includes(visitorSearchTerm.toLowerCase())
+      )
+    }
+
+    return result
+  }, [visitors, visitorSearchTerm])
+
+  const paginatedVisitors = useMemo(() => {
+    const startIndex = (visitorCurrentPage - 1) * visitorRecordsPerPage
+    return filteredVisitors.slice(startIndex, startIndex + visitorRecordsPerPage)
+  }, [filteredVisitors, visitorCurrentPage, visitorRecordsPerPage])
+
+  const visitorTotalPages = Math.ceil(filteredVisitors.length / visitorRecordsPerPage)
 
   const handleExportCollections = async () => {
     downloadJSON(collections, `${festival?.code || "fest"}-collections.json`)
@@ -1229,14 +1375,6 @@ function AdminPageContent() {
                     )}
                     
                     <button
-                      onClick={() => router.push(`/f/${code}/admin/activity`)}
-                      className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                    >
-                      Activity
-                      <ArrowUpRight className="w-4 h-4" />
-                    </button>
-                    
-                    <button
                       onClick={handleLogout}
                       className="flex items-center gap-1 px-3 py-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700"
                     >
@@ -1288,6 +1426,16 @@ function AdminPageContent() {
                     }`}
                   >
                     Settings
+                  </button>
+                  <button
+                    onClick={() => handleTabChange("activity")}
+                    className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
+                      currentTab === "activity"
+                        ? "border-blue-600 text-blue-600"
+                        : "border-transparent text-gray-600 hover:text-gray-800"
+                    }`}
+                  >
+                    Activity
                   </button>
                 </div>
               </div>
@@ -2064,6 +2212,380 @@ function AdminPageContent() {
                           {isSavingTheme ? "Saving..." : "Save Theme Settings"}
                         </button>
                       </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {currentTab === "activity" && (
+              <div className="space-y-6">
+                <div className="bg-white border-b border-gray-200 rounded-t-lg">
+                  <div className="flex overflow-x-auto">
+                    <button
+                      onClick={() => handleSubTabChange("my-activity")}
+                      className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
+                        (currentSubTab === "my-activity" || !currentSubTab)
+                          ? "border-blue-600 text-blue-600"
+                          : "border-transparent text-gray-600 hover:text-gray-800"
+                      }`}
+                    >
+                      My Activity
+                    </button>
+                    <button
+                      onClick={() => handleSubTabChange("transactions")}
+                      className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
+                        currentSubTab === "transactions"
+                          ? "border-blue-600 text-blue-600"
+                          : "border-transparent text-gray-600 hover:text-gray-800"
+                      }`}
+                    >
+                      Transactions
+                    </button>
+                    <button
+                      onClick={() => handleSubTabChange("visitors")}
+                      className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
+                        currentSubTab === "visitors"
+                          ? "border-blue-600 text-blue-600"
+                          : "border-transparent text-gray-600 hover:text-gray-800"
+                      }`}
+                    >
+                      Visitors
+                    </button>
+                  </div>
+                </div>
+
+                {(currentSubTab === "my-activity" || !currentSubTab) && (
+                  <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                    <div className="space-y-4">
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <div className="relative flex-1">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                          <input
+                            type="text"
+                            placeholder="Search activity..."
+                            value={ownSearchTerm}
+                            onChange={(e) => {
+                              setOwnSearchTerm(e.target.value)
+                              setOwnCurrentPage(1)
+                            }}
+                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                          />
+                        </div>
+                        <select
+                          value={ownActionFilter}
+                          onChange={(e) => {
+                            setOwnActionFilter(e.target.value)
+                            setOwnCurrentPage(1)
+                          }}
+                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                        >
+                          <option value="all">All Actions</option>
+                          {actionTypes.map(type => (
+                            <option key={type} value={type}>{type}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead className="bg-gray-50">
+                            <tr>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Date & Time</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Action</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Target</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Details</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-200">
+                            {paginatedOwnActivity.length === 0 ? (
+                              <tr>
+                                <td colSpan={4} className="px-4 py-8 text-center text-gray-500">
+                                  No activity found
+                                </td>
+                              </tr>
+                            ) : (
+                              paginatedOwnActivity.map((log) => (
+                                <tr key={log.log_id} className="hover:bg-gray-50">
+                                  <td className="px-4 py-3 text-sm text-gray-900">
+                                    {formatDate(log.timestamp)}
+                                    <br />
+                                    <span className="text-xs text-gray-500">
+                                      {new Date(log.timestamp).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
+                                    </span>
+                                  </td>
+                                  <td className="px-4 py-3 text-sm">
+                                    <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                                      {log.action_type}
+                                    </span>
+                                  </td>
+                                  <td className="px-4 py-3 text-sm text-gray-900">
+                                    {log.target_type || "N/A"}
+                                  </td>
+                                  <td className="px-4 py-3 text-sm text-gray-600">
+                                    {log.action_details ? JSON.stringify(log.action_details).substring(0, 50) + "..." : "N/A"}
+                                  </td>
+                                </tr>
+                              ))
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {ownTotalPages > 1 && (
+                        <div className="flex items-center justify-between mt-4">
+                          <p className="text-sm text-gray-600">
+                            Showing {((ownCurrentPage - 1) * ownRecordsPerPage) + 1} to{" "}
+                            {Math.min(ownCurrentPage * ownRecordsPerPage, filteredOwnActivity.length)} of{" "}
+                            {filteredOwnActivity.length} entries
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => setOwnCurrentPage(p => Math.max(1, p - 1))}
+                              disabled={ownCurrentPage === 1}
+                              className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <ChevronLeft className="w-4 h-4" />
+                            </button>
+                            <span className="text-sm text-gray-600">
+                              Page {ownCurrentPage} of {ownTotalPages}
+                            </span>
+                            <button
+                              onClick={() => setOwnCurrentPage(p => Math.min(ownTotalPages, p + 1))}
+                              disabled={ownCurrentPage === ownTotalPages}
+                              className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <ChevronRight className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {currentSubTab === "transactions" && (
+                  <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                    <div className="space-y-4">
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <div className="relative flex-1">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                          <input
+                            type="text"
+                            placeholder="Search transactions..."
+                            value={txnSearchTerm}
+                            onChange={(e) => {
+                              setTxnSearchTerm(e.target.value)
+                              setTxnCurrentPage(1)
+                            }}
+                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                          />
+                        </div>
+                        <select
+                          value={txnTypeFilter}
+                          onChange={(e) => {
+                            setTxnTypeFilter(e.target.value as any)
+                            setTxnCurrentPage(1)
+                          }}
+                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                        >
+                          <option value="all">All Types</option>
+                          <option value="collection">Collections Only</option>
+                          <option value="expense">Expenses Only</option>
+                        </select>
+                      </div>
+
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead className="bg-gray-50">
+                            <tr>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Type</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Date</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Time</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Name/Item</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Amount</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Transaction To</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">By Admin</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-200">
+                            {paginatedTransactions.length === 0 ? (
+                              <tr>
+                                <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
+                                  No transactions found
+                                </td>
+                              </tr>
+                            ) : (
+                              paginatedTransactions.map((txn) => (
+                                <tr key={txn.id} className="hover:bg-gray-50">
+                                  <td className="px-4 py-3">
+                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                      txn.type === "collection"
+                                        ? "bg-green-100 text-green-800"
+                                        : "bg-red-100 text-red-800"
+                                    }`}>
+                                      {txn.type === "collection" ? "Collection" : "Expense"}
+                                    </span>
+                                  </td>
+                                  <td className="px-4 py-3 text-sm text-gray-900">{formatDate(txn.date)}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-600">
+                                    {formatTime(txn.time_hour, txn.time_minute) || "N/A"}
+                                  </td>
+                                  <td className="px-4 py-3 text-sm text-gray-900">
+                                    {txn.type === "collection" ? txn.name : txn.item}
+                                  </td>
+                                  <td className={`px-4 py-3 text-sm font-semibold ${
+                                    txn.type === "collection" ? "text-green-600" : "text-red-600"
+                                  }`}>
+                                    {formatCurrency(txn.type === "collection" ? txn.amount : txn.total_amount)}
+                                  </td>
+                                  <td className="px-4 py-3 text-sm text-gray-900">
+                                    {txn.type === "collection" ? txn.name : txn.item}
+                                  </td>
+                                  <td className="px-4 py-3 text-sm text-gray-900">
+                                    {getAdminDisplay(txn.admin_code, txn.admin_name)}
+                                  </td>
+                                </tr>
+                              ))
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {txnTotalPages > 1 && (
+                        <div className="flex items-center justify-between mt-4">
+                          <p className="text-sm text-gray-600">
+                            Showing {((txnCurrentPage - 1) * txnRecordsPerPage) + 1} to{" "}
+                            {Math.min(txnCurrentPage * txnRecordsPerPage, filteredTransactions.length)} of{" "}
+                            {filteredTransactions.length} entries
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => setTxnCurrentPage(p => Math.max(1, p - 1))}
+                              disabled={txnCurrentPage === 1}
+                              className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <ChevronLeft className="w-4 h-4" />
+                            </button>
+                            <span className="text-sm text-gray-600">
+                              Page {txnCurrentPage} of {txnTotalPages}
+                            </span>
+                            <button
+                              onClick={() => setTxnCurrentPage(p => Math.min(txnTotalPages, p + 1))}
+                              disabled={txnCurrentPage === txnTotalPages}
+                              className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <ChevronRight className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {currentSubTab === "visitors" && (
+                  <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                    <div className="space-y-4">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <input
+                          type="text"
+                          placeholder="Search visitors..."
+                          value={visitorSearchTerm}
+                          onChange={(e) => {
+                            setVisitorSearchTerm(e.target.value)
+                            setVisitorCurrentPage(1)
+                          }}
+                          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                        />
+                      </div>
+
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead className="bg-gray-50">
+                            <tr>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Visitor Name</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Login Time</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Login Using</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Access Method</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-200">
+                            {paginatedVisitors.length === 0 ? (
+                              <tr>
+                                <td colSpan={4} className="px-4 py-8 text-center text-gray-500">
+                                  No visitors found
+                                </td>
+                              </tr>
+                            ) : (
+                              paginatedVisitors.map((log) => (
+                                <tr key={log.id} className="hover:bg-gray-50">
+                                  <td className="px-4 py-3 text-sm text-gray-900 font-medium">{log.visitor_name}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-900">
+                                    {formatDate(log.accessed_at)}
+                                    <br />
+                                    <span className="text-xs text-gray-500">
+                                      {new Date(log.accessed_at).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
+                                    </span>
+                                  </td>
+                                  <td className="px-4 py-3 text-sm text-gray-900">
+                                    {log.admin_id ? (
+                                      <div>
+                                        <div className="font-medium">
+                                          {getAdminDisplay(
+                                            admins.find(a => a.admin_id === log.admin_id)?.admin_code,
+                                            admins.find(a => a.admin_id === log.admin_id)?.admin_name
+                                          )}
+                                        </div>
+                                        <div className="text-xs text-gray-500">{log.password_used}</div>
+                                      </div>
+                                    ) : "N/A"}
+                                  </td>
+                                  <td className="px-4 py-3 text-sm">
+                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                      log.access_method === "password_modal" 
+                                        ? "bg-blue-100 text-blue-800" 
+                                        : "bg-green-100 text-green-800"
+                                    }`}>
+                                      {log.access_method === "password_modal" ? "Login Page" : "Direct Link"}
+                                    </span>
+                                  </td>
+                                </tr>
+                              ))
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {visitorTotalPages > 1 && (
+                        <div className="flex items-center justify-between mt-4">
+                          <p className="text-sm text-gray-600">
+                            Showing {((visitorCurrentPage - 1) * visitorRecordsPerPage) + 1} to{" "}
+                            {Math.min(visitorCurrentPage * visitorRecordsPerPage, filteredVisitors.length)} of{" "}
+                            {filteredVisitors.length} entries
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => setVisitorCurrentPage(p => Math.max(1, p - 1))}
+                              disabled={visitorCurrentPage === 1}
+                              className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <ChevronLeft className="w-4 h-4" />
+                            </button>
+                            <span className="text-sm text-gray-600">
+                              Page {visitorCurrentPage} of {visitorTotalPages}
+                            </span>
+                            <button
+                              onClick={() => setVisitorCurrentPage(p => Math.min(visitorTotalPages, p + 1))}
+                              disabled={visitorCurrentPage === visitorTotalPages}
+                              className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <ChevronRight className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
