@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { X, Upload, Trash2, FileText, Film, Music, FileIcon, Image as ImageIcon, Eye } from 'lucide-react';
+import { X, Upload, Trash2, FileText, Film, Music, FileIcon, Image as ImageIcon, Eye, Link as LinkIcon } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
 import { MediaItem } from '@/types';
-import { formatFileSize, getFileSizeLimit, generateThumbnailFromVideo } from '@/lib/utils';
+import { formatFileSize, getFileSizeLimit, generateThumbnailFromVideo, convertGoogleDriveUrl, detectMediaTypeFromUrl } from '@/lib/utils';
 import MediaViewerModal from './MediaViewerModal';
 import { useSession } from '@/lib/hooks/useSession';
 
@@ -35,6 +35,10 @@ export default function ManageAlbumMediaModal({ isOpen, onClose, albumId, festiv
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [viewingMedia, setViewingMedia] = useState<MediaItem | null>(null);
   const [festivalId, setFestivalId] = useState<string>('');
+  const [mode, setMode] = useState<'upload' | 'link'>('upload');
+  const [linkUrl, setLinkUrl] = useState('');
+  const [linkTitle, setLinkTitle] = useState('');
+  const [isAddingLink, setIsAddingLink] = useState(false);
 
   const fetchItems = async () => {
     if (!albumId) return;
@@ -187,6 +191,64 @@ export default function ManageAlbumMediaModal({ isOpen, onClose, albumId, festiv
     
     setUploadQueue(prev => [...prev, ...newTasks]);
     (e.target as HTMLInputElement).value = '';
+  };
+
+  const handleAddLink = async () => {
+    if (!albumId || !linkUrl.trim()) {
+      toast.error('Please enter a valid URL');
+      return;
+    }
+    
+    setIsAddingLink(true);
+    
+    try {
+      let finalUrl = linkUrl.trim();
+      
+      if (finalUrl.includes('drive.google.com')) {
+        finalUrl = convertGoogleDriveUrl(finalUrl);
+      }
+      
+      const detectedType = detectMediaTypeFromUrl(finalUrl);
+      const title = linkTitle.trim() || finalUrl.split('/').pop()?.split('?')[0] || 'External Link';
+      
+      const { data: insertedMedia, error: insErr } = await supabase.from('media_items').insert({
+        album_id: albumId,
+        type: detectedType,
+        title,
+        url: finalUrl,
+        media_source_type: 'link',
+        external_url: finalUrl,
+      }).select('id').single();
+      
+      if (insErr) throw new Error(`Failed to add link: ${insErr.message}`);
+      
+      if (festivalId && insertedMedia) {
+        await supabase.rpc('log_admin_activity', {
+          p_festival_id: festivalId,
+          p_admin_id: session?.type === 'admin' ? session.adminId : null,
+          p_action_type: 'add_media_item',
+          p_action_details: {
+            album_id: albumId,
+            media_id: insertedMedia.id,
+            media_type: detectedType,
+            media_source: 'external_link',
+            url: finalUrl
+          },
+          p_target_type: 'media_item',
+          p_target_id: insertedMedia.id
+        });
+      }
+      
+      toast.success('External link added successfully');
+      setLinkUrl('');
+      setLinkTitle('');
+      fetchItems();
+    } catch (e: any) {
+      console.error('Add link error:', e);
+      toast.error(e.message || 'Failed to add link');
+    } finally {
+      setIsAddingLink(false);
+    }
   };
 
   const filtered = useMemo(() => items.filter(i => filter === 'all' ? true : i.type === filter), [items, filter]);
@@ -344,17 +406,20 @@ export default function ManageAlbumMediaModal({ isOpen, onClose, albumId, festiv
           <div className="p-4 border-b space-y-3">
             <div className="flex items-center justify-between flex-wrap gap-3">
               <div className="flex items-center gap-2">
-                <label className="px-3 py-2 border rounded-lg cursor-pointer flex items-center gap-2 hover:bg-gray-50">
-                  <Upload className="w-4 h-4" /> Upload Files
-                  <input 
-                    type="file" 
-                    multiple 
-                    accept="image/*,video/*,audio/*,application/pdf" 
-                    onChange={handleUpload} 
-                    className="hidden" 
-                    disabled={isUploading} 
-                  />
-                </label>
+                <div className="flex border rounded-lg overflow-hidden">
+                  <button
+                    onClick={() => setMode('upload')}
+                    className={`px-3 py-2 flex items-center gap-2 transition-colors ${mode === 'upload' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
+                  >
+                    <Upload className="w-4 h-4" /> Upload
+                  </button>
+                  <button
+                    onClick={() => setMode('link')}
+                    className={`px-3 py-2 flex items-center gap-2 transition-colors ${mode === 'link' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
+                  >
+                    <LinkIcon className="w-4 h-4" /> Link
+                  </button>
+                </div>
                 <select 
                   value={filter} 
                   onChange={(e) => setFilter(e.target.value as FilterType)} 
@@ -395,6 +460,59 @@ export default function ManageAlbumMediaModal({ isOpen, onClose, albumId, festiv
                 </div>
               )}
             </div>
+
+            {mode === 'upload' ? (
+              <div>
+                <label className="px-4 py-3 border-2 border-dashed rounded-lg cursor-pointer flex items-center justify-center gap-2 hover:bg-gray-50 hover:border-blue-400 transition-colors">
+                  <Upload className="w-5 h-5 text-gray-600" /> 
+                  <span className="text-gray-700 font-medium">Click to select files or drag and drop</span>
+                  <input 
+                    type="file" 
+                    multiple 
+                    accept="image/*,video/*,audio/*,application/pdf" 
+                    onChange={handleUpload} 
+                    className="hidden" 
+                    disabled={isUploading} 
+                  />
+                </label>
+              </div>
+            ) : (
+              <div className="bg-blue-50 rounded-lg p-4 space-y-3">
+                <div className="text-sm text-gray-700 mb-2">
+                  <strong>Add External Link</strong> (Google Drive, OneDrive, or any publicly accessible media URL)
+                </div>
+                <input
+                  type="text"
+                  value={linkUrl}
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                  placeholder="Paste URL (e.g., https://drive.google.com/file/d/...)"
+                  className="w-full px-3 py-2 border rounded-lg"
+                  disabled={isAddingLink}
+                />
+                <input
+                  type="text"
+                  value={linkTitle}
+                  onChange={(e) => setLinkTitle(e.target.value)}
+                  placeholder="Title (optional)"
+                  className="w-full px-3 py-2 border rounded-lg"
+                  disabled={isAddingLink}
+                />
+                <button
+                  onClick={handleAddLink}
+                  disabled={isAddingLink || !linkUrl.trim()}
+                  className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {isAddingLink ? (
+                    <><span className="animate-spin">⏳</span> Adding...</>
+                  ) : (
+                    <><LinkIcon className="w-4 h-4" /> Add Link</>
+                  )}
+                </button>
+                <div className="text-xs text-gray-600 mt-2">
+                  <strong>Note:</strong> Google Drive links will be automatically converted to preview URLs. Make sure the link is publicly accessible.
+                </div>
+              </div>
+            )}
 
             {uploadQueue.length > 0 && (
               <div className="bg-blue-50 rounded-lg p-3">
@@ -466,8 +584,15 @@ export default function ManageAlbumMediaModal({ isOpen, onClose, albumId, festiv
                   </div>
                   
                   <div className="p-2">
-                    <div className="truncate text-xs font-medium" title={item.title}>{item.title}</div>
-                    <div className="text-xs text-gray-500">{formatFileSize(item.size_bytes)}</div>
+                    <div className="flex items-center gap-1">
+                      {item.media_source_type === 'link' && (
+                        <LinkIcon className="w-3 h-3 text-blue-600 flex-shrink-0" />
+                      )}
+                      <div className="truncate text-xs font-medium" title={item.title}>{item.title}</div>
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {item.media_source_type === 'link' ? 'External Link' : (item.size_bytes ? formatFileSize(item.size_bytes) : 'N/A')}
+                    </div>
                   </div>
                   
                   <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">

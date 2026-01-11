@@ -136,6 +136,7 @@ export interface Album {
 }
 
 export type MediaType = "image" | "video" | "audio" | "pdf" | "other"
+export type MediaSourceType = "upload" | "link"
 
 export interface MediaItem {
   id: string
@@ -149,7 +150,8 @@ export interface MediaItem {
   duration_sec?: number
   created_at?: string
   thumbnail_url?: string
-  // External link support
+  media_source_type?: MediaSourceType
+  external_url?: string
   is_external_link?: boolean
   external_link?: string
 }
