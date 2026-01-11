@@ -2441,30 +2441,26 @@ function AdminPageContent() {
               <div className="space-y-6">
                 <div className="bg-white border-b border-gray-200 rounded-t-lg">
                   <div className="flex overflow-x-auto">
-                    {session?.type === "admin" && (
-                      <>
-                        <button
-                          onClick={() => handleSubTabChange("personal")}
-                          className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
-                            (currentSubTab === "personal" || !currentSubTab)
-                              ? "border-blue-600 text-blue-600"
-                              : "border-transparent text-gray-600 hover:text-gray-800"
-                          }`}
-                        >
-                          Personal
-                        </button>
-                        <button
-                          onClick={() => handleSubTabChange("user")}
-                          className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
-                            currentSubTab === "user"
-                              ? "border-blue-600 text-blue-600"
-                              : "border-transparent text-gray-600 hover:text-gray-800"
-                          }`}
-                        >
-                          User
-                        </button>
-                      </>
-                    )}
+                    <button
+                      onClick={() => handleSubTabChange("personal")}
+                      className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
+                        (currentSubTab === "personal" || (!currentSubTab && session?.type === "admin"))
+                          ? "border-blue-600 text-blue-600"
+                          : "border-transparent text-gray-600 hover:text-gray-800"
+                      }`}
+                    >
+                      Personal
+                    </button>
+                    <button
+                      onClick={() => handleSubTabChange("user")}
+                      className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
+                        currentSubTab === "user"
+                          ? "border-blue-600 text-blue-600"
+                          : "border-transparent text-gray-600 hover:text-gray-800"
+                      }`}
+                    >
+                      User
+                    </button>
                     <button
                       onClick={() => handleSubTabChange("theme")}
                       className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
@@ -2478,7 +2474,7 @@ function AdminPageContent() {
                   </div>
                 </div>
 
-                {session?.type === "admin" && (currentSubTab === "personal" || !currentSubTab) && currentAdmin && (
+                {(currentSubTab === "personal" || (!currentSubTab && session?.type === "admin")) && currentAdmin && (
                   <div className="theme-card bg-white rounded-lg shadow-md p-6">
                     <h3 className="text-lg font-bold text-gray-800 mb-4">Your Admin Account</h3>
                     <div className="space-y-4">
@@ -2560,7 +2556,7 @@ function AdminPageContent() {
                   </div>
                 )}
 
-                {session?.type === "admin" && currentSubTab === "user" && adminId && adminId.trim() && (
+                {currentSubTab === "user" && adminId && adminId.trim() && (
                   <div className="theme-card bg-white rounded-lg shadow-md p-6">
                     <div className="flex items-center justify-between mb-4">
                       <div>
@@ -2600,6 +2596,34 @@ function AdminPageContent() {
                           No user passwords created yet. Click "Manage Passwords" to create one.
                         </p>
                       )}
+                    </div>
+                  </div>
+                )}
+
+                {currentSubTab === "personal" && !currentAdmin && session?.type === "super_admin" && (
+                  <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 text-center">
+                      <h3 className="text-lg font-semibold text-purple-900 mb-2">Super Admin Account</h3>
+                      <p className="text-sm text-purple-700 mb-3">
+                        You're logged in as Super Admin. This section is for managing individual admin accounts.
+                      </p>
+                      <p className="text-xs text-purple-600">
+                        To manage your super admin password, go to: Super Admin Dashboard → Settings → Personal
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {currentSubTab === "user" && (!adminId || !adminId.trim()) && session?.type === "super_admin" && (
+                  <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 text-center">
+                      <h3 className="text-lg font-semibold text-purple-900 mb-2">Super Admin Account</h3>
+                      <p className="text-sm text-purple-700 mb-3">
+                        You're logged in as Super Admin. Visitor password management is tied to individual admin accounts.
+                      </p>
+                      <p className="text-xs text-purple-600">
+                        Super Admin doesn't have associated visitor passwords. Each admin manages their own visitor passwords.
+                      </p>
                     </div>
                   </div>
                 )}
