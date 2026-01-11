@@ -217,7 +217,12 @@ BEGIN
 END;
 $$;
 
-RAISE NOTICE '';
-RAISE NOTICE '========================================';
-RAISE NOTICE 'PRE-CHECK COMPLETE';
-RAISE NOTICE '========================================';
+-- Final summary
+DO $$
+BEGIN
+    RAISE NOTICE '';
+    RAISE NOTICE '========================================';
+    RAISE NOTICE 'PRE-CHECK COMPLETE';
+    RAISE NOTICE '========================================';
+END;
+$$;
