@@ -934,13 +934,8 @@ function AdminPageContent() {
           throw new Error(`Row ${rowNum}: Invalid "total_amount" value "${x.total_amount}". Must be a positive number.`)
         }
 
-        // Validate pieces * price_per_piece matches total_amount (with tolerance)
-        const calculatedTotal = pieces * price_per_piece
-        if (Math.abs(calculatedTotal - total_amount) > 0.01) {
-          throw new Error(
-            `Row ${rowNum}: Total amount mismatch. pieces (${pieces}) × price_per_piece (${price_per_piece}) = ${calculatedTotal.toFixed(2)}, but total_amount is ${total_amount}. Please fix the calculation.`,
-          )
-        }
+        // Note: total_amount can be manually edited (for discounts, rounding, etc.)
+        // So we don't enforce strict validation against pieces * price_per_piece
 
         const categoryKey = normalize(String(x.category || ""))
         if (!categoryKey) {
@@ -1804,7 +1799,7 @@ function AdminPageContent() {
                 <p className="text-xs text-blue-800 mb-1">• pieces (number) - Number of pieces (positive integer)</p>
                 <p className="text-xs text-blue-800 mb-1">• price_per_piece (number) - Price per piece (non-negative)</p>
                 <p className="text-xs text-blue-800 mb-1">
-                  • total_amount (number) - Total amount, must equal pieces × price_per_piece
+                  • total_amount (number) - Total amount (can be manually adjusted for discounts/rounding)
                 </p>
                 <p className="text-xs text-blue-800 mb-1">
                   • category (string) - Must match existing category (case-insensitive)
@@ -1828,7 +1823,7 @@ function AdminPageContent() {
               </div>
               <p className="text-xs text-gray-600 mb-2">
                 💡 Category & Mode are matched case-insensitively. Dates must be within the festival's Collection/Expense
-                date range. Total amount must match pieces × price_per_piece.
+                date range. Total amount can be manually adjusted (e.g., for discounts or rounding).
               </p>
               <div className="bg-gray-50 p-3 rounded border text-xs mb-3 font-mono overflow-x-auto">
                 {`[
