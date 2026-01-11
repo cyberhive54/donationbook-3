@@ -1584,10 +1584,10 @@ function AdminPageContent() {
                       >
                         {isSavingTitleStyle ? "Saving..." : "Save Title Style"}
                       </button>
-                      </div>
                     </div>
                   </div>
-                )}
+                </div>
+              )}
 
                 {/* Analytics Sub-tab */}
                 {currentSubTab === "analytics" && (
