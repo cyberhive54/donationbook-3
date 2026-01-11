@@ -172,12 +172,23 @@ function SuperAdminActivityPageContent() {
       setTransactions(combined);
 
       // Fetch all visitors
+      console.log('[Super Admin Activity] Fetching visitor logs for festival:', fest.id);
       const { data: visitorsData, error: visitorsErr } = await supabase
         .from('access_logs')
         .select('*')
         .eq('festival_id', fest.id)
         .order('accessed_at', { ascending: false });
-      if (visitorsErr) throw visitorsErr;
+      
+      console.log('[Super Admin Activity] Visitor logs fetched:', {
+        count: visitorsData?.length || 0,
+        error: visitorsErr,
+        sample: visitorsData?.slice(0, 3)
+      });
+      
+      if (visitorsErr) {
+        console.error('[Super Admin Activity] Error fetching visitors:', visitorsErr);
+        throw visitorsErr;
+      }
       setVisitors(visitorsData || []);
 
     } catch (error) {

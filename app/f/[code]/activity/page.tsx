@@ -85,15 +85,30 @@ export default function VisitorActivityPage() {
 
       // Fetch visitor's login history
       if (session?.type === 'visitor') {
-        // Query visitor logs - use exact match (name is sanitized when logged)
+        console.log('[Activity Page] Fetching visitor logs:', {
+          festival_id: fest.id,
+          visitor_name: session.visitorName,
+          session_type: session.type
+        });
+        
+        // Query visitor logs - use exact match (name is already sanitized and trimmed)
         const { data: logs, error: logsErr } = await supabase
           .from('access_logs')
           .select('*')
           .eq('festival_id', fest.id)
-          .eq('visitor_name', session.visitorName.trim())
+          .eq('visitor_name', session.visitorName)
           .order('accessed_at', { ascending: false });
         
-        if (logsErr) throw logsErr;
+        console.log('[Activity Page] Visitor logs fetched:', {
+          count: logs?.length || 0,
+          error: logsErr,
+          sample: logs?.[0]
+        });
+        
+        if (logsErr) {
+          console.error('[Activity Page] Error fetching visitor logs:', logsErr);
+          throw logsErr;
+        }
         setLoginHistory(logs || []);
       }
 

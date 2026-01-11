@@ -8,7 +8,7 @@ import { Album, MediaItem, Festival } from '@/types';
 import BottomNav from '@/components/BottomNav';
 import GlobalSessionBar from '@/components/GlobalSessionBar';
 import { getThemeStyles, getThemeClasses } from '@/lib/theme';
-import { Download, Eye, FileText, Film, Music, FileIcon, Image as ImageIcon, Lock } from 'lucide-react';
+import { Download, Eye, FileText, Film, Music, FileIcon, Image as ImageIcon, Lock, Link as LinkIcon, ExternalLink } from 'lucide-react';
 import { formatFileSize } from '@/lib/utils';
 import MediaViewerModal from '@/components/modals/MediaViewerModal';
 import { useSession } from '@/lib/hooks/useSession';
@@ -26,25 +26,38 @@ export default function ShowcasePage() {
   const [filter, setFilter] = useState<'all'|'image'|'video'|'audio'|'pdf'|'other'>('all');
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [viewingMedia, setViewingMedia] = useState<MediaItem | null>(null);
+  const [failedMedia, setFailedMedia] = useState<Set<string>>(new Set());
   
   // Check if download is allowed
   const canDownload = useMemo(() => {
+    console.log('canDownload check:', {
+      session_type: session?.type,
+      festival_allow: festival?.allow_media_download,
+      album_allow: active?.allow_download,
+      active_album: active?.title
+    });
+    
     // Admins and super_admins can always download
     if (session?.type === 'admin' || session?.type === 'super_admin') {
+      console.log('Admin/Super Admin - downloads allowed');
       return true;
     }
     
     // For visitors, check festival and album settings
-    // Festival setting overrides album setting only when festival denies
+    // If festival setting is explicitly false, deny downloads
     if (festival?.allow_media_download === false) {
+      console.log('Festival blocks downloads');
       return false;
     }
     
-    // If festival allows, check album setting
+    // If festival setting is explicitly true or undefined (default true), check album
+    // If album setting is explicitly false, deny downloads  
     if (active?.allow_download === false) {
+      console.log('Album blocks downloads');
       return false;
     }
     
+    console.log('Downloads allowed');
     return true;
   }, [festival, active, session]);
 
@@ -52,6 +65,11 @@ export default function ShowcasePage() {
     const fetchAlbums = async () => {
       const { data: fest } = await supabase.from('festivals').select('*').eq('code', code).maybeSingle();
       if (!fest) return;
+      console.log('Festival data loaded:', {
+        code: fest.code,
+        allow_media_download: fest.allow_media_download,
+        session_type: session?.type
+      });
       setFestival(fest);
       const { data } = await supabase.from('albums').select('*').eq('festival_id', fest.id).order('year', { ascending: false });
       setAlbums((data as Album[]) || []);
@@ -78,17 +96,28 @@ export default function ShowcasePage() {
   const themeStyles = getThemeStyles(festival);
   const themeClasses = getThemeClasses(festival);
 
+  const getMediaUrl = (item: MediaItem): string => {
+    if (item.media_source_type === 'link' && item.external_url) {
+      return item.external_url;
+    }
+    return item.url;
+  };
+  
+  const isExternalLink = (item: MediaItem): boolean => {
+    return item.media_source_type === 'link';
+  };
+
   const handleDownload = async (item: MediaItem) => {
-    // Check download permission
     if (!canDownload) {
       toast.error('Downloads are disabled for this festival/album');
       return;
     }
     
     try {
-      // If it's an external link, open in new tab
-      if (item.is_external_link && item.external_link) {
-        window.open(item.external_link, '_blank');
+      if (item.media_source_type === 'link') {
+        const linkUrl = item.external_url || item.url;
+        window.open(linkUrl, '_blank');
+        toast.success('Opening link in new tab');
         return;
       }
       
@@ -107,6 +136,10 @@ export default function ShowcasePage() {
       console.error('Download failed:', error);
       toast.error('Download failed');
     }
+  };
+
+  const handleMediaError = (itemId: string) => {
+    setFailedMedia(prev => new Set(prev).add(itemId));
   };
 
   const preventRightClick = (e: React.MouseEvent) => {
@@ -161,6 +194,27 @@ export default function ShowcasePage() {
     <PasswordGate code={code}>
       <div className={`min-h-screen p-4 pb-24 ${themeClasses}`} style={{ ...bgStyle, ...themeStyles }}>
         <div className="max-w-7xl mx-auto">
+          {/* Debug banner - shows viewing mode */}
+          {(session?.type === 'admin' || session?.type === 'super_admin') && (
+            <div className="mb-4 bg-amber-100 border-l-4 border-amber-500 text-amber-900 p-3 rounded">
+              <div className="flex items-center gap-2">
+                <span className="font-bold">🔓 Admin Mode:</span>
+                <span>You are viewing as {session.type === 'super_admin' ? 'Super Admin' : 'Admin'}. Download restrictions do not apply to you.</span>
+              </div>
+            </div>
+          )}
+          
+          {/* Debug info - shows download settings */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="mb-4 bg-blue-100 border-l-4 border-blue-500 text-blue-900 p-3 rounded text-xs">
+              <div><strong>Debug Info:</strong></div>
+              <div>Session Type: {session?.type || 'visitor'}</div>
+              <div>Festival Download Setting: {festival?.allow_media_download === true ? 'Enabled ✓' : festival?.allow_media_download === false ? 'Disabled ✗' : 'Not Set (defaults to Enabled)'}</div>
+              <div>Album Download Setting: {active?.allow_download === true ? 'Enabled ✓' : active?.allow_download === false ? 'Disabled ✗' : 'Not Set (defaults to Enabled)'}</div>
+              <div>Can Download: {canDownload ? 'YES ✓' : 'NO ✗'}</div>
+            </div>
+          )}
+          
           <h1 className="text-2xl font-bold theme-text mb-4">Showcase</h1>
           
           {albums.length === 0 ? (
@@ -176,7 +230,13 @@ export default function ShowcasePage() {
                   className={`theme-card border rounded-lg overflow-hidden text-left transition-all ${active?.id === a.id ? 'border-blue-600 ring-2 ring-blue-300' : ''}`}
                 >
                   {a.cover_url && (
-                    <img src={a.cover_url} alt={a.title} className="w-full h-32 object-cover" />
+                    <img 
+                      src={a.cover_url} 
+                      alt={a.title} 
+                      className="w-full h-32 object-cover" 
+                      onContextMenu={preventRightClick}
+                      draggable={false}
+                    />
                   )}
                   <div className="p-3">
                     <div className="font-semibold theme-text truncate">{a.title}</div>
@@ -264,13 +324,19 @@ export default function ShowcasePage() {
                       className="cursor-pointer"
                       onClick={() => setViewingMedia(item)}
                     >
-                      {item.type === 'image' ? (
+                      {failedMedia.has(item.id) ? (
+                        <div className="h-36 flex flex-col items-center justify-center bg-gray-100 theme-text gap-2">
+                          <ExternalLink className="w-8 h-8 text-blue-600" />
+                          <span className="text-xs">External Link</span>
+                        </div>
+                      ) : item.type === 'image' ? (
                         <img 
-                          src={item.url} 
+                          src={getMediaUrl(item)} 
                           alt={item.title || ''} 
                           className="w-full h-36 object-cover" 
                           onContextMenu={preventRightClick}
                           draggable={false}
+                          onError={() => handleMediaError(item.id)}
                         />
                       ) : item.type === 'video' && item.thumbnail_url ? (
                         <div className="relative">
@@ -280,6 +346,7 @@ export default function ShowcasePage() {
                             className="w-full h-36 object-cover" 
                             onContextMenu={preventRightClick}
                             draggable={false}
+                            onError={() => handleMediaError(item.id)}
                           />
                           <div className="absolute inset-0 flex items-center justify-center bg-black/30">
                             <Film className="w-8 h-8 text-white" />
@@ -294,11 +361,21 @@ export default function ShowcasePage() {
                           {getMediaIcon(item.type)}
                         </div>
                       )}
+                      {isExternalLink(item) && !failedMedia.has(item.id) && (
+                        <div className="absolute bottom-2 left-2">
+                          <div className="bg-blue-600 text-white px-2 py-1 rounded text-xs flex items-center gap-1">
+                            <LinkIcon className="w-3 h-3" />
+                            Link
+                          </div>
+                        </div>
+                      )}
                     </div>
                     
                     <div className="p-2">
                       <div className="truncate text-xs theme-text" title={item.title}>{item.title}</div>
-                      <div className="text-xs opacity-70 theme-text">{formatFileSize(item.size_bytes)}</div>
+                      <div className="text-xs opacity-70 theme-text">
+                        {isExternalLink(item) ? 'External Link' : formatFileSize(item.size_bytes)}
+                      </div>
                     </div>
                     
                     <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">

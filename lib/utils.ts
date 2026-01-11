@@ -57,11 +57,12 @@ export const getFileSizeLimit = (type: string): { bytes: number; label: string }
 };
 
 export const calculateStorageStats = (items: MediaItem[]) => {
-  const totalBytes = items.reduce((sum, item) => sum + (item.size_bytes || 0), 0);
+  const uploadedItems = items.filter(item => !item.media_source_type || item.media_source_type === 'upload');
+  const totalBytes = uploadedItems.reduce((sum, item) => sum + (item.size_bytes || 0), 0);
   const maxBytes = 400 * 1024 * 1024;
   const percentage = (totalBytes / maxBytes) * 100;
   
-  const byType = items.reduce((acc, item) => {
+  const byType = uploadedItems.reduce((acc, item) => {
     const type = item.type;
     if (!acc[type]) {
       acc[type] = { count: 0, bytes: 0 };
@@ -78,6 +79,54 @@ export const calculateStorageStats = (items: MediaItem[]) => {
     availableBytes: Math.max(maxBytes - totalBytes, 0),
     byType
   };
+};
+
+export const convertGoogleDriveUrl = (url: string): string => {
+  const fileIdMatch = url.match(/[-\w]{25,}/);
+  if (!fileIdMatch) return url;
+  
+  const fileId = fileIdMatch[0];
+  
+  if (url.includes('docs.google.com/document')) {
+    return `https://docs.google.com/document/d/${fileId}/preview`;
+  }
+  if (url.includes('docs.google.com/presentation')) {
+    return `https://docs.google.com/presentation/d/${fileId}/preview`;
+  }
+  if (url.includes('docs.google.com/spreadsheets')) {
+    return `https://docs.google.com/spreadsheets/d/${fileId}/preview`;
+  }
+  
+  if (url.includes('drive.google.com/file') || url.includes('drive.google.com/open')) {
+    return `https://drive.google.com/uc?export=view&id=${fileId}`;
+  }
+  
+  return url;
+};
+
+export const detectMediaTypeFromUrl = (url: string): 'image' | 'video' | 'audio' | 'pdf' | 'other' => {
+  const urlLower = url.toLowerCase();
+  
+  if (urlLower.match(/\.(jpg|jpeg|png|gif|bmp|webp|svg)(\?|$)/)) {
+    return 'image';
+  }
+  if (urlLower.match(/\.(mp4|webm|avi|mov|mkv|flv)(\?|$)/)) {
+    return 'video';
+  }
+  if (urlLower.match(/\.(mp3|wav|ogg|m4a|flac)(\?|$)/)) {
+    return 'audio';
+  }
+  if (urlLower.match(/\.pdf(\?|$)/)) {
+    return 'pdf';
+  }
+  
+  if (urlLower.includes('drive.google.com')) {
+    if (urlLower.includes('/document/')) return 'pdf';
+    if (urlLower.includes('/presentation/')) return 'pdf';
+    if (urlLower.includes('/spreadsheets/')) return 'pdf';
+  }
+  
+  return 'other';
 };
 
 export const calculateStats = (

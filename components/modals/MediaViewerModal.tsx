@@ -16,13 +16,31 @@ interface MediaViewerModalProps {
 export default function MediaViewerModal({ isOpen, onClose, mediaItem, allItems = [], onNavigate, canDownload = true }: MediaViewerModalProps) {
   if (!isOpen || !mediaItem) return null;
 
+  const getMediaUrl = (): string => {
+    if (mediaItem.media_source_type === 'link' && mediaItem.external_url) {
+      return mediaItem.external_url;
+    }
+    return mediaItem.url;
+  };
+
   const preventRightClick = (e: React.MouseEvent) => {
     e.preventDefault();
     return false;
   };
 
   const handleDownload = async () => {
+    // Safety check: respect download restrictions
+    if (!canDownload) {
+      return;
+    }
+    
     try {
+      if (mediaItem.media_source_type === 'link') {
+        const linkUrl = mediaItem.external_url || mediaItem.url;
+        window.open(linkUrl, '_blank');
+        return;
+      }
+      
       const response = await fetch(mediaItem.url);
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
@@ -89,7 +107,7 @@ export default function MediaViewerModal({ isOpen, onClose, mediaItem, allItems 
       <div className="w-full h-full flex items-center justify-center p-4">
         {mediaItem.type === 'image' && (
           <img 
-            src={mediaItem.url} 
+            src={getMediaUrl()} 
             alt={mediaItem.title || ''} 
             className="max-w-full max-h-full object-contain"
             onContextMenu={preventRightClick}
@@ -99,18 +117,25 @@ export default function MediaViewerModal({ isOpen, onClose, mediaItem, allItems 
         
         {mediaItem.type === 'video' && (
           <video 
-            src={mediaItem.url} 
+            src={getMediaUrl()} 
             controls 
             autoPlay
             className="max-w-full max-h-full"
             onContextMenu={preventRightClick}
-            controlsList="nodownload"
+            controlsList={!canDownload ? "nodownload" : undefined}
           />
         )}
         
         {mediaItem.type === 'audio' && (
           <div className="bg-white/10 rounded-lg p-8 backdrop-blur">
-            <audio src={mediaItem.url} controls autoPlay className="w-full" />
+            <audio 
+              src={getMediaUrl()} 
+              controls 
+              autoPlay 
+              className="w-full"
+              onContextMenu={preventRightClick}
+              controlsList={!canDownload ? "nodownload" : undefined}
+            />
             <div className="text-white text-center mt-4">
               <div className="text-lg font-semibold">{mediaItem.title}</div>
               {mediaItem.size_bytes && (
@@ -122,7 +147,7 @@ export default function MediaViewerModal({ isOpen, onClose, mediaItem, allItems 
         
         {mediaItem.type === 'pdf' && (
           <iframe 
-            src={mediaItem.url}
+            src={getMediaUrl()}
             className="w-full h-full bg-white rounded"
             title={mediaItem.title || 'PDF'}
           />
@@ -151,9 +176,11 @@ export default function MediaViewerModal({ isOpen, onClose, mediaItem, allItems 
 
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 backdrop-blur rounded-lg px-4 py-2 text-white text-sm">
         <div className="font-medium">{mediaItem.title}</div>
-        {mediaItem.size_bytes && (
+        {mediaItem.media_source_type === 'link' ? (
+          <div className="text-xs opacity-75">External Link</div>
+        ) : mediaItem.size_bytes ? (
           <div className="text-xs opacity-75">{formatFileSize(mediaItem.size_bytes)}</div>
-        )}
+        ) : null}
       </div>
     </div>
   );

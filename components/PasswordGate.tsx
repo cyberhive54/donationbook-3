@@ -320,14 +320,57 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
       };
 
       // Log access - use sanitized name
-      await supabase.rpc('log_festival_access', {
-        p_festival_id: festival.id,
-        p_visitor_name: sanitizedName,
-        p_access_method: 'password_modal',
-        p_password_used: password.trim(),
-        p_session_id: visitorSession.sessionId,
-        p_user_password_id: passwordData.password_id
+      console.log('[PasswordGate] Attempting to log visitor access:', {
+        festival_id: festival.id,
+        visitor_name: sanitizedName,
+        admin_id: passwordData.admin_id,
+        user_password_id: passwordData.password_id,
+        session_id: visitorSession.sessionId
       });
+      
+      // Try calling with new parameters first (if function is updated)
+      let logAccessData, logAccessError;
+      try {
+        const result = await supabase.rpc('log_festival_access', {
+          p_festival_id: festival.id,
+          p_visitor_name: sanitizedName,
+          p_access_method: 'password_modal',
+          p_password_used: password.trim(),
+          p_session_id: visitorSession.sessionId,
+          p_admin_id: passwordData.admin_id,
+          p_user_password_id: passwordData.password_id
+        });
+        logAccessData = result.data;
+        logAccessError = result.error;
+      } catch (firstAttemptError: any) {
+        console.warn('[PasswordGate] New function signature failed, trying old signature:', firstAttemptError);
+        
+        // Fallback to old function signature (without admin_id and user_password_id)
+        const result = await supabase.rpc('log_festival_access', {
+          p_festival_id: festival.id,
+          p_visitor_name: sanitizedName,
+          p_access_method: 'password_modal',
+          p_password_used: password.trim(),
+          p_session_id: visitorSession.sessionId
+        });
+        logAccessData = result.data;
+        logAccessError = result.error;
+      }
+      
+      console.log('[PasswordGate] log_festival_access result:', {
+        data: logAccessData,
+        error: logAccessError,
+        errorMessage: logAccessError?.message,
+        errorCode: logAccessError?.code,
+        errorDetails: logAccessError?.details
+      });
+      
+      if (logAccessError) {
+        console.error('[PasswordGate] ❌ CRITICAL: Failed to log access:', logAccessError);
+        toast.error('Warning: Login not recorded. Please contact admin.');
+      } else {
+        console.log('[PasswordGate] ✅ Access logged successfully, record ID:', logAccessData);
+      }
 
       // Update password usage count
       await supabase
