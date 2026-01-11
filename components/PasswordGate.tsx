@@ -320,7 +320,15 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
       };
 
       // Log access - use sanitized name
-      await supabase.rpc('log_festival_access', {
+      console.log('[PasswordGate] Attempting to log visitor access:', {
+        festival_id: festival.id,
+        visitor_name: sanitizedName,
+        admin_id: passwordData.admin_id,
+        user_password_id: passwordData.password_id,
+        session_id: visitorSession.sessionId
+      });
+      
+      const { data: logAccessData, error: logAccessError } = await supabase.rpc('log_festival_access', {
         p_festival_id: festival.id,
         p_visitor_name: sanitizedName,
         p_access_method: 'password_modal',
@@ -329,6 +337,17 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
         p_admin_id: passwordData.admin_id,
         p_user_password_id: passwordData.password_id
       });
+      
+      console.log('[PasswordGate] log_festival_access result:', {
+        data: logAccessData,
+        error: logAccessError,
+        errorMessage: logAccessError?.message,
+        errorCode: logAccessError?.code
+      });
+      
+      if (logAccessError) {
+        console.error('[PasswordGate] Failed to log access:', logAccessError);
+      }
 
       // Update password usage count
       await supabase
