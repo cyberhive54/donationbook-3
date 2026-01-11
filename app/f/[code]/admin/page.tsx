@@ -1516,7 +1516,7 @@ function AdminPageContent() {
                 <h3 className="text-lg font-bold text-gray-800 mb-4">Showcase</h3>
                 {allMediaItems.length > 0 &&
                   (() => {
-                    const storageStats = calculateStorageStats(allMediaItems)
+                    const storageStats = calculateStorageStats(allMediaItems, festival?.max_storage_mb)
                     return (
                       <div
                         className="mb-4 cursor-pointer hover:bg-gray-50 p-4 rounded-lg border transition-colors"
@@ -1655,6 +1655,7 @@ function AdminPageContent() {
         onClose={() => setIsStorageStatsOpen(false)}
         allMediaItems={allMediaItems}
         albums={albums}
+        maxStorageMB={festival?.max_storage_mb}
       />
 
       <AddCollectionModal

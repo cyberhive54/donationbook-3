@@ -39,6 +39,8 @@ export default function ManageAlbumMediaModal({ isOpen, onClose, albumId, festiv
   const [linkUrl, setLinkUrl] = useState('');
   const [linkTitle, setLinkTitle] = useState('');
   const [isAddingLink, setIsAddingLink] = useState(false);
+  const [maxVideoSizeMB, setMaxVideoSizeMB] = useState(50);
+  const [maxFileSizeMB, setMaxFileSizeMB] = useState(15);
 
   const fetchItems = async () => {
     if (!albumId) return;
@@ -49,11 +51,23 @@ export default function ManageAlbumMediaModal({ isOpen, onClose, albumId, festiv
       setItems(data as MediaItem[]);
     }
 
-    // Get festival_id from album
+    // Get festival_id from album and fetch festival storage settings
     if (albumId) {
       const { data: albumData } = await supabase.from('albums').select('festival_id').eq('id', albumId).single();
       if (albumData) {
         setFestivalId(albumData.festival_id);
+        
+        // Fetch festival storage settings
+        const { data: festivalData } = await supabase
+          .from('festivals')
+          .select('max_video_size_mb, max_file_size_mb')
+          .eq('id', albumData.festival_id)
+          .single();
+        
+        if (festivalData) {
+          setMaxVideoSizeMB(festivalData.max_video_size_mb || 50);
+          setMaxFileSizeMB(festivalData.max_file_size_mb || 15);
+        }
       }
     }
   };
@@ -88,7 +102,7 @@ export default function ManageAlbumMediaModal({ isOpen, onClose, albumId, festiv
       
       try {
         const file = task.file;
-        const limit = getFileSizeLimit(file.type);
+        const limit = getFileSizeLimit(file.type, maxVideoSizeMB, maxFileSizeMB);
         
         if (file.size > limit.bytes) {
           throw new Error(`File too large. Max ${limit.label}`);

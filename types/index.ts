@@ -42,6 +42,11 @@ export interface Festival {
   admin_display_preference?: "code" | "name"
   // Download control
   allow_media_download?: boolean
+  // Storage limits (configurable per festival)
+  max_storage_mb?: number // Default: 400MB, range: 100-10000MB
+  max_video_size_mb?: number // Default: 50MB, range: 10-500MB
+  max_file_size_mb?: number // Default: 15MB, range: 1-100MB
+  storage_settings_updated_at?: string
 }
 
 export interface BasicInfo {

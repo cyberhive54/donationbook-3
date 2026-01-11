@@ -50,6 +50,14 @@ function SuperAdminDashboardContent() {
   const [editingSuperAdminPassword, setEditingSuperAdminPassword] = useState(false)
   const [newSuperAdminPassword, setNewSuperAdminPassword] = useState("")
 
+  // Storage limit settings
+  const [storageSettings, setStorageSettings] = useState({
+    max_storage_mb: 400,
+    max_video_size_mb: 50,
+    max_file_size_mb: 15,
+  })
+  const [editingStorageSettings, setEditingStorageSettings] = useState(false)
+
   // Banner visibility settings
   const [bannerSettings, setBannerSettings] = useState({
     banner_show_organiser: true,
@@ -103,6 +111,12 @@ function SuperAdminDashboardContent() {
         banner_show_dates: fest.banner_show_dates !== false,
         banner_show_duration: fest.banner_show_duration !== false,
         admin_display_preference: fest.admin_display_preference || "code",
+      })
+
+      setStorageSettings({
+        max_storage_mb: fest.max_storage_mb || 400,
+        max_video_size_mb: fest.max_video_size_mb || 50,
+        max_file_size_mb: fest.max_file_size_mb || 15,
       })
 
       const calculatedStats = calculateStats(fetchedCollections, fetchedExpenses)
@@ -185,6 +199,36 @@ function SuperAdminDashboardContent() {
       console.error("Error updating festival code:", error)
       toast.error("Failed to update festival code")
       setCodeEditLoading(false)
+    }
+  }
+
+  const handleUpdateStorageSettings = async () => {
+    if (!festival) return
+    try {
+      const { error } = await supabase
+        .from("festivals")
+        .update({
+          max_storage_mb: storageSettings.max_storage_mb,
+          max_video_size_mb: storageSettings.max_video_size_mb,
+          max_file_size_mb: storageSettings.max_file_size_mb,
+          storage_settings_updated_at: new Date().toISOString(),
+        })
+        .eq("id", festival.id)
+      if (error) throw error
+
+      // Log activity
+      await supabase.rpc("log_admin_activity", {
+        p_festival_id: festival.id,
+        p_admin_id: null,
+        p_action_type: "update_storage_settings",
+        p_action_details: storageSettings,
+      })
+
+      toast.success("Storage settings updated")
+      setEditingStorageSettings(false)
+      fetchData()
+    } catch (error) {
+      toast.error("Failed to update storage settings")
     }
   }
 
@@ -510,6 +554,113 @@ function SuperAdminDashboardContent() {
               {festival.super_admin_password_updated_at && (
                 <p className="text-xs text-purple-600 mt-2">
                   Last updated: {new Date(festival.super_admin_password_updated_at).toLocaleString()}
+                </p>
+              )}
+            </div>
+
+            {/* Storage Limit Settings */}
+            <div className="theme-card bg-white rounded-lg shadow-md p-6 mb-6 border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white">
+              <div className="flex items-center gap-2 mb-4">
+                <h3 className="text-lg font-bold text-blue-900">Storage Limit Settings</h3>
+                <span className="px-2 py-1 bg-blue-600 text-white text-xs rounded-full">Media</span>
+              </div>
+              <p className="text-sm text-blue-700 mb-4">Configure storage limits for festival media uploads</p>
+              
+              {editingStorageSettings ? (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Total Storage Limit (MB) <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      min="100"
+                      max="10000"
+                      value={storageSettings.max_storage_mb}
+                      onChange={(e) => setStorageSettings({...storageSettings, max_storage_mb: Number(e.target.value)})}
+                      className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Range: 100MB - 10000MB (10GB). Default: 400MB</p>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Max Video File Size (MB) <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      min="10"
+                      max="500"
+                      value={storageSettings.max_video_size_mb}
+                      onChange={(e) => setStorageSettings({...storageSettings, max_video_size_mb: Number(e.target.value)})}
+                      className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Range: 10MB - 500MB. Default: 50MB</p>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Max File Size (MB) - Images, Audio, PDFs <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="100"
+                      value={storageSettings.max_file_size_mb}
+                      onChange={(e) => setStorageSettings({...storageSettings, max_file_size_mb: Number(e.target.value)})}
+                      className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Range: 1MB - 100MB. Default: 15MB</p>
+                  </div>
+                  
+                  <div className="flex gap-2 pt-2">
+                    <button
+                      onClick={handleUpdateStorageSettings}
+                      className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      Save Storage Settings
+                    </button>
+                    <button
+                      onClick={() => {
+                        setEditingStorageSettings(false)
+                        setStorageSettings({
+                          max_storage_mb: festival?.max_storage_mb || 400,
+                          max_video_size_mb: festival?.max_video_size_mb || 50,
+                          max_file_size_mb: festival?.max_file_size_mb || 15,
+                        })
+                      }}
+                      className="px-4 py-2 border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <span className="text-sm font-medium text-gray-700">Total Storage Limit</span>
+                    <span className="text-sm font-bold text-blue-900">{festival.max_storage_mb || 400} MB</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <span className="text-sm font-medium text-gray-700">Max Video File Size</span>
+                    <span className="text-sm font-bold text-blue-900">{festival.max_video_size_mb || 50} MB</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <span className="text-sm font-medium text-gray-700">Max Other File Size</span>
+                    <span className="text-sm font-bold text-blue-900">{festival.max_file_size_mb || 15} MB</span>
+                  </div>
+                  <button
+                    onClick={() => setEditingStorageSettings(true)}
+                    className="w-full px-4 py-2 border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <Edit className="w-4 h-4" />
+                    Edit Storage Limits
+                  </button>
+                </div>
+              )}
+              {festival.storage_settings_updated_at && (
+                <p className="text-xs text-blue-600 mt-3">
+                  Last updated: {new Date(festival.storage_settings_updated_at).toLocaleString()}
                 </p>
               )}
             </div>

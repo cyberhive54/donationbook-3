@@ -51,15 +51,20 @@ export const formatFileSize = (bytes: number | null | undefined): string => {
   return `${(bytes / Math.pow(k, i)).toFixed(2)} ${sizes[i]}`;
 };
 
-export const getFileSizeLimit = (type: string): { bytes: number; label: string } => {
-  if (type.startsWith('video/')) return { bytes: 50 * 1024 * 1024, label: '50MB' };
-  return { bytes: 15 * 1024 * 1024, label: '15MB' };
+export const getFileSizeLimit = (type: string, maxVideoSizeMB?: number, maxFileSizeMB?: number): { bytes: number; label: string } => {
+  const videoLimitMB = maxVideoSizeMB || 50;
+  const fileLimitMB = maxFileSizeMB || 15;
+  
+  if (type.startsWith('video/')) {
+    return { bytes: videoLimitMB * 1024 * 1024, label: `${videoLimitMB}MB` };
+  }
+  return { bytes: fileLimitMB * 1024 * 1024, label: `${fileLimitMB}MB` };
 };
 
-export const calculateStorageStats = (items: MediaItem[]) => {
+export const calculateStorageStats = (items: MediaItem[], maxStorageMB?: number) => {
   const uploadedItems = items.filter(item => !item.media_source_type || item.media_source_type === 'upload');
   const totalBytes = uploadedItems.reduce((sum, item) => sum + (item.size_bytes || 0), 0);
-  const maxBytes = 400 * 1024 * 1024;
+  const maxBytes = (maxStorageMB || 400) * 1024 * 1024;
   const percentage = (totalBytes / maxBytes) * 100;
   
   const byType = uploadedItems.reduce((acc, item) => {
