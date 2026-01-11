@@ -44,47 +44,15 @@ export default function TopDonatorsChart({ collections, topN = 5 }: TopDonatorsC
           No data available
         </div>
       ) : (
-        <>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={topDonators} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis type="number" tick={{ fontSize: 12 }} />
-              <YAxis dataKey="name" type="category" tick={{ fontSize: 12 }} width={100} />
-              <Tooltip formatter={(value: number | undefined) => formatCurrency(value ?? 0)} />
-              <Bar dataKey="amount" fill="#10b981" />
-            </BarChart>
-          </ResponsiveContainer>
-
-          <div className="mt-4 space-y-2">
-            {topDonators.map((donator, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-              >
-                <div className="flex items-center gap-3">
-                  {donator.image_url ? (
-                    <img
-                      src={donator.image_url}
-                      alt={donator.name}
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                      <span className="text-blue-600 font-semibold">
-                        {donator.name.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
-                  )}
-                  <div>
-                    <p className="font-medium text-gray-800">{donator.name}</p>
-                    <p className="text-xs text-gray-500">Rank #{index + 1}</p>
-                  </div>
-                </div>
-                <p className="font-bold text-green-600">{formatCurrency(donator.amount)}</p>
-              </div>
-            ))}
-          </div>
-        </>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={topDonators} layout="vertical">
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis type="number" tick={{ fontSize: 12 }} />
+            <YAxis dataKey="name" type="category" tick={{ fontSize: 12 }} width={100} />
+            <Tooltip formatter={(value: number | undefined) => formatCurrency(value ?? 0)} />
+            <Bar dataKey="amount" fill="#10b981" />
+          </BarChart>
+        </ResponsiveContainer>
       )}
     </div>
   );

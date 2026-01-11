@@ -21,11 +21,14 @@ const CARD_LABELS: Record<AnalyticsCardType, string> = {
   'daily_net_balance': 'Daily Net Balance',
   'top_expenses': 'Top Expenses',
   'transaction_count_by_day': 'Daily Transaction Count',
-  'collections_by_group': 'Collections by Group (Pie)',
-  'collections_by_mode': 'Collections by Mode (Pie)',
+  'collections_by_group': 'Collections by Group (Donut)',
+  'collections_by_mode': 'Collections by Mode (Horizontal Bar)',
   'expenses_by_category': 'Expenses by Category (Pie)',
-  'expenses_by_mode': 'Expenses by Mode (Pie)',
+  'expenses_by_mode': 'Expenses by Mode (Radial Bar)',
   'top_donators': 'Top Donators Chart',
+  'average_donation_per_donor': 'Average Donation Per Donor',
+  'collection_vs_expense_comparison': 'Collection vs Expense Comparison',
+  'daily_collection_expense_bidirectional': 'Daily Collection & Expense (Bidirectional)',
 };
 
 const CARD_DESCRIPTIONS: Record<AnalyticsCardType, string> = {
@@ -37,11 +40,14 @@ const CARD_DESCRIPTIONS: Record<AnalyticsCardType, string> = {
   'daily_net_balance': 'Line/bar chart showing daily net balance over time',
   'top_expenses': 'List of top 3 expense items with percentage breakdown',
   'transaction_count_by_day': 'Bar chart showing daily transaction counts',
-  'collections_by_group': 'Pie chart showing collection distribution by group',
-  'collections_by_mode': 'Pie chart showing collection distribution by mode',
+  'collections_by_group': 'Donut chart showing collection distribution by group with center total',
+  'collections_by_mode': 'Horizontal bar chart showing collection distribution by payment mode',
   'expenses_by_category': 'Pie chart showing expense distribution by category',
-  'expenses_by_mode': 'Pie chart showing expense distribution by mode',
+  'expenses_by_mode': 'Radial bar chart showing expense distribution by payment mode',
   'top_donators': 'Bar chart showing top 5 donators',
+  'average_donation_per_donor': 'Shows average donation amount per unique donor with statistics',
+  'collection_vs_expense_comparison': 'Line chart comparing daily collections and expenses over date range',
+  'daily_collection_expense_bidirectional': 'Bidirectional bar chart with collections above (green) and expenses below (red) the baseline',
 };
 
 export default function AnalyticsCardsManagementModal({ isOpen, onClose, festivalId }: AnalyticsCardsManagementModalProps) {

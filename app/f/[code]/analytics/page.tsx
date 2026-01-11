@@ -8,7 +8,7 @@ import PasswordGate from "@/components/PasswordGate"
 import BottomNav from "@/components/BottomNav"
 import GlobalSessionBar from "@/components/GlobalSessionBar"
 import { useSession } from "@/lib/hooks/useSession"
-import { TrendingUp, TrendingDown, Target, Calendar, Users, FileText, BarChart3 } from "lucide-react"
+import { TrendingUp, TrendingDown, Target, Calendar, Users, FileText, BarChart3, ArrowUp, ArrowDown } from "lucide-react"
 import toast from "react-hot-toast"
 import {
   BarChart,
@@ -24,10 +24,15 @@ import {
 } from "recharts"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { getCollectionsByBuckets, getCollectionsByTimeOfDay, getDailyNetBalance, getTransactionCountByDay, getTopExpenses } from "@/lib/analyticsUtils"
+import { getCollectionsByBuckets, getCollectionsByTimeOfDay, getDailyNetBalance, getTransactionCountByDay, getTopExpenses, getAverageDonationPerDonor, getCollectionVsExpenseComparison } from "@/lib/analyticsUtils"
 import { groupBy } from "@/lib/utils"
 import PieChart from "@/components/charts/PieChart"
 import TopDonatorsChart from "@/components/charts/TopDonatorsChart"
+import HorizontalBarChart from "@/components/charts/HorizontalBarChart"
+import DonutChart from "@/components/charts/DonutChart"
+import TreemapChart from "@/components/charts/TreemapChart"
+import RadialBarChart from "@/components/charts/RadialBarChart"
+import BidirectionalBarChart from "@/components/charts/BidirectionalBarChart"
 
 function PublicAnalyticsContent() {
   const params = useParams<{ code: string }>()
@@ -141,6 +146,15 @@ function PublicAnalyticsContent() {
     }))
   }, [expenses])
 
+  const averageDonationData = useMemo(() => {
+    return getAverageDonationPerDonor(collections)
+  }, [collections])
+
+  const collectionVsExpenseData = useMemo(() => {
+    if (!festival?.ce_start_date || !festival?.ce_end_date) return []
+    return getCollectionVsExpenseComparison(collections, expenses, festival.ce_start_date, festival.ce_end_date)
+  }, [collections, expenses, festival])
+
   const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899", "#14b8a6", "#f97316"]
 
   const renderCard = (card: AnalyticsCard) => {
@@ -150,6 +164,15 @@ function PublicAnalyticsContent() {
 
     switch (card.card_type) {
       case 'festival_snapshot':
+        const prevYearCollection = analyticsConfig?.previous_year_total_collection || 0
+        const prevYearExpense = analyticsConfig?.previous_year_total_expense || 0
+        
+        const hasPrevYearData = prevYearCollection > 0 || prevYearExpense > 0
+        
+        const collectionChange = prevYearCollection > 0 ? ((totalCollection - prevYearCollection) / prevYearCollection) * 100 : 0
+        const expenseChange = prevYearExpense > 0 ? ((totalExpense - prevYearExpense) / prevYearExpense) * 100 : 0
+        const netBalanceChange = prevYearNetBalance !== 0 ? ((netBalance - prevYearNetBalance) / Math.abs(prevYearNetBalance)) * 100 : 0
+        
         return (
           <div key={card.id} className="col-span-full">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -161,6 +184,19 @@ function PublicAnalyticsContent() {
                   </div>
                 </div>
                 <p className="text-3xl font-bold text-gray-900">₹{totalCollection.toLocaleString()}</p>
+                {hasPrevYearData && prevYearCollection > 0 && (
+                  <div className="mt-2 flex items-center gap-1">
+                    {collectionChange >= 0 ? (
+                      <ArrowUp className="w-4 h-4 text-green-600" />
+                    ) : (
+                      <ArrowDown className="w-4 h-4 text-red-600" />
+                    )}
+                    <span className={`text-sm font-semibold ${collectionChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {Math.abs(collectionChange).toFixed(1)}%
+                    </span>
+                    <span className="text-xs text-gray-500">vs last year</span>
+                  </div>
+                )}
               </div>
 
               <div className="bg-white rounded-lg shadow-sm p-6">
@@ -171,6 +207,19 @@ function PublicAnalyticsContent() {
                   </div>
                 </div>
                 <p className="text-3xl font-bold text-gray-900">₹{totalExpense.toLocaleString()}</p>
+                {hasPrevYearData && prevYearExpense > 0 && (
+                  <div className="mt-2 flex items-center gap-1">
+                    {expenseChange >= 0 ? (
+                      <ArrowUp className="w-4 h-4 text-red-600" />
+                    ) : (
+                      <ArrowDown className="w-4 h-4 text-green-600" />
+                    )}
+                    <span className={`text-sm font-semibold ${expenseChange >= 0 ? 'text-red-600' : 'text-green-600'}`}>
+                      {Math.abs(expenseChange).toFixed(1)}%
+                    </span>
+                    <span className="text-xs text-gray-500">vs last year</span>
+                  </div>
+                )}
               </div>
 
               <div className="bg-white rounded-lg shadow-sm p-6">
@@ -183,6 +232,19 @@ function PublicAnalyticsContent() {
                 <p className={`text-3xl font-bold ${netBalance >= 0 ? "text-blue-600" : "text-orange-600"}`}>
                   ₹{netBalance.toLocaleString()}
                 </p>
+                {hasPrevYearData && prevYearNetBalance !== 0 && (
+                  <div className="mt-2 flex items-center gap-1">
+                    {netBalanceChange >= 0 ? (
+                      <ArrowUp className="w-4 h-4 text-green-600" />
+                    ) : (
+                      <ArrowDown className="w-4 h-4 text-red-600" />
+                    )}
+                    <span className={`text-sm font-semibold ${netBalanceChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {Math.abs(netBalanceChange).toFixed(1)}%
+                    </span>
+                    <span className="text-xs text-gray-500">vs last year</span>
+                  </div>
+                )}
               </div>
 
               <div className="bg-white rounded-lg shadow-sm p-6">
@@ -501,7 +563,7 @@ function PublicAnalyticsContent() {
         if (collectionsByGroup.length === 0) return null
         return (
           <div key={card.id} className="col-span-full lg:col-span-1">
-            <PieChart data={collectionsByGroup} title="Collections by Group" colors={COLORS} />
+            <DonutChart data={collectionsByGroup} title="Collections by Group" colors={COLORS} />
           </div>
         )
 
@@ -509,7 +571,7 @@ function PublicAnalyticsContent() {
         if (collectionsByMode.length === 0) return null
         return (
           <div key={card.id} className="col-span-full lg:col-span-1">
-            <PieChart data={collectionsByMode} title="Collections by Mode" colors={COLORS} />
+            <HorizontalBarChart data={collectionsByMode} title="Collections by Mode" colors={COLORS} />
           </div>
         )
 
@@ -525,7 +587,7 @@ function PublicAnalyticsContent() {
         if (expensesByMode.length === 0) return null
         return (
           <div key={card.id} className="col-span-full lg:col-span-1">
-            <PieChart data={expensesByMode} title="Expenses by Mode" colors={COLORS} />
+            <RadialBarChart data={expensesByMode} title="Expenses by Mode" colors={COLORS} />
           </div>
         )
 
@@ -534,6 +596,105 @@ function PublicAnalyticsContent() {
         return (
           <div key={card.id} className="col-span-full lg:col-span-1">
             <TopDonatorsChart collections={collections} topN={topDonatorsCount} />
+          </div>
+        )
+
+      case 'average_donation_per_donor':
+        if (collections.length === 0) return null
+        return (
+          <div key={card.id} className="col-span-full lg:col-span-1">
+            <div className="bg-white rounded-lg shadow-sm p-6 h-full">
+              <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <Users className="w-5 h-5 text-blue-600" />
+                Average Donation Per Donor
+              </h2>
+              <div className="space-y-6">
+                <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
+                  <p className="text-sm text-gray-600 mb-2">Average per Donor</p>
+                  <p className="text-4xl font-bold text-blue-600">₹{averageDonationData.averageDonation.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-4 bg-gray-50 rounded-lg">
+                    <p className="text-xs text-gray-600 mb-1">Total Donors</p>
+                    <p className="text-2xl font-bold text-gray-900">{averageDonationData.totalDonors}</p>
+                  </div>
+                  <div className="p-4 bg-gray-50 rounded-lg">
+                    <p className="text-xs text-gray-600 mb-1">Total Amount</p>
+                    <p className="text-2xl font-bold text-gray-900">₹{averageDonationData.totalAmount.toLocaleString()}</p>
+                  </div>
+                </div>
+                <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-700">Collection per Donor Ratio</span>
+                    <span className="text-lg font-semibold text-green-600">
+                      {averageDonationData.totalDonors > 0 
+                        ? `1:${(averageDonationData.totalAmount / averageDonationData.totalDonors / 100).toFixed(1)}`
+                        : 'N/A'
+                      }
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+
+      case 'collection_vs_expense_comparison':
+        if (collectionVsExpenseData.length === 0) return null
+        return (
+          <div key={card.id} className="col-span-full lg:col-span-1">
+            <Card className="h-full">
+              <CardHeader>
+                <CardTitle>Collection vs Expense Over Time</CardTitle>
+                <CardDescription>Daily comparison of collections and expenses</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ChartContainer
+                  config={{
+                    collection: { label: "Collection", color: "#10b981" },
+                    expense: { label: "Expense", color: "#ef4444" },
+                  }}
+                  className="h-[300px]"
+                >
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={collectionVsExpenseData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="date" angle={-45} textAnchor="end" height={80} />
+                      <YAxis />
+                      <ChartTooltip content={<ChartTooltipContent />} />
+                      <Legend />
+                      <Line 
+                        type="monotone" 
+                        dataKey="collection" 
+                        stroke="#10b981" 
+                        strokeWidth={2}
+                        name="Collection"
+                        dot={{ fill: "#10b981", r: 4 }}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="expense" 
+                        stroke="#ef4444" 
+                        strokeWidth={2}
+                        name="Expense"
+                        dot={{ fill: "#ef4444", r: 4 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
+              </CardContent>
+            </Card>
+          </div>
+        )
+
+      case 'daily_collection_expense_bidirectional':
+        if (collectionVsExpenseData.length === 0) return null
+        return (
+          <div key={card.id} className="col-span-full lg:col-span-1">
+            <BidirectionalBarChart 
+              data={collectionVsExpenseData} 
+              title="Daily Collection & Expense" 
+            />
           </div>
         )
 
