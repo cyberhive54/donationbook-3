@@ -254,7 +254,7 @@ function AdminPageContent() {
       } else {
         console.log('[Admin Page] Skipping activity fetch:', {
           session_type: session?.type,
-          has_admin_id: !!session?.adminId
+          has_admin_id: session?.type === 'admin' ? !!session.adminId : false
         })
       }
 
@@ -1862,24 +1862,31 @@ function AdminPageContent() {
                 <div className="theme-card bg-white rounded-lg shadow-md p-6">
                   <h3 className="text-lg font-bold text-gray-800 mb-4">Media Download Control</h3>
                   <div className="space-y-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3">
-                          <Switch
-                            checked={allowMediaDownload}
-                            onCheckedChange={setAllowMediaDownload}
-                          />
-                          <span className="text-sm font-medium text-gray-700">Allow visitors to download media (festival-wide)</span>
+                    <div className="flex flex-col gap-4">
+                      <div className="flex items-start gap-4">
+                        <Switch
+                          checked={allowMediaDownload}
+                          onCheckedChange={setAllowMediaDownload}
+                          className="mt-1"
+                        />
+                        <div className="flex-1">
+                          <label className="text-sm font-medium text-gray-700 block mb-1">
+                            Allow visitors to download media (festival-wide)
+                          </label>
+                          <p className="text-xs text-gray-500">
+                            When disabled, visitors cannot download any media from showcase
+                          </p>
                         </div>
-                        <p className="text-xs text-gray-500 mt-1 ml-14">When disabled, visitors cannot download any media from showcase</p>
                       </div>
-                      <button
-                        onClick={handleSaveMediaDownload}
-                        disabled={isSavingMediaDownload}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex-shrink-0 self-start sm:self-auto"
-                      >
-                        {isSavingMediaDownload ? "Saving..." : "Save"}
-                      </button>
+                      <div className="flex justify-end pt-2 border-t border-gray-200">
+                        <button
+                          onClick={handleSaveMediaDownload}
+                          disabled={isSavingMediaDownload}
+                          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                        >
+                          {isSavingMediaDownload ? "Saving..." : "Save Changes"}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
