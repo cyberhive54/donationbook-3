@@ -1523,71 +1523,72 @@ function AdminPageContent() {
 
                     <div className="theme-card bg-white rounded-lg shadow-md p-6">
                       <h3 className="text-lg font-bold text-gray-800 mb-4">Title Style Settings</h3>
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Title Size</label>
-                        <select
-                          value={titleStyleSettings.title_size}
-                          onChange={(e) => setTitleStyleSettings({ ...titleStyleSettings, title_size: e.target.value })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                          <option value="text-2xl">Small</option>
-                          <option value="text-3xl">Medium</option>
-                          <option value="text-4xl">Large</option>
-                          <option value="text-5xl">Extra Large</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Title Weight</label>
-                        <select
-                          value={titleStyleSettings.title_weight}
-                          onChange={(e) => setTitleStyleSettings({ ...titleStyleSettings, title_weight: e.target.value })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                          <option value="font-normal">Normal</option>
-                          <option value="font-semibold">Semibold</option>
-                          <option value="font-bold">Bold</option>
-                        </select>
-                      </div>
-                    </div>
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Title Size</label>
+                            <select
+                              value={titleStyleSettings.title_size}
+                              onChange={(e) => setTitleStyleSettings({ ...titleStyleSettings, title_size: e.target.value })}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                              <option value="text-2xl">Small</option>
+                              <option value="text-3xl">Medium</option>
+                              <option value="text-4xl">Large</option>
+                              <option value="text-5xl">Extra Large</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Title Weight</label>
+                            <select
+                              value={titleStyleSettings.title_weight}
+                              onChange={(e) => setTitleStyleSettings({ ...titleStyleSettings, title_weight: e.target.value })}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                              <option value="font-normal">Normal</option>
+                              <option value="font-semibold">Semibold</option>
+                              <option value="font-bold">Bold</option>
+                            </select>
+                          </div>
+                        </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Title Alignment</label>
-                        <select
-                          value={titleStyleSettings.title_align}
-                          onChange={(e) => setTitleStyleSettings({ ...titleStyleSettings, title_align: e.target.value })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                          <option value="text-left">Left</option>
-                          <option value="text-center">Center</option>
-                          <option value="text-right">Right</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Title Color</label>
-                        <input
-                          type="color"
-                          value={titleStyleSettings.title_color}
-                          onChange={(e) => setTitleStyleSettings({ ...titleStyleSettings, title_color: e.target.value })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-10"
-                        />
-                      </div>
-                    </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Title Alignment</label>
+                            <select
+                              value={titleStyleSettings.title_align}
+                              onChange={(e) => setTitleStyleSettings({ ...titleStyleSettings, title_align: e.target.value })}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                              <option value="text-left">Left</option>
+                              <option value="text-center">Center</option>
+                              <option value="text-right">Right</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Title Color</label>
+                            <input
+                              type="color"
+                              value={titleStyleSettings.title_color}
+                              onChange={(e) => setTitleStyleSettings({ ...titleStyleSettings, title_color: e.target.value })}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-10"
+                            />
+                          </div>
+                        </div>
 
-                    <div className="flex justify-end">
-                      <button
-                        onClick={handleSaveTitleStyle}
-                        disabled={isSavingTitleStyle}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                      >
-                        {isSavingTitleStyle ? "Saving..." : "Save Title Style"}
-                      </button>
+                        <div className="flex justify-end">
+                          <button
+                            onClick={handleSaveTitleStyle}
+                            disabled={isSavingTitleStyle}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                          >
+                            {isSavingTitleStyle ? "Saving..." : "Save Title Style"}
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
 
                 {/* Analytics Sub-tab */}
                 {currentSubTab === "analytics" && (
