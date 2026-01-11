@@ -1142,7 +1142,8 @@ function SuperAdminDashboardContent() {
                           </thead>
                           <tbody className="divide-y divide-gray-200">
                             {filteredAdmins.map((admin) => {
-                              const isDefaultAdmin = !admin.created_by || admin.created_by === null;
+                              const isDefaultAdmin = !admin.created_by || admin.created_by === null || admin.created_by === '';
+                              const isSuperAdminCreated = admin.created_by === 'SUPER_ADMIN';
                               return (
                                 <tr key={admin.admin_id} className="hover:bg-gray-50">
                                   <td className="px-4 py-3 text-sm font-mono text-gray-900">{admin.admin_code}</td>
@@ -1151,6 +1152,10 @@ function SuperAdminDashboardContent() {
                                     {isDefaultAdmin ? (
                                       <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
                                         Default
+                                      </span>
+                                    ) : isSuperAdminCreated ? (
+                                      <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
+                                        Super Admin
                                       </span>
                                     ) : (
                                       <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">
@@ -1936,6 +1941,7 @@ function SuperAdminDashboardContent() {
         onSuccess={fetchData}
         festivalId={festival?.id || ""}
         festivalCode={festival?.code || ""}
+        superAdminId="SUPER_ADMIN"
       />
 
       <EditAdminModal
