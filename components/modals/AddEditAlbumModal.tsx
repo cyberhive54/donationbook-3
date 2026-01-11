@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
 import { Album, Festival } from '@/types';
 import { useSession } from '@/lib/hooks/useSession';
+import { Switch } from '@/components/ui/switch';
 
 interface AddEditAlbumModalProps {
   isOpen: boolean;
@@ -193,16 +194,14 @@ export default function AddEditAlbumModal({ isOpen, onClose, onSuccess, festival
           </div>
           
           <div>
-            <label className={`flex items-center gap-2 ${festival?.allow_media_download === false ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}>
-              <input 
-                type="checkbox" 
-                checked={allowDownload} 
-                onChange={(e) => setAllowDownload(e.target.checked)}
+            <div className={`flex items-center gap-3 ${festival?.allow_media_download === false ? 'opacity-60 cursor-not-allowed' : ''}`}>
+              <Switch
+                checked={allowDownload}
+                onCheckedChange={setAllowDownload}
                 disabled={festival?.allow_media_download === false}
-                className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
               />
               <span className="text-sm font-medium text-gray-700">Allow visitors to download media from this album</span>
-            </label>
+            </div>
             {festival?.allow_media_download === false ? (
               <div className="text-xs text-red-600 mt-1 font-medium">
                 ⚠️ Festival-wide downloads are disabled. Enable them in Festival Settings first.

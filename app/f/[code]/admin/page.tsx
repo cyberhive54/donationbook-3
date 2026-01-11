@@ -27,6 +27,7 @@ import { InfoSkeleton, CardSkeleton, TableSkeleton } from "@/components/Loader"
 import toast from "react-hot-toast"
 import { Plus, Edit, Trash2, Eye, EyeOff, HardDrive, Key, LogOut, ExternalLink, Search, ChevronLeft, ChevronRight } from "lucide-react"
 import { useMemo } from "react"
+import { Switch } from "@/components/ui/switch"
 
 import { getThemeStyles, getThemeClasses } from "@/lib/theme"
 import { useSession } from "@/lib/hooks/useSession"
@@ -123,8 +124,11 @@ function AdminPageContent() {
   const [visitorRecordsPerPage] = useState(10)
 
   useEffect(() => {
-    if (code) fetchData()
-  }, [code])
+    if (code) {
+      fetchData()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [code, session])
 
   useEffect(() => {
     if (session?.type === "admin" && session.adminId) {
@@ -223,13 +227,35 @@ function AdminPageContent() {
       setAllowMediaDownload(fest.allow_media_download !== false)
 
       if (session?.type === "admin" && session.adminId) {
-        const { data: activityData } = await supabase
+        console.log('[Admin Page] Fetching admin activity:', {
+          festival_id: fest.id,
+          admin_id: session.adminId,
+          session_type: session.type
+        })
+        
+        const { data: activityData, error: activityErr } = await supabase
           .from("admin_activity_log")
           .select("*")
           .eq("festival_id", fest.id)
           .eq("admin_id", session.adminId)
           .order("timestamp", { ascending: false })
+        
+        console.log('[Admin Page] Activity data fetched:', {
+          count: activityData?.length || 0,
+          error: activityErr,
+          sample: activityData?.slice(0, 2)
+        })
+        
+        if (activityErr) {
+          console.error("Error fetching admin activity:", activityErr)
+          toast.error("Failed to fetch activity logs")
+        }
         setOwnActivity(activityData || [])
+      } else {
+        console.log('[Admin Page] Skipping activity fetch:', {
+          session_type: session?.type,
+          has_admin_id: session?.type === 'admin' ? !!session.adminId : false
+        })
       }
 
       const { data: adminsData } = await supabase
@@ -1445,44 +1471,58 @@ function AdminPageContent() {
           <div className="max-w-7xl mx-auto px-4 py-6">
             {currentTab === "dashboard" && (
               <div className="space-y-6">
-                <BasicInfo
-                  basicInfo={
-                    {
-                      id: festival.id,
-                      event_name: festival.event_name,
-                      organiser: festival.organiser || "",
-                      mentor: festival.mentor || "",
-                      guide: festival.guide || "",
-                      event_start_date: festival.event_start_date,
-                      event_end_date: festival.event_end_date,
-                      location: festival.location,
-                      other_data: festival.other_data,
-                    } as any
-                  }
-                  festival={festival}
-                  showEditButton
-                  onEdit={() => setIsFestivalModalOpen(true)}
-                />
-                
-                <StatsCards stats={stats} />
-
-                <div className="theme-card bg-white rounded-lg shadow-md p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-bold text-gray-800">Analytics Configuration</h3>
+                {/* Sub-tabs for Dashboard */}
+                <div className="bg-white border-b border-gray-200 rounded-t-lg">
+                  <div className="flex overflow-x-auto">
                     <button
-                      onClick={() => setIsAnalyticsConfigOpen(true)}
-                      className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm"
+                      onClick={() => handleSubTabChange("info")}
+                      className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
+                        (currentSubTab === "info" || !currentSubTab)
+                          ? "border-blue-600 text-blue-600"
+                          : "border-transparent text-gray-600 hover:text-gray-800"
+                      }`}
                     >
-                      Open Analytics Config
+                      Info
+                    </button>
+                    <button
+                      onClick={() => handleSubTabChange("analytics")}
+                      className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
+                        currentSubTab === "analytics"
+                          ? "border-blue-600 text-blue-600"
+                          : "border-transparent text-gray-600 hover:text-gray-800"
+                      }`}
+                    >
+                      Analytics
                     </button>
                   </div>
-                  <p className="text-sm text-gray-600">
-                    Configure collection targets, donation buckets, and time-of-day analytics for better insights.
-                  </p>
                 </div>
 
-                <div className="theme-card bg-white rounded-lg shadow-md p-6">
-                  <h3 className="text-lg font-bold text-gray-800 mb-4">Title Style Settings</h3>
+                {/* Info Sub-tab */}
+                {(currentSubTab === "info" || !currentSubTab) && (
+                  <div className="space-y-6">
+                    <BasicInfo
+                      basicInfo={
+                        {
+                          id: festival.id,
+                          event_name: festival.event_name,
+                          organiser: festival.organiser || "",
+                          mentor: festival.mentor || "",
+                          guide: festival.guide || "",
+                          event_start_date: festival.event_start_date,
+                          event_end_date: festival.event_end_date,
+                          location: festival.location,
+                          other_data: festival.other_data,
+                        } as any
+                      }
+                      festival={festival}
+                      showEditButton
+                      onEdit={() => setIsFestivalModalOpen(true)}
+                    />
+                    
+                    <StatsCards stats={stats} />
+
+                    <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                      <h3 className="text-lg font-bold text-gray-800 mb-4">Title Style Settings</h3>
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
@@ -1547,6 +1587,25 @@ function AdminPageContent() {
                     </div>
                   </div>
                 </div>
+              )}
+
+                {/* Analytics Sub-tab */}
+                {currentSubTab === "analytics" && (
+                  <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-bold text-gray-800">Analytics Configuration</h3>
+                      <button
+                        onClick={() => setIsAnalyticsConfigOpen(true)}
+                        className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm"
+                      >
+                        Open Analytics Config
+                      </button>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      Configure collection targets, donation buckets, and time-of-day analytics for better insights.
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 
@@ -1836,26 +1895,31 @@ function AdminPageContent() {
                 <div className="theme-card bg-white rounded-lg shadow-md p-6">
                   <h3 className="text-lg font-bold text-gray-800 mb-4">Media Download Control</h3>
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={allowMediaDownload}
-                            onChange={(e) => setAllowMediaDownload(e.target.checked)}
-                            className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                          />
-                          <span className="text-sm font-medium text-gray-700">Allow visitors to download media (festival-wide)</span>
-                        </label>
-                        <p className="text-xs text-gray-500 mt-1 ml-6">When disabled, visitors cannot download any media from showcase</p>
+                    <div className="flex flex-col gap-4">
+                      <div className="flex items-start gap-4">
+                        <Switch
+                          checked={allowMediaDownload}
+                          onCheckedChange={setAllowMediaDownload}
+                          className="mt-1"
+                        />
+                        <div className="flex-1">
+                          <label className="text-sm font-medium text-gray-700 block mb-1">
+                            Allow visitors to download media (festival-wide)
+                          </label>
+                          <p className="text-xs text-gray-500">
+                            When disabled, visitors cannot download any media from showcase
+                          </p>
+                        </div>
                       </div>
-                      <button
-                        onClick={handleSaveMediaDownload}
-                        disabled={isSavingMediaDownload}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                      >
-                        {isSavingMediaDownload ? "Saving..." : "Save"}
-                      </button>
+                      <div className="flex justify-end pt-2 border-t border-gray-200">
+                        <button
+                          onClick={handleSaveMediaDownload}
+                          disabled={isSavingMediaDownload}
+                          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                        >
+                          {isSavingMediaDownload ? "Saving..." : "Save Changes"}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
