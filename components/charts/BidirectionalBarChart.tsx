@@ -97,31 +97,6 @@ export default function BidirectionalBarChart({ data, title }: BidirectionalBarC
               <Bar dataKey="expense" fill="#ef4444" radius={[0, 0, 8, 8]} />
             </BarChart>
           </ResponsiveContainer>
-          
-          <div className="mt-6 grid grid-cols-3 gap-4">
-            <div className="p-3 bg-green-50 rounded-lg border border-green-200">
-              <p className="text-xs text-gray-600 mb-1">Total Collection</p>
-              <p className="text-lg font-bold text-green-600">
-                ₹{data.reduce((sum, d) => sum + d.collection, 0).toLocaleString()}
-              </p>
-            </div>
-            <div className="p-3 bg-red-50 rounded-lg border border-red-200">
-              <p className="text-xs text-gray-600 mb-1">Total Expense</p>
-              <p className="text-lg font-bold text-red-600">
-                ₹{data.reduce((sum, d) => sum + d.expense, 0).toLocaleString()}
-              </p>
-            </div>
-            <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-              <p className="text-xs text-gray-600 mb-1">Net Balance</p>
-              <p className={`text-lg font-bold ${
-                data.reduce((sum, d) => sum + (d.collection - d.expense), 0) >= 0 
-                  ? 'text-blue-600' 
-                  : 'text-orange-600'
-              }`}>
-                ₹{data.reduce((sum, d) => sum + (d.collection - d.expense), 0).toLocaleString()}
-              </p>
-            </div>
-          </div>
         </>
       )}
     </div>

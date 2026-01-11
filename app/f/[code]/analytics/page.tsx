@@ -8,7 +8,7 @@ import PasswordGate from "@/components/PasswordGate"
 import BottomNav from "@/components/BottomNav"
 import GlobalSessionBar from "@/components/GlobalSessionBar"
 import { useSession } from "@/lib/hooks/useSession"
-import { TrendingUp, TrendingDown, Target, Calendar, Users, FileText, BarChart3 } from "lucide-react"
+import { TrendingUp, TrendingDown, Target, Calendar, Users, FileText, BarChart3, ArrowUp, ArrowDown } from "lucide-react"
 import toast from "react-hot-toast"
 import {
   BarChart,
@@ -164,6 +164,16 @@ function PublicAnalyticsContent() {
 
     switch (card.card_type) {
       case 'festival_snapshot':
+        const prevYearCollection = analyticsConfig?.previous_year_total_collection || 0
+        const prevYearExpense = analyticsConfig?.previous_year_total_expense || 0
+        const prevYearNetBalance = prevYearCollection - prevYearExpense
+        
+        const hasPrevYearData = prevYearCollection > 0 || prevYearExpense > 0
+        
+        const collectionChange = prevYearCollection > 0 ? ((totalCollection - prevYearCollection) / prevYearCollection) * 100 : 0
+        const expenseChange = prevYearExpense > 0 ? ((totalExpense - prevYearExpense) / prevYearExpense) * 100 : 0
+        const netBalanceChange = prevYearNetBalance !== 0 ? ((netBalance - prevYearNetBalance) / Math.abs(prevYearNetBalance)) * 100 : 0
+        
         return (
           <div key={card.id} className="col-span-full">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -175,6 +185,19 @@ function PublicAnalyticsContent() {
                   </div>
                 </div>
                 <p className="text-3xl font-bold text-gray-900">₹{totalCollection.toLocaleString()}</p>
+                {hasPrevYearData && prevYearCollection > 0 && (
+                  <div className="mt-2 flex items-center gap-1">
+                    {collectionChange >= 0 ? (
+                      <ArrowUp className="w-4 h-4 text-green-600" />
+                    ) : (
+                      <ArrowDown className="w-4 h-4 text-red-600" />
+                    )}
+                    <span className={`text-sm font-semibold ${collectionChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {Math.abs(collectionChange).toFixed(1)}%
+                    </span>
+                    <span className="text-xs text-gray-500">vs last year</span>
+                  </div>
+                )}
               </div>
 
               <div className="bg-white rounded-lg shadow-sm p-6">
@@ -185,6 +208,19 @@ function PublicAnalyticsContent() {
                   </div>
                 </div>
                 <p className="text-3xl font-bold text-gray-900">₹{totalExpense.toLocaleString()}</p>
+                {hasPrevYearData && prevYearExpense > 0 && (
+                  <div className="mt-2 flex items-center gap-1">
+                    {expenseChange >= 0 ? (
+                      <ArrowUp className="w-4 h-4 text-red-600" />
+                    ) : (
+                      <ArrowDown className="w-4 h-4 text-green-600" />
+                    )}
+                    <span className={`text-sm font-semibold ${expenseChange >= 0 ? 'text-red-600' : 'text-green-600'}`}>
+                      {Math.abs(expenseChange).toFixed(1)}%
+                    </span>
+                    <span className="text-xs text-gray-500">vs last year</span>
+                  </div>
+                )}
               </div>
 
               <div className="bg-white rounded-lg shadow-sm p-6">
@@ -197,6 +233,19 @@ function PublicAnalyticsContent() {
                 <p className={`text-3xl font-bold ${netBalance >= 0 ? "text-blue-600" : "text-orange-600"}`}>
                   ₹{netBalance.toLocaleString()}
                 </p>
+                {hasPrevYearData && prevYearNetBalance !== 0 && (
+                  <div className="mt-2 flex items-center gap-1">
+                    {netBalanceChange >= 0 ? (
+                      <ArrowUp className="w-4 h-4 text-green-600" />
+                    ) : (
+                      <ArrowDown className="w-4 h-4 text-red-600" />
+                    )}
+                    <span className={`text-sm font-semibold ${netBalanceChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {Math.abs(netBalanceChange).toFixed(1)}%
+                    </span>
+                    <span className="text-xs text-gray-500">vs last year</span>
+                  </div>
+                )}
               </div>
 
               <div className="bg-white rounded-lg shadow-sm p-6">
