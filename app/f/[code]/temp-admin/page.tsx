@@ -35,7 +35,7 @@ function AdminPageContent() {
   const code = (params?.code as string) || ""
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { session, clearSession } = useSession(code)
+  const { session, logout: clearSession } = useSession(code)
 
   const currentTab = searchParams?.get("tab") || "dashboard"
   const currentSubTab = searchParams?.get("sub-tab") || ""
