@@ -356,49 +356,27 @@ function HelpSuperAdminStructure({ festivalCode }: { festivalCode: string }) {
             
             {!collapsed[`super-tab-${idx}`] && (
               <div className="p-4 bg-white">
-                {tab.subTabs ? (
-                  tab.subTabs.map((subTab, subIdx) => (
-                    <div key={subIdx} className="mb-3 ml-4 border-l-2 border-purple-300 pl-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h4 className="font-semibold text-gray-800">{subTab.name}</h4>
-                        <a 
-                          href={subTab.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-purple-600 hover:text-purple-800"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                        </a>
-                      </div>
-                      {subTab.sections.map((section, secIdx) => (
-                        <div key={secIdx} className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                          <p className="text-sm font-medium text-gray-700">{section.name}</p>
-                          <p className="text-xs text-gray-500 mt-1">{section.desc}</p>
-                        </div>
-                      ))}
-                    </div>
-                  ))
-                ) : (
-                  <div className="ml-4">
-                    <div className="flex items-center gap-2 mb-3">
+                {tab.subTabs.map((subTab, subIdx) => (
+                  <div key={subIdx} className="mb-3 ml-4 border-l-2 border-purple-300 pl-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <h4 className="font-semibold text-gray-800">{subTab.name}</h4>
                       <a 
-                        href={tab.url}
+                        href={subTab.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-purple-600 hover:text-purple-800 flex items-center gap-1"
+                        className="text-purple-600 hover:text-purple-800"
                       >
-                        <span className="font-medium">Open {tab.title}</span>
                         <ExternalLink className="w-4 h-4" />
                       </a>
                     </div>
-                    {tab.sections?.map((section, secIdx) => (
-                      <div key={secIdx} className="mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                    {subTab.sections.map((section, secIdx) => (
+                      <div key={secIdx} className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
                         <p className="text-sm font-medium text-gray-700">{section.name}</p>
                         <p className="text-xs text-gray-500 mt-1">{section.desc}</p>
                       </div>
                     ))}
                   </div>
-                )}
+                ))}
               </div>
             )}
           </div>
