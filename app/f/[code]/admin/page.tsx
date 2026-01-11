@@ -1471,44 +1471,58 @@ function AdminPageContent() {
           <div className="max-w-7xl mx-auto px-4 py-6">
             {currentTab === "dashboard" && (
               <div className="space-y-6">
-                <BasicInfo
-                  basicInfo={
-                    {
-                      id: festival.id,
-                      event_name: festival.event_name,
-                      organiser: festival.organiser || "",
-                      mentor: festival.mentor || "",
-                      guide: festival.guide || "",
-                      event_start_date: festival.event_start_date,
-                      event_end_date: festival.event_end_date,
-                      location: festival.location,
-                      other_data: festival.other_data,
-                    } as any
-                  }
-                  festival={festival}
-                  showEditButton
-                  onEdit={() => setIsFestivalModalOpen(true)}
-                />
-                
-                <StatsCards stats={stats} />
-
-                <div className="theme-card bg-white rounded-lg shadow-md p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-bold text-gray-800">Analytics Configuration</h3>
+                {/* Sub-tabs for Dashboard */}
+                <div className="bg-white border-b border-gray-200 rounded-t-lg">
+                  <div className="flex overflow-x-auto">
                     <button
-                      onClick={() => setIsAnalyticsConfigOpen(true)}
-                      className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm"
+                      onClick={() => handleSubTabChange("info")}
+                      className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
+                        (currentSubTab === "info" || !currentSubTab)
+                          ? "border-blue-600 text-blue-600"
+                          : "border-transparent text-gray-600 hover:text-gray-800"
+                      }`}
                     >
-                      Open Analytics Config
+                      Info
+                    </button>
+                    <button
+                      onClick={() => handleSubTabChange("analytics")}
+                      className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
+                        currentSubTab === "analytics"
+                          ? "border-blue-600 text-blue-600"
+                          : "border-transparent text-gray-600 hover:text-gray-800"
+                      }`}
+                    >
+                      Analytics
                     </button>
                   </div>
-                  <p className="text-sm text-gray-600">
-                    Configure collection targets, donation buckets, and time-of-day analytics for better insights.
-                  </p>
                 </div>
 
-                <div className="theme-card bg-white rounded-lg shadow-md p-6">
-                  <h3 className="text-lg font-bold text-gray-800 mb-4">Title Style Settings</h3>
+                {/* Info Sub-tab */}
+                {(currentSubTab === "info" || !currentSubTab) && (
+                  <div className="space-y-6">
+                    <BasicInfo
+                      basicInfo={
+                        {
+                          id: festival.id,
+                          event_name: festival.event_name,
+                          organiser: festival.organiser || "",
+                          mentor: festival.mentor || "",
+                          guide: festival.guide || "",
+                          event_start_date: festival.event_start_date,
+                          event_end_date: festival.event_end_date,
+                          location: festival.location,
+                          other_data: festival.other_data,
+                        } as any
+                      }
+                      festival={festival}
+                      showEditButton
+                      onEdit={() => setIsFestivalModalOpen(true)}
+                    />
+                    
+                    <StatsCards stats={stats} />
+
+                    <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                      <h3 className="text-lg font-bold text-gray-800 mb-4">Title Style Settings</h3>
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
@@ -1570,9 +1584,28 @@ function AdminPageContent() {
                       >
                         {isSavingTitleStyle ? "Saving..." : "Save Title Style"}
                       </button>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
+
+                {/* Analytics Sub-tab */}
+                {currentSubTab === "analytics" && (
+                  <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-bold text-gray-800">Analytics Configuration</h3>
+                      <button
+                        onClick={() => setIsAnalyticsConfigOpen(true)}
+                        className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm"
+                      >
+                        Open Analytics Config
+                      </button>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      Configure collection targets, donation buckets, and time-of-day analytics for better insights.
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 
