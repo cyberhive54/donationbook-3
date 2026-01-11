@@ -27,6 +27,7 @@ import { InfoSkeleton, CardSkeleton, TableSkeleton } from "@/components/Loader"
 import toast from "react-hot-toast"
 import { Plus, Edit, Trash2, Eye, EyeOff, HardDrive, Key, LogOut, ExternalLink, Search, ChevronLeft, ChevronRight } from "lucide-react"
 import { useMemo } from "react"
+import { Switch } from "@/components/ui/switch"
 
 import { getThemeStyles, getThemeClasses } from "@/lib/theme"
 import { useSession } from "@/lib/hooks/useSession"
@@ -223,12 +224,17 @@ function AdminPageContent() {
       setAllowMediaDownload(fest.allow_media_download !== false)
 
       if (session?.type === "admin" && session.adminId) {
-        const { data: activityData } = await supabase
+        const { data: activityData, error: activityErr } = await supabase
           .from("admin_activity_log")
           .select("*")
           .eq("festival_id", fest.id)
           .eq("admin_id", session.adminId)
           .order("timestamp", { ascending: false })
+        
+        if (activityErr) {
+          console.error("Error fetching admin activity:", activityErr)
+          toast.error("Failed to fetch activity logs")
+        }
         setOwnActivity(activityData || [])
       }
 
@@ -1837,17 +1843,15 @@ function AdminPageContent() {
                   <h3 className="text-lg font-bold text-gray-800 mb-4">Media Download Control</h3>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <div>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="checkbox"
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3">
+                          <Switch
                             checked={allowMediaDownload}
-                            onChange={(e) => setAllowMediaDownload(e.target.checked)}
-                            className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                            onCheckedChange={setAllowMediaDownload}
                           />
                           <span className="text-sm font-medium text-gray-700">Allow visitors to download media (festival-wide)</span>
-                        </label>
-                        <p className="text-xs text-gray-500 mt-1 ml-6">When disabled, visitors cannot download any media from showcase</p>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1 ml-14">When disabled, visitors cannot download any media from showcase</p>
                       </div>
                       <button
                         onClick={handleSaveMediaDownload}
