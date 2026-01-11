@@ -25,12 +25,396 @@ import ManageUserPasswordsModal from "@/components/modals/ManageUserPasswordsMod
 import AnalyticsConfigModal from "@/components/modals/AnalyticsConfigModal"
 import { InfoSkeleton, CardSkeleton, TableSkeleton } from "@/components/Loader"
 import toast from "react-hot-toast"
-import { Plus, Edit, Trash2, Eye, EyeOff, HardDrive, Key, LogOut, ExternalLink, Search, ChevronLeft, ChevronRight } from "lucide-react"
+import { Plus, Edit, Trash2, Eye, EyeOff, HardDrive, Key, LogOut, ExternalLink, Search, ChevronLeft, ChevronRight, HelpCircle, ChevronDown, ChevronUp } from "lucide-react"
 import { useMemo } from "react"
 import { Switch } from "@/components/ui/switch"
 
 import { getThemeStyles, getThemeClasses } from "@/lib/theme"
 import { useSession } from "@/lib/hooks/useSession"
+
+// Help Structure Components
+function HelpAdminStructure({ festivalCode }: { festivalCode: string }) {
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({})
+
+  const toggleSection = (key: string) => {
+    setCollapsed(prev => ({ ...prev, [key]: !prev[key] }))
+  }
+
+  const adminStructure = [
+    {
+      title: "Dashboard",
+      icon: "📊",
+      subTabs: [
+        {
+          name: "Info",
+          url: `/f/${festivalCode}/admin?tab=dashboard&sub-tab=info`,
+          sections: [
+            { name: "Festival Information", desc: "View event details like name, organiser, dates, location" },
+            { name: "Statistics Cards", desc: "Total collection, expenses, donations, and balance" },
+            { name: "Title Style Settings", desc: "Customize title size, weight, alignment, and color" }
+          ]
+        },
+        {
+          name: "Analytics",
+          url: `/f/${festivalCode}/admin?tab=dashboard&sub-tab=analytics`,
+          sections: [
+            { name: "Analytics Configuration", desc: "Configure collection targets, donation buckets, and time-of-day analytics" }
+          ]
+        }
+      ]
+    },
+    {
+      title: "Transaction",
+      icon: "💰",
+      subTabs: [
+        {
+          name: "Collection",
+          url: `/f/${festivalCode}/admin?tab=transaction&sub-tab=collection`,
+          sections: [
+            { name: "Add Collection", desc: "Record new donations/collections" },
+            { name: "Collections Table", desc: "View, edit, and delete collections with filtering" },
+            { name: "Export/Import", desc: "Export to JSON or import collections from JSON" }
+          ]
+        },
+        {
+          name: "Expenses",
+          url: `/f/${festivalCode}/admin?tab=transaction&sub-tab=expenses`,
+          sections: [
+            { name: "Add Expense", desc: "Record new expenses" },
+            { name: "Expenses Table", desc: "View, edit, and delete expenses with filtering" },
+            { name: "Export/Import", desc: "Export to JSON or import expenses from JSON" }
+          ]
+        },
+        {
+          name: "Configs",
+          url: `/f/${festivalCode}/admin?tab=transaction&sub-tab=configs`,
+          sections: [
+            { name: "Groups Management", desc: "Add/remove collection groups" },
+            { name: "Collection Modes", desc: "Manage collection payment modes (Cash, UPI, etc.)" },
+            { name: "Categories Management", desc: "Add/remove expense categories" },
+            { name: "Expense Modes", desc: "Manage expense payment modes" }
+          ]
+        }
+      ]
+    },
+    {
+      title: "Showcase",
+      icon: "🎨",
+      url: `/f/${festivalCode}/admin?tab=showcase`,
+      sections: [
+        { name: "Media Download Control", desc: "Toggle festival-wide media download permission for visitors" },
+        { name: "Album Management", desc: "Create, edit, and delete media albums" },
+        { name: "Media Upload", desc: "Upload images, videos, audio, and PDFs to albums" },
+        { name: "Storage Usage", desc: "Monitor storage consumption and limits" }
+      ]
+    },
+    {
+      title: "Settings",
+      icon: "⚙️",
+      url: `/f/${festivalCode}/admin?tab=settings`,
+      sections: [
+        { name: "Admin Password", desc: "Change your admin password" },
+        { name: "Visitor Passwords", desc: "Manage visitor access passwords (up to your limit)" },
+        { name: "Theme Settings", desc: "Customize background color, image, text color, and border color" },
+        { name: "Dark Mode", desc: "Toggle dark theme for the festival pages" }
+      ]
+    },
+    {
+      title: "Activity",
+      icon: "📝",
+      url: `/f/${festivalCode}/admin?tab=activity`,
+      sections: [
+        { name: "My Activity Log", desc: "View your personal admin actions with search and filtering" },
+        { name: "Transactions History", desc: "See all collections and expenses with admin attribution" },
+        { name: "Visitors Log", desc: "Track visitor access history and authentication methods" }
+      ]
+    }
+  ]
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Admin Dashboard Structure</h2>
+        <p className="text-sm text-gray-600 mb-4">Navigate the admin dashboard with this visual guide. Click links to open sections in a new tab.</p>
+        
+        {adminStructure.map((tab, idx) => (
+          <div key={idx} className="mb-4 border border-gray-200 rounded-lg overflow-hidden">
+            <div 
+              className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 cursor-pointer hover:from-blue-100 hover:to-blue-200 transition-colors"
+              onClick={() => toggleSection(`admin-tab-${idx}`)}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">{tab.icon}</span>
+                  <h3 className="text-lg font-bold text-gray-900">{tab.title}</h3>
+                </div>
+                {collapsed[`admin-tab-${idx}`] ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+              </div>
+            </div>
+            
+            {!collapsed[`admin-tab-${idx}`] && (
+              <div className="p-4 bg-white">
+                {tab.subTabs ? (
+                  tab.subTabs.map((subTab, subIdx) => (
+                    <div key={subIdx} className="mb-3 ml-4 border-l-2 border-blue-300 pl-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <h4 className="font-semibold text-gray-800">{subTab.name}</h4>
+                        <a 
+                          href={subTab.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
+                      </div>
+                      {subTab.sections.map((section, secIdx) => (
+                        <div key={secIdx} className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                          <p className="text-sm font-medium text-gray-700">{section.name}</p>
+                          <p className="text-xs text-gray-500 mt-1">{section.desc}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ))
+                ) : (
+                  <div className="ml-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <a 
+                        href={tab.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-800 flex items-center gap-1"
+                      >
+                        <span className="font-medium">Open {tab.title}</span>
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    </div>
+                    {tab.sections?.map((section, secIdx) => (
+                      <div key={secIdx} className="mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                        <p className="text-sm font-medium text-gray-700">{section.name}</p>
+                        <p className="text-xs text-gray-500 mt-1">{section.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function HelpSuperAdminStructure({ festivalCode }: { festivalCode: string }) {
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({})
+
+  const toggleSection = (key: string) => {
+    setCollapsed(prev => ({ ...prev, [key]: !prev[key] }))
+  }
+
+  const superAdminStructure = [
+    {
+      title: "Home",
+      icon: "🏠",
+      subTabs: [
+        {
+          name: "Info",
+          url: `/f/${festivalCode}/admin/sup/dashboard?tab=home&sub-tab=info`,
+          sections: [
+            { name: "Festival Information", desc: "View-only festival details (edit via Admin Dashboard)" },
+            { name: "Statistics Cards", desc: "Total collection, expenses, donations, and balance" }
+          ]
+        },
+        {
+          name: "Banner",
+          url: `/f/${festivalCode}/admin/sup/dashboard?tab=home&sub-tab=banner`,
+          sections: [
+            { name: "Banner Visibility Settings", desc: "Toggle visibility of organiser, guide, mentor, location, dates, duration" },
+            { name: "Admin Display Preference", desc: "Choose to display admin code or admin name" }
+          ]
+        },
+        {
+          name: "Festival Code",
+          url: `/f/${festivalCode}/admin/sup/dashboard?tab=home&sub-tab=festival-code`,
+          sections: [
+            { name: "Festival Code Management", desc: "View and update festival code (6-12 characters)" },
+            { name: "Automatic Redirect", desc: "Old code links automatically redirect to new code" }
+          ]
+        }
+      ]
+    },
+    {
+      title: "Settings",
+      icon: "⚙️",
+      subTabs: [
+        {
+          name: "Personal",
+          url: `/f/${festivalCode}/admin/sup/dashboard?tab=settings&sub-tab=personal`,
+          sections: [
+            { name: "Super Admin Password", desc: "Update super admin dashboard access password" }
+          ]
+        },
+        {
+          name: "Admin Management",
+          url: `/f/${festivalCode}/admin/sup/dashboard?tab=settings&sub-tab=admin-management`,
+          sections: [
+            { name: "Create Admin", desc: "Add new admin accounts with custom codes and passwords" },
+            { name: "Admin Search & Filters", desc: "Search by code/name, filter by status, sort by various fields" },
+            { name: "Admin Table", desc: "View all admins with type (Default/Super Admin/Regular), status, and actions" },
+            { name: "Edit/Delete Admins", desc: "Modify admin details or remove admin accounts" }
+          ]
+        },
+        {
+          name: "Media Storage",
+          url: `/f/${festivalCode}/admin/sup/dashboard?tab=settings&sub-tab=media-storage`,
+          sections: [
+            { name: "Total Storage Limit", desc: "Set festival-wide storage limit (100-10000 MB)" },
+            { name: "Max Video File Size", desc: "Configure maximum video upload size (10-500 MB)" },
+            { name: "Max File Size", desc: "Set limit for images, audio, PDFs (1-100 MB)" }
+          ]
+        },
+        {
+          name: "Analytics",
+          url: `/f/${festivalCode}/admin/sup/dashboard?tab=settings&sub-tab=analytics`,
+          sections: [
+            { name: "Analytics Cards Configuration", desc: "Manage visibility and order of analytics cards for visitors" }
+          ]
+        },
+        {
+          name: "Danger",
+          url: `/f/${festivalCode}/admin/sup/dashboard?tab=settings&sub-tab=danger`,
+          sections: [
+            { name: "Delete Festival", desc: "Permanently delete festival and all associated data (irreversible)" }
+          ]
+        }
+      ]
+    },
+    {
+      title: "Activity",
+      icon: "📝",
+      subTabs: [
+        {
+          name: "My Activity",
+          url: `/f/${festivalCode}/admin/sup/dashboard?tab=activity&sub-tab=own`,
+          sections: [
+            { name: "Super Admin Actions", desc: "Track your super admin activities with search and filtering" },
+            { name: "System Activities", desc: "View system-level operations and changes" }
+          ]
+        },
+        {
+          name: "All Transactions",
+          url: `/f/${festivalCode}/admin/sup/dashboard?tab=activity&sub-tab=transactions`,
+          sections: [
+            { name: "Combined View", desc: "See all collections and expenses in one place" },
+            { name: "Admin Attribution", desc: "Track which admin created each transaction" },
+            { name: "Transaction Management", desc: "Edit or delete any transaction with confirmation" }
+          ]
+        },
+        {
+          name: "All Visitors",
+          url: `/f/${festivalCode}/admin/sup/dashboard?tab=activity&sub-tab=visitors`,
+          sections: [
+            { name: "Visitor Access Log", desc: "Complete history of visitor logins" },
+            { name: "Authentication Details", desc: "See which admin/password was used for access" },
+            { name: "Access Method", desc: "Track login page vs direct link access" }
+          ]
+        },
+        {
+          name: "Admin Activity",
+          url: `/f/${festivalCode}/admin/sup/dashboard?tab=activity&sub-tab=admins`,
+          sections: [
+            { name: "All Admin Actions", desc: "Monitor actions from all admin accounts" },
+            { name: "Multi-level Filtering", desc: "Filter by action type and specific admin" },
+            { name: "Accountability Tracking", desc: "Full audit trail of admin operations" }
+          ]
+        }
+      ]
+    },
+    {
+      title: "Navigation",
+      icon: "🧭",
+      url: `/f/${festivalCode}/admin/sup/dashboard?tab=navigation`,
+      sections: [
+        { name: "Quick Navigation", desc: "Coming soon - Quick access to important pages" }
+      ]
+    }
+  ]
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Super Admin Dashboard Structure</h2>
+        <p className="text-sm text-gray-600 mb-4">Navigate the super admin dashboard with this visual guide. Click links to open sections in a new tab.</p>
+        
+        {superAdminStructure.map((tab, idx) => (
+          <div key={idx} className="mb-4 border border-gray-200 rounded-lg overflow-hidden">
+            <div 
+              className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 cursor-pointer hover:from-purple-100 hover:to-purple-200 transition-colors"
+              onClick={() => toggleSection(`super-tab-${idx}`)}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">{tab.icon}</span>
+                  <h3 className="text-lg font-bold text-gray-900">{tab.title}</h3>
+                </div>
+                {collapsed[`super-tab-${idx}`] ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+              </div>
+            </div>
+            
+            {!collapsed[`super-tab-${idx}`] && (
+              <div className="p-4 bg-white">
+                {tab.subTabs ? (
+                  tab.subTabs.map((subTab, subIdx) => (
+                    <div key={subIdx} className="mb-3 ml-4 border-l-2 border-purple-300 pl-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <h4 className="font-semibold text-gray-800">{subTab.name}</h4>
+                        <a 
+                          href={subTab.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-purple-600 hover:text-purple-800"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
+                      </div>
+                      {subTab.sections.map((section, secIdx) => (
+                        <div key={secIdx} className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                          <p className="text-sm font-medium text-gray-700">{section.name}</p>
+                          <p className="text-xs text-gray-500 mt-1">{section.desc}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ))
+                ) : (
+                  <div className="ml-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <a 
+                        href={tab.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-purple-600 hover:text-purple-800 flex items-center gap-1"
+                      >
+                        <span className="font-medium">Open {tab.title}</span>
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    </div>
+                    {tab.sections?.map((section, secIdx) => (
+                      <div key={secIdx} className="mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
+                        <p className="text-sm font-medium text-gray-700">{section.name}</p>
+                        <p className="text-xs text-gray-500 mt-1">{section.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 function AdminPageContent() {
   const params = useParams<{ code: string }>()
@@ -1463,6 +1847,17 @@ function AdminPageContent() {
                   >
                     Activity
                   </button>
+                  <button
+                    onClick={() => handleTabChange("help")}
+                    className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
+                      currentTab === "help"
+                        ? "border-blue-600 text-blue-600"
+                        : "border-transparent text-gray-600 hover:text-gray-800"
+                    }`}
+                  >
+                    <HelpCircle className="w-4 h-4 inline mr-1" />
+                    Help
+                  </button>
                 </div>
               </div>
             </div>
@@ -2046,30 +2441,26 @@ function AdminPageContent() {
               <div className="space-y-6">
                 <div className="bg-white border-b border-gray-200 rounded-t-lg">
                   <div className="flex overflow-x-auto">
-                    {session?.type === "admin" && (
-                      <>
-                        <button
-                          onClick={() => handleSubTabChange("personal")}
-                          className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
-                            (currentSubTab === "personal" || !currentSubTab)
-                              ? "border-blue-600 text-blue-600"
-                              : "border-transparent text-gray-600 hover:text-gray-800"
-                          }`}
-                        >
-                          Personal
-                        </button>
-                        <button
-                          onClick={() => handleSubTabChange("user")}
-                          className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
-                            currentSubTab === "user"
-                              ? "border-blue-600 text-blue-600"
-                              : "border-transparent text-gray-600 hover:text-gray-800"
-                          }`}
-                        >
-                          User
-                        </button>
-                      </>
-                    )}
+                    <button
+                      onClick={() => handleSubTabChange("personal")}
+                      className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
+                        (currentSubTab === "personal" || (!currentSubTab && session?.type === "admin"))
+                          ? "border-blue-600 text-blue-600"
+                          : "border-transparent text-gray-600 hover:text-gray-800"
+                      }`}
+                    >
+                      Personal
+                    </button>
+                    <button
+                      onClick={() => handleSubTabChange("user")}
+                      className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
+                        currentSubTab === "user"
+                          ? "border-blue-600 text-blue-600"
+                          : "border-transparent text-gray-600 hover:text-gray-800"
+                      }`}
+                    >
+                      User
+                    </button>
                     <button
                       onClick={() => handleSubTabChange("theme")}
                       className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
@@ -2083,7 +2474,7 @@ function AdminPageContent() {
                   </div>
                 </div>
 
-                {session?.type === "admin" && (currentSubTab === "personal" || !currentSubTab) && currentAdmin && (
+                {(currentSubTab === "personal" || (!currentSubTab && session?.type === "admin")) && currentAdmin && (
                   <div className="theme-card bg-white rounded-lg shadow-md p-6">
                     <h3 className="text-lg font-bold text-gray-800 mb-4">Your Admin Account</h3>
                     <div className="space-y-4">
@@ -2165,7 +2556,7 @@ function AdminPageContent() {
                   </div>
                 )}
 
-                {session?.type === "admin" && currentSubTab === "user" && adminId && adminId.trim() && (
+                {currentSubTab === "user" && adminId && adminId.trim() && (
                   <div className="theme-card bg-white rounded-lg shadow-md p-6">
                     <div className="flex items-center justify-between mb-4">
                       <div>
@@ -2205,6 +2596,34 @@ function AdminPageContent() {
                           No user passwords created yet. Click "Manage Passwords" to create one.
                         </p>
                       )}
+                    </div>
+                  </div>
+                )}
+
+                {currentSubTab === "personal" && !currentAdmin && session?.type === "super_admin" && (
+                  <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 text-center">
+                      <h3 className="text-lg font-semibold text-purple-900 mb-2">Super Admin Account</h3>
+                      <p className="text-sm text-purple-700 mb-3">
+                        You're logged in as Super Admin. This section is for managing individual admin accounts.
+                      </p>
+                      <p className="text-xs text-purple-600">
+                        To manage your super admin password, go to: Super Admin Dashboard → Settings → Personal
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {currentSubTab === "user" && (!adminId || !adminId.trim()) && session?.type === "super_admin" && (
+                  <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 text-center">
+                      <h3 className="text-lg font-semibold text-purple-900 mb-2">Super Admin Account</h3>
+                      <p className="text-sm text-purple-700 mb-3">
+                        You're logged in as Super Admin. Visitor password management is tied to individual admin accounts.
+                      </p>
+                      <p className="text-xs text-purple-600">
+                        Super Admin doesn't have associated visitor passwords. Each admin manages their own visitor passwords.
+                      </p>
                     </div>
                   </div>
                 )}
@@ -2653,6 +3072,49 @@ function AdminPageContent() {
                       )}
                     </div>
                   </div>
+                )}
+              </div>
+            )}
+
+            {/* HELP TAB */}
+            {currentTab === "help" && (
+              <div className="space-y-6">
+                {/* Sub-tabs for Help */}
+                <div className="bg-white border-b border-gray-200 rounded-t-lg">
+                  <div className="flex overflow-x-auto">
+                    <button
+                      onClick={() => handleSubTabChange("admin")}
+                      className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
+                        (currentSubTab === "admin" || !currentSubTab)
+                          ? "border-blue-600 text-blue-600"
+                          : "border-transparent text-gray-600 hover:text-gray-800"
+                      }`}
+                    >
+                      Admin Dashboard
+                    </button>
+                    {session?.type === "super_admin" && (
+                      <button
+                        onClick={() => handleSubTabChange("superadmin")}
+                        className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
+                          currentSubTab === "superadmin"
+                            ? "border-blue-600 text-blue-600"
+                            : "border-transparent text-gray-600 hover:text-gray-800"
+                        }`}
+                      >
+                        Super Admin Dashboard
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Admin Dashboard Help */}
+                {(currentSubTab === "admin" || !currentSubTab) && (
+                  <HelpAdminStructure festivalCode={code} />
+                )}
+
+                {/* Super Admin Dashboard Help */}
+                {currentSubTab === "superadmin" && session?.type === "super_admin" && (
+                  <HelpSuperAdminStructure festivalCode={code} />
                 )}
               </div>
             )}
