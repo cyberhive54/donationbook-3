@@ -29,6 +29,11 @@ export default function MediaViewerModal({ isOpen, onClose, mediaItem, allItems 
   };
 
   const handleDownload = async () => {
+    // Safety check: respect download restrictions
+    if (!canDownload) {
+      return;
+    }
+    
     try {
       if (mediaItem.media_source_type === 'link') {
         const linkUrl = mediaItem.external_url || mediaItem.url;
@@ -117,13 +122,20 @@ export default function MediaViewerModal({ isOpen, onClose, mediaItem, allItems 
             autoPlay
             className="max-w-full max-h-full"
             onContextMenu={preventRightClick}
-            controlsList="nodownload"
+            controlsList={!canDownload ? "nodownload" : undefined}
           />
         )}
         
         {mediaItem.type === 'audio' && (
           <div className="bg-white/10 rounded-lg p-8 backdrop-blur">
-            <audio src={getMediaUrl()} controls autoPlay className="w-full" />
+            <audio 
+              src={getMediaUrl()} 
+              controls 
+              autoPlay 
+              className="w-full"
+              onContextMenu={preventRightClick}
+              controlsList={!canDownload ? "nodownload" : undefined}
+            />
             <div className="text-white text-center mt-4">
               <div className="text-lg font-semibold">{mediaItem.title}</div>
               {mediaItem.size_bytes && (
