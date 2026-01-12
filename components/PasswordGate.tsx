@@ -367,7 +367,6 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
       
       if (logAccessError) {
         console.error('[PasswordGate] ❌ CRITICAL: Failed to log access:', logAccessError);
-        toast.error('Warning: Login not recorded. Please contact admin.');
       } else {
         console.log('[PasswordGate] ✅ Access logged successfully, record ID:', logAccessData);
       }
@@ -395,7 +394,7 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
       
       // Verify session was saved correctly
       const sessionKey = `session:${code}`;
-      await new Promise(resolve => setTimeout(resolve, 50)); // Small delay for localStorage write
+      await new Promise(resolve => setTimeout(resolve, 100)); // Increased delay for mobile browsers
       const savedSession = localStorage.getItem(sessionKey);
       
       if (!savedSession) {
@@ -413,11 +412,24 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
         throw new Error('Session verification failed. Please try again.');
       }
       
-      toast.success('Access granted!');
+      // Show success message only if logging succeeded
+      if (logAccessError) {
+        toast('Access granted! (Warning: Login not recorded, contact admin)', {
+          duration: 5000,
+          icon: '⚠️'
+        });
+      } else {
+        toast.success('Access granted!');
+      }
       
-      // Keep isVerifying true briefly - component will detect session and show children
-      // The session check at the top will handle the redirect
-      // Don't set isVerifying to false here - let the component re-render detect session
+      // Wait a bit longer on mobile to ensure localStorage is fully written
+      await new Promise(resolve => setTimeout(resolve, 150));
+      
+      // Force a re-render by setting isVerifying to false
+      setIsVerifying(false);
+      
+      // Trigger a window location check to ensure page updates
+      window.dispatchEvent(new Event('storage'));
       
     } catch (error: any) {
       console.error('Login error:', error);

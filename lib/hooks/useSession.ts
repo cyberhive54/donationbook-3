@@ -214,8 +214,8 @@ export function useSession(festivalCode: string) {
       }
     };
 
-    // Initial check - delay slightly to avoid race conditions
-    const timeoutId = setTimeout(checkSession, 1000);
+    // Initial check - delay to avoid race conditions, especially on mobile
+    const timeoutId = setTimeout(checkSession, 3000);
 
     // Periodic checks every 30 seconds
     const interval = setInterval(checkSession, 30000);
