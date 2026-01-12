@@ -12,9 +12,10 @@ import BottomNav from '@/components/BottomNav';
 import GlobalSessionBar from '@/components/GlobalSessionBar';
 import { InfoSkeleton, CardSkeleton, TableSkeleton } from '@/components/Loader';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, BarChart3 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { getThemeStyles, getThemeClasses } from '@/lib/theme';
+import { useRouter } from 'next/navigation';
 
 function generateSessionId() {
   return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -32,6 +33,7 @@ export default function FestivalHomePage() {
   const params = useParams<{ code: string }>();
   const searchParams = useSearchParams();
   const code = (params?.code as string) || '';
+  const router = useRouter();
 
   const [festival, setFestival] = useState<Festival | null>(null);
   const [collections, setCollections] = useState<Collection[]>([]);
@@ -378,6 +380,17 @@ export default function FestivalHomePage() {
                     </div>
                   )}
                 </div>
+              </div>
+
+              {/* View Analytics Button */}
+              <div className="flex justify-center mt-8 mb-6">
+                <button
+                  onClick={() => router.push(`/f/${code}/analytics`)}
+                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all shadow-md hover:shadow-lg font-semibold"
+                >
+                  <BarChart3 className="w-5 h-5" />
+                  <span>View Analytics</span>
+                </button>
               </div>
             </>
           )}
