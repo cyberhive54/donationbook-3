@@ -283,35 +283,6 @@ export default function DocsPage() {
               <FAQ />
             </div>
 
-            <div className="mt-16 pt-8 border-t border-docs-border">
-              <div className="docs-card bg-docs-accent/5 border-docs-accent/20">
-                <h3 className="text-lg font-semibold text-docs-foreground mb-2">
-                  Need More Help?
-                </h3>
-                <p className="docs-text mb-4">
-                  If you have questions not covered in this documentation, feel free to reach out!
-                </p>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Link
-                    href="https://github.com/cyberhive54/donationbook-3"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-4 py-2 bg-docs-accent text-white rounded-lg hover:bg-docs-accent/90 transition-colors text-center font-medium"
-                  >
-                    View on GitHub
-                  </Link>
-                  <Link
-                    href="https://github.com/cyberhive54/donationbook-3/issues"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-4 py-2 border border-docs-border text-docs-foreground rounded-lg hover:bg-docs-hover transition-colors text-center font-medium"
-                  >
-                    Report an Issue
-                  </Link>
-                </div>
-              </div>
-            </div>
-
             <footer className="mt-12 pt-8 border-t border-docs-border text-center text-sm text-docs-muted">
               <p>© 2026 Donation Book. Made with ❤️ for communities and hostels.</p>
               <p className="mt-2">Version 0.1.0 • Last updated: January 12, 2026</p>
