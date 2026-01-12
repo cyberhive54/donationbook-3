@@ -328,24 +328,12 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
         session_id: visitorSession.sessionId
       });
       
-      // Try calling with new parameters first (if function is updated)
+      // Log access - simplified to avoid function overload conflict
+      // Due to duplicate function signatures in database, use simpler version without UUID params
       let logAccessData, logAccessError;
       try {
-        const result = await supabase.rpc('log_festival_access', {
-          p_festival_id: festival.id,
-          p_visitor_name: sanitizedName,
-          p_access_method: 'password_modal',
-          p_password_used: password.trim(),
-          p_session_id: visitorSession.sessionId,
-          p_admin_id: passwordData.admin_id,
-          p_user_password_id: passwordData.password_id
-        });
-        logAccessData = result.data;
-        logAccessError = result.error;
-      } catch (firstAttemptError: any) {
-        console.warn('[PasswordGate] New function signature failed, trying old signature:', firstAttemptError);
-        
-        // Fallback to old function signature (without admin_id and user_password_id)
+        // Use simpler function signature (without admin_id and user_password_id UUIDs)
+        // to avoid PGRST203 overload error
         const result = await supabase.rpc('log_festival_access', {
           p_festival_id: festival.id,
           p_visitor_name: sanitizedName,
@@ -355,6 +343,21 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
         });
         logAccessData = result.data;
         logAccessError = result.error;
+        
+        // If successful but admin_id/user_password_id tracking is needed,
+        // update the access_logs record directly
+        if (!logAccessError && logAccessData) {
+          await supabase
+            .from('access_logs')
+            .update({
+              admin_id: passwordData.admin_id,
+              user_password_id: passwordData.password_id
+            })
+            .eq('id', logAccessData);
+        }
+      } catch (logError: any) {
+        console.warn('[PasswordGate] Access logging error:', logError);
+        logAccessError = logError;
       }
       
       console.log('[PasswordGate] log_festival_access result:', {

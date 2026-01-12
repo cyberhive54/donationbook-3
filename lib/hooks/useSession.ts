@@ -46,6 +46,7 @@ export function useSession(festivalCode: string) {
   const [isLoading, setIsLoading] = useState(true);
   const [validationResult, setValidationResult] = useState<SessionValidationResult | null>(null);
   const [lastSaveTime, setLastSaveTime] = useState<number>(0);
+  const [isValidating, setIsValidating] = useState(false);
 
   useEffect(() => {
     const loadSession = () => {
@@ -262,22 +263,36 @@ export function useSession(festivalCode: string) {
 
   // Periodic session validation (every 30 seconds)
   // Only validate if session exists and festivalCode matches
+  // DISABLED for visitor sessions to prevent mobile issues - they use date-based expiry instead
   useEffect(() => {
     if (!session || !festivalCode) return;
     
-    // Don't validate if session's festivalCode doesn't match current code
-    if (session.type === 'visitor' && session.festivalCode !== festivalCode) {
-      return; // Skip validation for mismatched festival codes
+    // Skip validation for visitor sessions - they already have:
+    // 1. 30-second grace period for fresh sessions
+    // 2. Daily expiry check on page load
+    // 3. No need for real-time password validation
+    if (session.type === 'visitor') {
+      console.log('[useSession] Skipping validation for visitor session (using date-based expiry)');
+      return;
     }
+    
+    // Don't validate if session's festivalCode doesn't match current code
     if (session.type === 'admin' && session.festivalCode !== festivalCode) {
       return; // Skip validation for mismatched festival codes
     }
     if (session.type === 'super_admin' && session.festivalCode !== festivalCode) {
       return; // Skip validation for mismatched festival codes
     }
+    
+    // Prevent concurrent validations
+    if (isValidating) {
+      console.log('[useSession] Validation already in progress, skipping');
+      return;
+    }
 
     const checkSession = async () => {
       try {
+        setIsValidating(true);
         const result = await validateSession(session);
         setValidationResult(result);
 
@@ -289,11 +304,13 @@ export function useSession(festivalCode: string) {
       } catch (error) {
         console.error('[useSession] Error validating session:', error);
         // Don't clear session on validation errors - just log them
+      } finally {
+        setIsValidating(false);
       }
     };
 
     // Initial check - delay to avoid race conditions, especially on mobile
-    const timeoutId = setTimeout(checkSession, 3000);
+    const timeoutId = setTimeout(checkSession, 5000);
 
     // Periodic checks every 30 seconds
     const interval = setInterval(checkSession, 30000);
@@ -302,7 +319,7 @@ export function useSession(festivalCode: string) {
       clearTimeout(timeoutId);
       clearInterval(interval);
     };
-  }, [session, festivalCode]);
+  }, [session, festivalCode, isValidating]);
 
   return {
     session,
