@@ -87,7 +87,6 @@ export default function SuperHome() {
                 <p className="text-gray-600 dark:text-gray-400 text-sm">Customize colors, dark mode, and background images. Make it match your festival's vibe!</p>
               </div>
             </div>
-            </div>
           </div>
         </section>
       </main>
