@@ -9,6 +9,7 @@ export default function SuperHome() {
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-xl font-bold text-gray-800">Donation Book</h1>
           <nav className="text-sm text-gray-600 flex items-center gap-4">
+            <Link href="/docs" className="hover:text-blue-600 font-medium">Documentation</Link>
             <Link href="#features" className="hover:text-blue-600">Features</Link>
             <Link href="#how" className="hover:text-blue-600">How it works</Link>
             <Link href="#about" className="hover:text-blue-600">About</Link>
@@ -23,6 +24,7 @@ export default function SuperHome() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/view" className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700">View a Festival</Link>
             <Link href="/create" className="px-6 py-3 bg-gray-900 text-white rounded-lg font-semibold hover:bg-gray-800">Create a Festival</Link>
+            <Link href="/docs" className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:border-blue-600 hover:text-blue-600">Read Documentation</Link>
           </div>
         </section>
 

@@ -272,3 +272,151 @@ input[type="number"] {
 .dark ::-webkit-scrollbar-thumb:hover {
   background: #6b7280;
 }
+
+/* ============================================ */
+/* Documentation Page Styles */
+/* ============================================ */
+
+/* Docs Color Scheme - Light Mode */
+:root {
+  --docs-bg: #ffffff;
+  --docs-foreground: #0f172a;
+  --docs-muted: #64748b;
+  --docs-card: #f8fafc;
+  --docs-border: #e2e8f0;
+  --docs-hover: #f1f5f9;
+  --docs-accent: #3b82f6;
+  --docs-accent-foreground: #ffffff;
+  --docs-code-bg: #f1f5f9;
+}
+
+/* Docs Color Scheme - Dark Mode */
+.dark {
+  --docs-bg: #0f172a;
+  --docs-foreground: #f1f5f9;
+  --docs-muted: #94a3b8;
+  --docs-card: #1e293b;
+  --docs-border: #334155;
+  --docs-hover: #334155;
+  --docs-accent: #60a5fa;
+  --docs-accent-foreground: #ffffff;
+  --docs-code-bg: #334155;
+}
+
+/* Docs Background Colors */
+.bg-docs-bg {
+  background-color: var(--docs-bg);
+}
+
+.bg-docs-card {
+  background-color: var(--docs-card);
+}
+
+.bg-docs-hover {
+  background-color: var(--docs-hover);
+}
+
+.bg-docs-accent {
+  background-color: var(--docs-accent);
+}
+
+/* Docs Text Colors */
+.text-docs-foreground {
+  color: var(--docs-foreground);
+}
+
+.text-docs-muted {
+  color: var(--docs-muted);
+}
+
+.text-docs-accent {
+  color: var(--docs-accent);
+}
+
+.text-docs-accent-foreground {
+  color: var(--docs-accent-foreground);
+}
+
+/* Docs Border Colors */
+.border-docs-border {
+  border-color: var(--docs-border);
+}
+
+.border-docs-accent {
+  border-color: var(--docs-accent);
+}
+
+/* Docs Components */
+.docs-section {
+  @apply mb-12;
+}
+
+.docs-subsection {
+  @apply mt-8;
+}
+
+.docs-heading {
+  @apply text-3xl font-bold text-docs-foreground mb-4 pb-2 border-b-2 border-docs-accent;
+}
+
+.docs-subheading {
+  @apply text-2xl font-semibold text-docs-foreground mb-3 mt-6;
+}
+
+.docs-text {
+  @apply text-docs-foreground leading-relaxed;
+}
+
+.docs-card {
+  @apply p-4 rounded-lg bg-docs-card border border-docs-border;
+}
+
+.docs-list {
+  @apply list-disc list-inside space-y-2 text-docs-foreground ml-4;
+}
+
+.docs-list-ordered {
+  @apply list-decimal list-inside space-y-2 text-docs-foreground ml-4;
+}
+
+.docs-code {
+  @apply px-2 py-1 rounded bg-docs-code-bg text-docs-accent font-mono text-sm;
+}
+
+/* Docs Link Styles */
+.docs-link {
+  @apply text-docs-accent hover:underline;
+}
+
+/* Smooth scrolling for docs navigation */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+}
+
+/* Docs sidebar scrollbar */
+aside::-webkit-scrollbar {
+  width: 6px;
+}
+
+aside::-webkit-scrollbar-track {
+  background: var(--docs-card);
+}
+
+aside::-webkit-scrollbar-thumb {
+  background: var(--docs-border);
+  border-radius: 3px;
+}
+
+aside::-webkit-scrollbar-thumb:hover {
+  background: var(--docs-muted);
+}
+
+/* Docs responsive tables */
+@media (max-width: 768px) {
+  .docs-section table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
