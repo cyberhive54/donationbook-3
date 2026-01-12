@@ -392,13 +392,24 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
       // Clear password field for security
       setPassword('');
       
-      // Verify session was saved correctly
+      // CRITICAL: Force multiple verification attempts for mobile browsers
       const sessionKey = `session:${code}`;
-      await new Promise(resolve => setTimeout(resolve, 100)); // Increased delay for mobile browsers
-      const savedSession = localStorage.getItem(sessionKey);
+      let verificationAttempts = 0;
+      let savedSession = null;
+      
+      // Try up to 5 times with increasing delays to ensure write completes
+      while (verificationAttempts < 5 && !savedSession) {
+        await new Promise(resolve => setTimeout(resolve, 50 + (verificationAttempts * 50)));
+        savedSession = localStorage.getItem(sessionKey) || sessionStorage.getItem(sessionKey);
+        verificationAttempts++;
+        
+        if (!savedSession) {
+          console.warn(`[PasswordGate] Session verification attempt ${verificationAttempts} failed, retrying...`);
+        }
+      }
       
       if (!savedSession) {
-        throw new Error('Failed to save session. Please try again.');
+        throw new Error('Failed to save session after multiple attempts. Please try again.');
       }
       
       // Parse and verify the saved session
@@ -407,6 +418,7 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
         if (parsed.type !== 'visitor' || parsed.festivalCode !== code) {
           throw new Error('Session saved incorrectly');
         }
+        console.log('[PasswordGate] ✅ Session verified successfully after', verificationAttempts, 'attempts');
       } catch (verifyError) {
         console.error('Session verification failed:', verifyError);
         throw new Error('Session verification failed. Please try again.');
@@ -422,11 +434,13 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
         toast.success('Access granted!');
       }
       
-      // Wait for mobile browsers to fully write localStorage
-      await new Promise(resolve => setTimeout(resolve, 200));
+      // Give a final moment for state to propagate (already verified above)
+      await new Promise(resolve => setTimeout(resolve, 100));
       
       // Clear verifying state - component will re-render and detect the session
       setIsVerifying(false);
+      
+      console.log('[PasswordGate] ✅ Login complete, rendering children');
       
     } catch (error: any) {
       console.error('Login error:', error);

@@ -45,14 +45,35 @@ export function useSession(festivalCode: string) {
   const [session, setSession] = useState<SessionData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [validationResult, setValidationResult] = useState<SessionValidationResult | null>(null);
+  const [lastSaveTime, setLastSaveTime] = useState<number>(0);
 
   useEffect(() => {
     const loadSession = () => {
       const todayIST = getTodayIST();
       const sessionKey = `session:${festivalCode}`;
+      const now = Date.now();
+      const timeSinceLastSave = now - lastSaveTime;
+
+      // If we just saved the session (within 2 seconds), don't reload from storage yet
+      // This prevents race conditions where we read before write completes on mobile
+      if (lastSaveTime > 0 && timeSinceLastSave < 2000) {
+        console.log('[useSession] ⏭️ Skipping load - just saved session', timeSinceLastSave, 'ms ago');
+        setIsLoading(false);
+        return;
+      }
 
       try {
-        const stored = localStorage.getItem(sessionKey);
+        // Try localStorage first, fall back to sessionStorage
+        let stored = localStorage.getItem(sessionKey);
+        if (!stored) {
+          console.log('[useSession] localStorage empty, checking sessionStorage');
+          stored = sessionStorage.getItem(sessionKey);
+          if (stored) {
+            // Restore to localStorage if found in sessionStorage
+            localStorage.setItem(sessionKey, stored);
+            console.log('[useSession] Restored session from sessionStorage to localStorage');
+          }
+        }
         console.log('[useSession] Loading session for:', festivalCode);
         console.log('[useSession] Stored session:', stored ? 'found' : 'not found');
         
@@ -136,6 +157,7 @@ export function useSession(festivalCode: string) {
                   });
                   // Session expired (not from today in IST), remove it
                   localStorage.removeItem(sessionKey);
+                  sessionStorage.removeItem(sessionKey);
                   setSession(null);
                 }
               } catch (dateError) {
@@ -148,18 +170,21 @@ export function useSession(festivalCode: string) {
                 } else {
                   console.log('[useSession] Session older than 24h, removing');
                   localStorage.removeItem(sessionKey);
+                  sessionStorage.removeItem(sessionKey);
                   setSession(null);
                 }
               }
             } else {
               console.warn('[useSession] Invalid session type:', parsedSession);
               localStorage.removeItem(sessionKey);
+              sessionStorage.removeItem(sessionKey);
               setSession(null);
             }
           } catch (parseError) {
             console.error('[useSession] Error parsing session:', parseError);
             try {
               localStorage.removeItem(sessionKey);
+              sessionStorage.removeItem(sessionKey);
             } catch (e) {
               // Ignore errors removing item
             }
@@ -173,6 +198,7 @@ export function useSession(festivalCode: string) {
         console.error('[useSession] Error loading session:', error);
         try {
           localStorage.removeItem(sessionKey);
+          sessionStorage.removeItem(sessionKey);
         } catch (e) {
           // Ignore errors removing item
         }
@@ -192,6 +218,7 @@ export function useSession(festivalCode: string) {
 
   const saveSession = (newSession: SessionData) => {
     const sessionKey = `session:${festivalCode}`;
+    const saveTimestamp = Date.now();
     console.log('[useSession] Saving session:', sessionKey, newSession);
     try {
       // Ensure loginTime is set and is a valid ISO string
@@ -199,9 +226,15 @@ export function useSession(festivalCode: string) {
         newSession.loginTime = new Date().toISOString();
       }
       
-      localStorage.setItem(sessionKey, JSON.stringify(newSession));
+      // Use both localStorage and sessionStorage for redundancy on mobile
+      const sessionData = JSON.stringify(newSession);
+      localStorage.setItem(sessionKey, sessionData);
+      sessionStorage.setItem(sessionKey, sessionData);
+      
+      // Set state and save timestamp
       setSession(newSession);
-      console.log('[useSession] Session saved successfully to localStorage');
+      setLastSaveTime(saveTimestamp);
+      console.log('[useSession] Session saved successfully to localStorage and sessionStorage');
       
       // Verify it was saved correctly
       const verified = localStorage.getItem(sessionKey);
@@ -221,8 +254,10 @@ export function useSession(festivalCode: string) {
     console.log('[useSession] LOGOUT called for:', festivalCode);
     console.trace('[useSession] Logout stack trace');
     localStorage.removeItem(sessionKey);
+    sessionStorage.removeItem(sessionKey);
     setSession(null);
     setValidationResult(null);
+    setLastSaveTime(0);
   };
 
   // Periodic session validation (every 30 seconds)

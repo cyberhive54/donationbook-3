@@ -122,11 +122,12 @@ export async function validateSession(
 }
 
 /**
- * Clears the session from localStorage
+ * Clears the session from localStorage and sessionStorage
  */
 export function clearSession(festivalCode: string): void {
   const storageKey = `session:${festivalCode}`;
   localStorage.removeItem(storageKey);
+  sessionStorage.removeItem(storageKey);
 }
 
 /**
