@@ -25,13 +25,15 @@ export default function SuperAdminLoginPage() {
     end?: string;
   } | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [themeBgColor, setThemeBgColor] = useState<string>('#f8fafc');
+  const [themeBgImageUrl, setThemeBgImageUrl] = useState<string>('');
 
   // Load festival info
   useEffect(() => {
     const loadInfo = async () => {
       const { data } = await supabase
         .from('festivals')
-        .select('event_name, organiser, location, event_start_date, event_end_date, theme_dark')
+        .select('event_name, organiser, location, event_start_date, event_end_date, theme_dark, theme_bg_color, theme_bg_image_url')
         .eq('code', code)
         .single();
       if (data) {
@@ -43,6 +45,8 @@ export default function SuperAdminLoginPage() {
           end: data.event_end_date
         });
         setIsDarkMode(data.theme_dark || false);
+        setThemeBgColor(data.theme_bg_color || '#f8fafc');
+        setThemeBgImageUrl(data.theme_bg_image_url || '');
       }
     };
     if (code) loadInfo();
@@ -86,8 +90,12 @@ export default function SuperAdminLoginPage() {
     }
   };
 
+  const bgStyle: React.CSSProperties = themeBgImageUrl
+    ? { backgroundImage: `url(${themeBgImageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+    : { backgroundColor: themeBgColor };
+  
   return (
-    <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'dark bg-gray-900' : 'bg-gray-50'} p-4`}>
+    <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'dark' : ''} p-4`} style={bgStyle}>
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 max-w-md w-full">
         {festivalInfo && (
           <div className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 mb-4 text-sm">

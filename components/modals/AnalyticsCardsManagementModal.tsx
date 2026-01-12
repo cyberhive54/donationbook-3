@@ -159,11 +159,11 @@ export default function AnalyticsCardsManagementModal({ isOpen, onClose, festiva
         <div className="p-6 overflow-y-auto flex-1">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400"></div>
             </div>
           ) : cards.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-gray-600">No analytics cards found</p>
+              <p className="text-gray-600 dark:text-gray-400">No analytics cards found</p>
               <p className="text-sm text-gray-500 mt-2">Cards will be automatically created when you run the SQL migration</p>
             </div>
           ) : (

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useSession } from '@/lib/hooks/useSession';
 import { supabase } from '@/lib/supabase';
@@ -11,6 +11,31 @@ export default function SuperAdminRouteHandler() {
   const code = (params?.code as string) || '';
   const router = useRouter();
   const { session, isLoading } = useSession(code);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [themeBgColor, setThemeBgColor] = useState<string>('#f8fafc');
+  const [themeBgImageUrl, setThemeBgImageUrl] = useState<string>('');
+
+  // Load festival theme
+  useEffect(() => {
+    const loadTheme = async () => {
+      try {
+        const { data } = await supabase
+          .from('festivals')
+          .select('theme_dark, theme_bg_color, theme_bg_image_url')
+          .eq('code', code)
+          .single();
+        
+        if (data) {
+          setIsDarkMode(data.theme_dark || false);
+          setThemeBgColor(data.theme_bg_color || '#f8fafc');
+          setThemeBgImageUrl(data.theme_bg_image_url || '');
+        }
+      } catch (error) {
+        console.error('Error loading festival theme:', error);
+      }
+    };
+    if (code) loadTheme();
+  }, [code]);
 
   useEffect(() => {
     if (isLoading) return; // Wait for session check
@@ -56,11 +81,15 @@ export default function SuperAdminRouteHandler() {
   }, [code, session, isLoading, router]);
 
   // Show loading state while checking session and redirecting
+  const bgStyle: React.CSSProperties = themeBgImageUrl
+    ? { backgroundImage: `url(${themeBgImageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+    : { backgroundColor: themeBgColor };
+  
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'dark' : ''}`} style={bgStyle}>
       <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-        <p className="text-gray-600">Redirecting...</p>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 dark:border-purple-400 mx-auto mb-4"></div>
+        <p className="text-gray-600 dark:text-gray-300">Redirecting...</p>
       </div>
     </div>
   );

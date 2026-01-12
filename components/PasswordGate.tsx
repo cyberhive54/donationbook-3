@@ -70,13 +70,15 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
   const [info, setInfo] = useState<{ name: string; organiser?: string | null; start?: string | null; end?: string | null; location?: string | null } | null>(null);
   const [deviceId, setDeviceId] = useState<string>('');
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [themeBgColor, setThemeBgColor] = useState<string>('#f8fafc');
+  const [themeBgImageUrl, setThemeBgImageUrl] = useState<string>('');
 
   useEffect(() => {
     const loadInfo = async () => {
       try {
         const { data, error } = await supabase
           .from('festivals')
-          .select('event_name, organiser, event_start_date, event_end_date, location, requires_password, requires_user_password, theme_dark')
+          .select('event_name, organiser, event_start_date, event_end_date, location, requires_password, requires_user_password, theme_dark, theme_bg_color, theme_bg_image_url')
           .eq('code', code)
           .single();
         
@@ -100,6 +102,8 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
           const needsPassword = data.requires_password !== false && data.requires_user_password !== false;
           setRequiresPassword(needsPassword);
           setIsDarkMode(data.theme_dark || false);
+          setThemeBgColor(data.theme_bg_color || '#f8fafc');
+          setThemeBgImageUrl(data.theme_bg_image_url || '');
           setFestivalLoaded(true);
         }
       } catch (error) {
@@ -142,8 +146,12 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
   // Show loading state while session is being validated or festival info is loading
   // This prevents race condition where protected content flashes before validation completes
   if (isLoading || !festivalLoaded || requiresPassword === null) {
+    const bgStyle: React.CSSProperties = themeBgImageUrl
+      ? { backgroundImage: `url(${themeBgImageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+      : { backgroundColor: themeBgColor };
+    
     return (
-      <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'dark bg-gray-900' : 'bg-gray-50'}`}>
+      <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'dark' : ''}`} style={bgStyle}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600 dark:text-gray-300">Loading...</p>
@@ -181,8 +189,12 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
           // Session exists, stop verifying and let component detect it
           setIsVerifying(false);
           // Component will re-render and detect session
+          const bgStyle: React.CSSProperties = themeBgImageUrl
+            ? { backgroundImage: `url(${themeBgImageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+            : { backgroundColor: themeBgColor };
+          
           return (
-            <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'dark bg-gray-900' : 'bg-gray-50'} p-4`}>
+            <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'dark' : ''} p-4`} style={bgStyle}>
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 max-w-md w-full text-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
                 <p className="text-gray-600 dark:text-gray-300">Access granted! Redirecting...</p>
@@ -195,8 +207,12 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
       }
     }
     
+    const bgStyle: React.CSSProperties = themeBgImageUrl
+      ? { backgroundImage: `url(${themeBgImageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+      : { backgroundColor: themeBgColor };
+    
     return (
-      <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'dark bg-gray-900' : 'bg-gray-50'} p-4`}>
+      <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'dark' : ''} p-4`} style={bgStyle}>
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 max-w-md w-full text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600 dark:text-gray-300">Verifying credentials...</p>
@@ -387,8 +403,12 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
   };
 
 
+  const bgStyle: React.CSSProperties = themeBgImageUrl
+    ? { backgroundImage: `url(${themeBgImageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+    : { backgroundColor: themeBgColor };
+  
   return (
-    <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'dark bg-gray-900' : 'bg-gray-50'} p-4`}>
+    <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'dark' : ''} p-4`} style={bgStyle}>
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 max-w-md w-full">
         {info && (
           <div className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 mb-4 text-sm">

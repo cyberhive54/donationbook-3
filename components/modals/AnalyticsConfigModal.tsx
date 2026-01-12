@@ -309,7 +309,7 @@ export default function AnalyticsConfigModal({ isOpen, onClose, onSuccess, festi
         </div>
 
         {isLoading ? (
-          <div className="p-6 text-center text-gray-500">Loading...</div>
+          <div className="p-6 text-center text-gray-500 dark:text-gray-400">Loading...</div>
         ) : (
           <div className="p-6 space-y-6">
             {/* Collection Target Section */}
