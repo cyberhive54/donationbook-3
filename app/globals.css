@@ -272,3 +272,189 @@ input[type="number"] {
 .dark ::-webkit-scrollbar-thumb:hover {
   background: #6b7280;
 }
+
+/* ============================================ */
+/* Documentation Page Styles */
+/* ============================================ */
+
+/* Docs Color Scheme - Light Mode */
+:root {
+  --docs-bg: #ffffff;
+  --docs-foreground: #0f172a;
+  --docs-muted: #64748b;
+  --docs-card: #f8fafc;
+  --docs-border: #e2e8f0;
+  --docs-hover: #f1f5f9;
+  --docs-accent: #3b82f6;
+  --docs-accent-foreground: #ffffff;
+  --docs-code-bg: #f1f5f9;
+}
+
+/* Docs Color Scheme - Dark Mode */
+.dark {
+  --docs-bg: #0f172a;
+  --docs-foreground: #f1f5f9;
+  --docs-muted: #94a3b8;
+  --docs-card: #1e293b;
+  --docs-border: #334155;
+  --docs-hover: #334155;
+  --docs-accent: #60a5fa;
+  --docs-accent-foreground: #ffffff;
+  --docs-code-bg: #334155;
+}
+
+/* Docs Background Colors */
+.bg-docs-bg {
+  background-color: var(--docs-bg);
+}
+
+.bg-docs-card {
+  background-color: var(--docs-card);
+}
+
+.bg-docs-hover {
+  background-color: var(--docs-hover);
+}
+
+.bg-docs-accent {
+  background-color: var(--docs-accent);
+}
+
+/* Docs Text Colors */
+.text-docs-foreground {
+  color: var(--docs-foreground);
+}
+
+.text-docs-muted {
+  color: var(--docs-muted);
+}
+
+.text-docs-accent {
+  color: var(--docs-accent);
+}
+
+.text-docs-accent-foreground {
+  color: var(--docs-accent-foreground);
+}
+
+/* Docs Border Colors */
+.border-docs-border {
+  border-color: var(--docs-border);
+}
+
+.border-docs-accent {
+  border-color: var(--docs-accent);
+}
+
+/* Docs Components */
+.docs-section {
+  margin-bottom: 3rem;
+}
+
+.docs-subsection {
+  margin-top: 2rem;
+}
+
+.docs-heading {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--docs-foreground);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--docs-accent);
+}
+
+.docs-subheading {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--docs-foreground);
+  margin-bottom: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.docs-text {
+  color: var(--docs-foreground);
+  line-height: 1.625;
+}
+
+.docs-card {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--docs-card);
+  border: 1px solid var(--docs-border);
+}
+
+.docs-list {
+  list-style-type: disc;
+  list-style-position: inside;
+  color: var(--docs-foreground);
+  margin-left: 1rem;
+}
+
+.docs-list > li {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.docs-list-ordered {
+  list-style-type: decimal;
+  list-style-position: inside;
+  color: var(--docs-foreground);
+  margin-left: 1rem;
+}
+
+.docs-list-ordered > li {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.docs-code {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  background-color: var(--docs-code-bg);
+  color: var(--docs-accent);
+  font-family: ui-monospace, monospace;
+  font-size: 0.875rem;
+}
+
+/* Docs Link Styles */
+.docs-link {
+  color: var(--docs-accent);
+}
+
+.docs-link:hover {
+  text-decoration: underline;
+}
+
+/* Smooth scrolling for docs navigation */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+}
+
+/* Docs sidebar scrollbar */
+aside::-webkit-scrollbar {
+  width: 6px;
+}
+
+aside::-webkit-scrollbar-track {
+  background: var(--docs-card);
+}
+
+aside::-webkit-scrollbar-thumb {
+  background: var(--docs-border);
+  border-radius: 3px;
+}
+
+aside::-webkit-scrollbar-thumb:hover {
+  background: var(--docs-muted);
+}
+
+/* Docs responsive tables */
+@media (max-width: 768px) {
+  .docs-section table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
