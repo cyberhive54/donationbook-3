@@ -194,7 +194,7 @@ export default function GlobalSessionBar({ festivalCode, currentPage = 'other' }
       )}
 
       {/* Session Bar */}
-      <div className="bg-white border-t border-gray-200 shadow-lg">
+      <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 py-3">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           {/* Session Info */}
@@ -202,22 +202,22 @@ export default function GlobalSessionBar({ festivalCode, currentPage = 'other' }
             {session.type === 'visitor' && (
               <>
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
                     <span className="text-blue-600 font-semibold text-sm">
                       {session.visitorName.charAt(0).toUpperCase()}
                     </span>
                   </div>
                   <div className="text-sm">
-                    <p className="font-semibold text-gray-800">{session.visitorName}</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="font-semibold text-gray-800 dark:text-gray-100">{session.visitorName}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
                       Logged in: {formattedDate} at {formattedTime}
                     </p>
                   </div>
                 </div>
-                <div className="hidden sm:block w-px h-8 bg-gray-300"></div>
-                <div className="text-xs text-gray-600">
+                <div className="hidden sm:block w-px h-8 bg-gray-300 dark:bg-gray-600"></div>
+                <div className="text-xs text-gray-600 dark:text-gray-300">
                   <p>via <span className="font-medium">{session.adminCode}</span> ({session.adminName})</p>
-                  <p className="text-gray-500">{session.passwordLabel}</p>
+                  <p className="text-gray-500 dark:text-gray-400">{session.passwordLabel}</p>
                 </div>
               </>
             )}
@@ -225,14 +225,14 @@ export default function GlobalSessionBar({ festivalCode, currentPage = 'other' }
             {session.type === 'admin' && (
               <>
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center">
                     <Shield className="w-4 h-4 text-red-600" />
                   </div>
                   <div className="text-sm">
-                    <p className="font-semibold text-gray-800">
+                    <p className="font-semibold text-gray-800 dark:text-gray-100">
                       {session.adminName} ({session.adminCode})
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
                       Admin • Logged in: {formattedDate} at {formattedTime}
                     </p>
                   </div>
@@ -243,12 +243,12 @@ export default function GlobalSessionBar({ festivalCode, currentPage = 'other' }
             {session.type === 'super_admin' && (
               <>
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center">
                     <Crown className="w-4 h-4 text-purple-600" />
                   </div>
                   <div className="text-sm">
-                    <p className="font-semibold text-gray-800">Super Admin</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="font-semibold text-gray-800 dark:text-gray-100">Super Admin</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
                       Logged in: {formattedDate} at {formattedTime}
                     </p>
                   </div>
@@ -306,7 +306,7 @@ export default function GlobalSessionBar({ festivalCode, currentPage = 'other' }
 
             <button
               onClick={handleLogout}
-              className="flex items-center gap-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-1 px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700 dark:text-gray-100 transition-colors"
             >
               <LogOut className="w-4 h-4 sm:hidden" />
               <span>Logout</span>

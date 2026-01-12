@@ -217,9 +217,9 @@ export default function FestivalHomePage() {
               <StatsCards stats={stats} />
 
               <div className="space-y-6">
-                <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                   <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-bold text-gray-800">Recent Transactions</h2>
+                    <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Recent Transactions</h2>
                     <Link
                       href={`/f/${code}/transaction`}
                       className="flex items-center gap-1 text-blue-600 hover:text-blue-700 text-sm font-medium"
@@ -228,29 +228,29 @@ export default function FestivalHomePage() {
                     </Link>
                   </div>
                   {recentTransactions.length === 0 ? (
-                    <p className="text-center text-gray-500 py-8">No transactions yet</p>
+                    <p className="text-center text-gray-500 dark:text-gray-400 py-8">No transactions yet</p>
                   ) : (
                     <div className="overflow-x-auto">
                       <table className="w-full">
                         <thead className="bg-gray-50">
                           <tr>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">
                               Type
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">
                               Name/Item
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">
                               Amount
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">
                               Date
                             </th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-200">
+                        <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                           {recentTransactions.map((txn) => (
-                            <tr key={txn.id} className="hover:bg-gray-50">
+                            <tr key={txn.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                               <td className="px-4 py-3">
                                 <span
                                   className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -262,15 +262,15 @@ export default function FestivalHomePage() {
                                   {txn.type === 'collection' ? 'Collection' : 'Expense'}
                                 </span>
                               </td>
-                              <td className="px-4 py-3 text-sm text-gray-900">{txn.name}</td>
+                              <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{txn.name}</td>
                               <td
                                 className={`px-4 py-3 text-sm font-semibold ${
-                                  txn.type === 'collection' ? 'text-green-600' : 'text-red-600'
+                                  txn.type === 'collection' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
                                 }`}
                               >
                                 {formatCurrency(txn.amount)}
                               </td>
-                              <td className="px-4 py-3 text-sm text-gray-900">
+                              <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                                 {formatDate(txn.date)}
                               </td>
                             </tr>
@@ -281,9 +281,9 @@ export default function FestivalHomePage() {
                   )}
                 </div>
 
-                <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                   <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-bold text-gray-800">Recent Collections</h2>
+                    <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Recent Collections</h2>
                     <Link
                       href={`/f/${code}/collection`}
                       className="flex items-center gap-1 text-blue-600 hover:text-blue-700 text-sm font-medium"
@@ -292,35 +292,35 @@ export default function FestivalHomePage() {
                     </Link>
                   </div>
                   {collections.length === 0 ? (
-                    <p className="text-center text-gray-500 py-8">No collections yet</p>
+                    <p className="text-center text-gray-500 dark:text-gray-400 py-8">No collections yet</p>
                   ) : (
                     <div className="overflow-x-auto">
                       <table className="w-full">
-                        <thead className="bg-gray-50">
+                        <thead className="bg-gray-50 dark:bg-gray-700">
                           <tr>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">
                               Name
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">
                               Amount
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">
                               Group
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">
                               Date
                             </th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-200">
+                        <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                           {collections.slice(0, 7).map((col) => (
-                            <tr key={col.id} className="hover:bg-gray-50">
-                              <td className="px-4 py-3 text-sm text-gray-900">{col.name}</td>
-                              <td className="px-4 py-3 text-sm text-green-600 font-semibold">
+                            <tr key={col.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                              <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{col.name}</td>
+                              <td className="px-4 py-3 text-sm text-green-600 dark:text-green-400 font-semibold">
                                 {formatCurrency(col.amount)}
                               </td>
-                              <td className="px-4 py-3 text-sm text-gray-900">{col.group_name}</td>
-                              <td className="px-4 py-3 text-sm text-gray-900">
+                              <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{col.group_name}</td>
+                              <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                                 {formatDate(col.date)}
                               </td>
                             </tr>
@@ -331,9 +331,9 @@ export default function FestivalHomePage() {
                   )}
                 </div>
 
-                <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                   <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-bold text-gray-800">Recent Expenses</h2>
+                    <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Recent Expenses</h2>
                     <Link
                       href={`/f/${code}/expense`}
                       className="flex items-center gap-1 text-blue-600 hover:text-blue-700 text-sm font-medium"
@@ -342,35 +342,35 @@ export default function FestivalHomePage() {
                     </Link>
                   </div>
                   {expenses.length === 0 ? (
-                    <p className="text-center text-gray-500 py-8">No expenses yet</p>
+                    <p className="text-center text-gray-500 dark:text-gray-400 py-8">No expenses yet</p>
                   ) : (
                     <div className="overflow-x-auto">
                       <table className="w-full">
-                        <thead className="bg-gray-50">
+                        <thead className="bg-gray-50 dark:bg-gray-700">
                           <tr>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">
                               Item
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">
                               Total Amount
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">
                               Category
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">
                               Date
                             </th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-200">
+                        <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                           {expenses.slice(0, 7).map((exp) => (
-                            <tr key={exp.id} className="hover:bg-gray-50">
-                              <td className="px-4 py-3 text-sm text-gray-900">{exp.item}</td>
-                              <td className="px-4 py-3 text-sm text-red-600 font-semibold">
+                            <tr key={exp.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                              <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{exp.item}</td>
+                              <td className="px-4 py-3 text-sm text-red-600 dark:text-red-400 font-semibold">
                                 {formatCurrency(exp.total_amount)}
                               </td>
-                              <td className="px-4 py-3 text-sm text-gray-900">{exp.category}</td>
-                              <td className="px-4 py-3 text-sm text-gray-900">
+                              <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{exp.category}</td>
+                              <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                                 {formatDate(exp.date)}
                               </td>
                             </tr>
