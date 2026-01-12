@@ -10,6 +10,7 @@ import GlobalSessionBar from "@/components/GlobalSessionBar"
 import { useSession } from "@/lib/hooks/useSession"
 import { TrendingUp, TrendingDown, Target, Calendar, Users, FileText, BarChart3, ArrowUp, ArrowDown } from "lucide-react"
 import toast from "react-hot-toast"
+import { getThemeStyles, getThemeClasses } from "@/lib/theme"
 import {
   BarChart,
   Bar,
@@ -96,6 +97,14 @@ function PublicAnalyticsContent() {
   const prevYearNetBalance =
     (analyticsConfig?.previous_year_total_collection || 0) - (analyticsConfig?.previous_year_total_expense || 0)
 
+  // Theme styling
+  const bgStyle: React.CSSProperties = festival?.theme_bg_image_url
+    ? { backgroundImage: `url(${festival.theme_bg_image_url})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+    : { backgroundColor: festival?.theme_bg_color || '#f8fafc' };
+
+  const themeStyles = getThemeStyles(festival);
+  const themeClasses = getThemeClasses(festival);
+
   const collectionsByBuckets = useMemo(() => {
     return donationBuckets.length > 0 ? getCollectionsByBuckets(collections, donationBuckets) : []
   }, [collections, donationBuckets])
@@ -176,14 +185,14 @@ function PublicAnalyticsContent() {
         return (
           <div key={card.id} className="col-span-full">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-              <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium text-gray-600">Total Collection</h3>
-                  <div className="bg-green-100 rounded-full p-2">
+                  <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Collection</h3>
+                  <div className="bg-green-100 dark:bg-green-900 rounded-full p-2">
                     <TrendingUp className="w-5 h-5 text-green-600" />
                   </div>
                 </div>
-                <p className="text-3xl font-bold text-gray-900">₹{totalCollection.toLocaleString()}</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">₹{totalCollection.toLocaleString()}</p>
                 {hasPrevYearData && prevYearCollection > 0 && (
                   <div className="mt-2 flex items-center gap-1">
                     {collectionChange >= 0 ? (
@@ -194,19 +203,19 @@ function PublicAnalyticsContent() {
                     <span className={`text-sm font-semibold ${collectionChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                       {Math.abs(collectionChange).toFixed(1)}%
                     </span>
-                    <span className="text-xs text-gray-500">vs last year</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">vs last year</span>
                   </div>
                 )}
               </div>
 
-              <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium text-gray-600">Total Expense</h3>
-                  <div className="bg-red-100 rounded-full p-2">
+                  <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Expense</h3>
+                  <div className="bg-red-100 dark:bg-red-900 rounded-full p-2">
                     <TrendingDown className="w-5 h-5 text-red-600" />
                   </div>
                 </div>
-                <p className="text-3xl font-bold text-gray-900">₹{totalExpense.toLocaleString()}</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">₹{totalExpense.toLocaleString()}</p>
                 {hasPrevYearData && prevYearExpense > 0 && (
                   <div className="mt-2 flex items-center gap-1">
                     {expenseChange >= 0 ? (
@@ -217,14 +226,14 @@ function PublicAnalyticsContent() {
                     <span className={`text-sm font-semibold ${expenseChange >= 0 ? 'text-red-600' : 'text-green-600'}`}>
                       {Math.abs(expenseChange).toFixed(1)}%
                     </span>
-                    <span className="text-xs text-gray-500">vs last year</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">vs last year</span>
                   </div>
                 )}
               </div>
 
-              <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium text-gray-600">Net Balance</h3>
+                  <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Net Balance</h3>
                   <div className={`rounded-full p-2 ${netBalance >= 0 ? "bg-blue-100" : "bg-orange-100"}`}>
                     <FileText className={`w-5 h-5 ${netBalance >= 0 ? "text-blue-600" : "text-orange-600"}`} />
                   </div>
@@ -242,29 +251,29 @@ function PublicAnalyticsContent() {
                     <span className={`text-sm font-semibold ${netBalanceChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                       {Math.abs(netBalanceChange).toFixed(1)}%
                     </span>
-                    <span className="text-xs text-gray-500">vs last year</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">vs last year</span>
                   </div>
                 )}
               </div>
 
-              <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium text-gray-600">Unique Donors</h3>
-                  <div className="bg-purple-100 rounded-full p-2">
+                  <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Unique Donors</h3>
+                  <div className="bg-purple-100 dark:bg-purple-900 rounded-full p-2">
                     <Users className="w-5 h-5 text-purple-600" />
                   </div>
                 </div>
-                <p className="text-3xl font-bold text-gray-900">{uniqueDonors}</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">{uniqueDonors}</p>
               </div>
 
-              <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium text-gray-600">Total Transactions</h3>
-                  <div className="bg-indigo-100 rounded-full p-2">
+                  <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Transactions</h3>
+                  <div className="bg-indigo-100 dark:bg-indigo-900 rounded-full p-2">
                     <Calendar className="w-5 h-5 text-indigo-600" />
                   </div>
                 </div>
-                <p className="text-3xl font-bold text-gray-900">{totalTransactions}</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">{totalTransactions}</p>
               </div>
             </div>
           </div>
@@ -276,24 +285,24 @@ function PublicAnalyticsContent() {
         
         return (
           <div key={card.id} className="col-span-full">
-            <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
               <div className="flex items-center gap-2 mb-4">
                 <Target className="w-5 h-5 text-blue-600" />
-                <h2 className="text-xl font-bold text-gray-900">Collection Target</h2>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Collection Target</h2>
               </div>
               <div className="space-y-4">
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <p className="text-gray-600">Target: ₹{analyticsConfig.collection_target_amount.toLocaleString()}</p>
-                    <p className="text-lg font-bold text-gray-900">{targetProgress.toFixed(1)}%</p>
+                    <p className="text-gray-600 dark:text-gray-300">Target: ₹{analyticsConfig.collection_target_amount.toLocaleString()}</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-gray-100">{targetProgress.toFixed(1)}%</p>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-3">
+                  <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-3">
                     <div
                       className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all"
                       style={{ width: `${Math.min(targetProgress, 100)}%` }}
                     ></div>
                   </div>
-                  <p className="text-sm text-gray-600 mt-2">
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
                     ₹{totalCollection.toLocaleString()} of ₹{analyticsConfig.collection_target_amount.toLocaleString()}
                   </p>
                 </div>
@@ -307,26 +316,26 @@ function PublicAnalyticsContent() {
         
         return (
           <div key={card.id} className="col-span-full lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 h-full">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6 h-full">
               <div className="flex items-center gap-2 mb-4">
-                <Calendar className="w-5 h-5 text-gray-600 flex-shrink-0" />
-                <h2 className="text-base sm:text-xl font-bold text-gray-900 break-words">Previous Year Summary</h2>
+                <Calendar className="w-5 h-5 text-gray-600 dark:text-gray-300 flex-shrink-0" />
+                <h2 className="text-base sm:text-xl font-bold text-gray-900 dark:text-gray-100 break-words">Previous Year Summary</h2>
               </div>
               <div className="space-y-4">
-                <div className="flex justify-between items-center gap-2 p-3 bg-gray-50 rounded-lg">
-                  <span className="text-gray-600 text-sm sm:text-base">Collection</span>
-                  <span className="text-sm sm:text-lg font-semibold text-gray-900 break-all text-right">
+                <div className="flex justify-between items-center gap-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                  <span className="text-gray-600 dark:text-gray-300 text-sm sm:text-base">Collection</span>
+                  <span className="text-sm sm:text-lg font-semibold text-gray-900 dark:text-gray-100 break-all text-right">
                     ₹{(analyticsConfig.previous_year_total_collection || 0).toLocaleString()}
                   </span>
                 </div>
-                <div className="flex justify-between items-center gap-2 p-3 bg-gray-50 rounded-lg">
-                  <span className="text-gray-600 text-sm sm:text-base">Expense</span>
-                  <span className="text-sm sm:text-lg font-semibold text-gray-900 break-all text-right">
+                <div className="flex justify-between items-center gap-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                  <span className="text-gray-600 dark:text-gray-300 text-sm sm:text-base">Expense</span>
+                  <span className="text-sm sm:text-lg font-semibold text-gray-900 dark:text-gray-100 break-all text-right">
                     ₹{(analyticsConfig.previous_year_total_expense || 0).toLocaleString()}
                   </span>
                 </div>
-                <div className="flex justify-between items-center gap-2 p-3 bg-blue-50 rounded-lg">
-                  <span className="text-gray-600 font-medium text-sm sm:text-base">Net Balance</span>
+                <div className="flex justify-between items-center gap-2 p-3 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                  <span className="text-gray-600 dark:text-gray-300 font-medium text-sm sm:text-base">Net Balance</span>
                   <span className={`text-sm sm:text-lg font-bold break-all text-right ${prevYearNetBalance >= 0 ? "text-blue-600" : "text-orange-600"}`}>
                     ₹{prevYearNetBalance.toLocaleString()}
                   </span>
@@ -346,7 +355,7 @@ function PublicAnalyticsContent() {
                 <CardTitle className="text-base md:text-lg">Collections by Donation Amount</CardTitle>
                 <CardDescription className="text-xs md:text-sm">Distribution across amount ranges</CardDescription>
                 {/* Mobile scroll indicator */}
-                <div className="flex items-center justify-center gap-2 mt-2 text-gray-500 text-xs sm:hidden">
+                <div className="flex items-center justify-center gap-2 mt-2 text-gray-500 dark:text-gray-400 text-xs sm:hidden">
                   <span>←</span>
                   <span>Scroll</span>
                   <span>→</span>
@@ -383,18 +392,18 @@ function PublicAnalyticsContent() {
                   {collectionsByBuckets.map((item, idx) => (
                     <div
                       key={item.bucket_label}
-                      className="flex justify-between items-center p-3 bg-gray-50 rounded-lg"
+                      className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
                     >
                       <div className="flex items-center gap-3">
                         <div
                           className="w-3 h-3 rounded-full flex-shrink-0"
                           style={{ backgroundColor: COLORS[idx % COLORS.length] }}
                         ></div>
-                        <span className="text-gray-700 text-sm break-words">{item.bucket_label}</span>
+                        <span className="text-gray-700 dark:text-gray-300 text-sm break-words">{item.bucket_label}</span>
                       </div>
                       <div className="text-right flex-shrink-0">
-                        <p className="font-semibold text-gray-900 text-sm">₹{item.total_amount.toLocaleString()}</p>
-                        <p className="text-xs text-gray-600">{item.donation_count} donations</p>
+                        <p className="font-semibold text-gray-900 dark:text-gray-100 text-sm">₹{item.total_amount.toLocaleString()}</p>
+                        <p className="text-xs text-gray-600 dark:text-gray-300">{item.donation_count} donations</p>
                       </div>
                     </div>
                   ))}
@@ -414,7 +423,7 @@ function PublicAnalyticsContent() {
                 <CardTitle className="text-base md:text-lg">Collections by Time of Day</CardTitle>
                 <CardDescription className="text-xs md:text-sm">When collections happen throughout the day</CardDescription>
                 {/* Mobile scroll indicator */}
-                <div className="flex items-center justify-center gap-2 mt-2 text-gray-500 text-xs sm:hidden">
+                <div className="flex items-center justify-center gap-2 mt-2 text-gray-500 dark:text-gray-400 text-xs sm:hidden">
                   <span>←</span>
                   <span>Scroll</span>
                   <span>→</span>
@@ -447,18 +456,18 @@ function PublicAnalyticsContent() {
                   {collectionsByTime.map((item, idx) => (
                     <div
                       key={item.bucket_label}
-                      className="flex justify-between items-center p-3 bg-gray-50 rounded-lg"
+                      className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
                     >
                       <div className="flex items-center gap-3">
                         <div
                           className="w-3 h-3 rounded-full flex-shrink-0"
                           style={{ backgroundColor: COLORS[idx % COLORS.length] }}
                         ></div>
-                        <span className="text-gray-700 text-sm break-words">{item.bucket_label}</span>
+                        <span className="text-gray-700 dark:text-gray-300 text-sm break-words">{item.bucket_label}</span>
                       </div>
                       <div className="text-right flex-shrink-0">
-                        <p className="font-semibold text-gray-900 text-sm">₹{item.total_amount.toLocaleString()}</p>
-                        <p className="text-xs text-gray-600">{item.collection_count} collections</p>
+                        <p className="font-semibold text-gray-900 dark:text-gray-100 text-sm">₹{item.total_amount.toLocaleString()}</p>
+                        <p className="text-xs text-gray-600 dark:text-gray-300">{item.collection_count} collections</p>
                       </div>
                     </div>
                   ))}
@@ -478,7 +487,7 @@ function PublicAnalyticsContent() {
                 <CardTitle className="text-base md:text-lg">Daily Net Balance</CardTitle>
                 <CardDescription className="text-xs md:text-sm">Collection minus expense per day</CardDescription>
                 {/* Mobile scroll indicator */}
-                <div className="flex items-center justify-center gap-2 mt-2 text-gray-500 text-xs sm:hidden">
+                <div className="flex items-center justify-center gap-2 mt-2 text-gray-500 dark:text-gray-400 text-xs sm:hidden">
                   <span>←</span>
                   <span>Scroll</span>
                   <span>→</span>
@@ -533,8 +542,8 @@ function PublicAnalyticsContent() {
         
         return (
           <div key={card.id} className="col-span-full lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm p-6 h-full">
-              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 h-full">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
                 <TrendingDown className="w-5 h-5 text-red-600" />
                 Top {topExpensesCount} Expenses
               </h2>
@@ -543,16 +552,16 @@ function PublicAnalyticsContent() {
                   {topExpensesData.map((expense, index) => (
                     <div key={index} className="mb-4 last:mb-0">
                       <div className="flex justify-between items-center mb-1">
-                        <span className="text-gray-600 text-sm">{expense.item}</span>
-                        <span className="text-sm font-semibold text-gray-900">{expense.percentage.toFixed(1)}%</span>
+                        <span className="text-gray-600 dark:text-gray-300 text-sm">{expense.item}</span>
+                        <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">{expense.percentage.toFixed(1)}%</span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
                         <div
                           className="bg-red-500 h-2 rounded-full transition-all"
                           style={{ width: `${expense.percentage}%` }}
                         ></div>
                       </div>
-                      <p className="text-xs text-gray-500 mt-1">₹{expense.amount.toLocaleString()}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">₹{expense.amount.toLocaleString()}</p>
                     </div>
                   ))}
                 </div>
@@ -571,7 +580,7 @@ function PublicAnalyticsContent() {
                 <CardTitle className="text-base md:text-lg">Transactions Per Day</CardTitle>
                 <CardDescription className="text-xs md:text-sm">Number of collections and expenses daily</CardDescription>
                 {/* Mobile scroll indicator */}
-                <div className="flex items-center justify-center gap-2 mt-2 text-gray-500 text-xs sm:hidden">
+                <div className="flex items-center justify-center gap-2 mt-2 text-gray-500 dark:text-gray-400 text-xs sm:hidden">
                   <span>←</span>
                   <span>Scroll</span>
                   <span>→</span>
@@ -652,29 +661,29 @@ function PublicAnalyticsContent() {
         if (collections.length === 0) return null
         return (
           <div key={card.id} className="col-span-full lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm p-6 h-full">
-              <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 h-full">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-2">
                 <Users className="w-5 h-5 text-blue-600" />
                 Average Donation Per Donor
               </h2>
               <div className="space-y-6">
                 <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
-                  <p className="text-sm text-gray-600 mb-2">Average per Donor</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">Average per Donor</p>
                   <p className="text-4xl font-bold text-blue-600">₹{averageDonationData.averageDonation.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <p className="text-xs text-gray-600 mb-1">Total Donors</p>
-                    <p className="text-2xl font-bold text-gray-900">{averageDonationData.totalDonors}</p>
+                  <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <p className="text-xs text-gray-600 dark:text-gray-300 mb-1">Total Donors</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{averageDonationData.totalDonors}</p>
                   </div>
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <p className="text-xs text-gray-600 mb-1">Total Amount</p>
-                    <p className="text-2xl font-bold text-gray-900">₹{averageDonationData.totalAmount.toLocaleString()}</p>
+                  <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <p className="text-xs text-gray-600 dark:text-gray-300 mb-1">Total Amount</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">₹{averageDonationData.totalAmount.toLocaleString()}</p>
                   </div>
                 </div>
                 <div className="p-4 bg-green-50 rounded-lg border border-green-200">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-700">Collection per Donor Ratio</span>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">Collection per Donor Ratio</span>
                     <span className="text-lg font-semibold text-green-600">
                       {averageDonationData.totalDonors > 0 
                         ? `1:${(averageDonationData.totalAmount / averageDonationData.totalDonors / 100).toFixed(1)}`
@@ -697,7 +706,7 @@ function PublicAnalyticsContent() {
                 <CardTitle className="text-base md:text-lg">Collection vs Expense Over Time</CardTitle>
                 <CardDescription className="text-xs md:text-sm">Daily comparison of collections and expenses</CardDescription>
                 {/* Mobile scroll indicator */}
-                <div className="flex items-center justify-center gap-2 mt-2 text-gray-500 text-xs sm:hidden">
+                <div className="flex items-center justify-center gap-2 mt-2 text-gray-500 dark:text-gray-400 text-xs sm:hidden">
                   <span>←</span>
                   <span>Scroll</span>
                   <span>→</span>
@@ -766,19 +775,19 @@ function PublicAnalyticsContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className={`min-h-screen flex items-center justify-center ${themeClasses}`} style={{ ...bgStyle, ...themeStyles }}>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400"></div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-6 pb-24">
+    <div className={`min-h-screen p-4 md:p-6 pb-24 ${themeClasses}`} style={{ ...bgStyle, ...themeStyles }}>
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Festival Analytics</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">Festival Analytics</h1>
           {festival && (
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-300">
               Collection Period:{" "}
               {festival.ce_start_date ? new Date(festival.ce_start_date).toLocaleDateString() : "N/A"} to{" "}
               {festival.ce_end_date ? new Date(festival.ce_end_date).toLocaleDateString() : "N/A"}
@@ -787,8 +796,8 @@ function PublicAnalyticsContent() {
         </div>
 
         {analyticsCards.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-            <p className="text-gray-600">No analytics cards configured. Contact admin to set up analytics.</p>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-8 text-center">
+            <p className="text-gray-600 dark:text-gray-300">No analytics cards configured. Contact admin to set up analytics.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -796,6 +805,10 @@ function PublicAnalyticsContent() {
           </div>
         )}
       </div>
+      
+      {/* Navigation Components */}
+      <BottomNav code={code} />
+      <GlobalSessionBar festivalCode={code} currentPage="analytics" />
     </div>
   )
 }
@@ -806,11 +819,7 @@ export default function PublicAnalyticsPage() {
   
   return (
     <PasswordGate code={code}>
-      <>
-        <PublicAnalyticsContent />
-        <BottomNav code={code} />
-        <GlobalSessionBar festivalCode={code} currentPage="analytics" />
-      </>
+      <PublicAnalyticsContent />
     </PasswordGate>
   )
 }

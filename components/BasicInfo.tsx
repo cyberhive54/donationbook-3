@@ -41,7 +41,7 @@ export default function BasicInfo({ basicInfo, showEditButton = false, onEdit, f
   const showDuration = festival?.banner_show_duration !== false;
 
   return (
-    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg shadow-md p-6 mb-6 relative">
+    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-indigo-950 rounded-lg shadow-md p-6 mb-6 relative">
       {showEditButton && onEdit && (
         <button
           onClick={onEdit}
@@ -52,39 +52,39 @@ export default function BasicInfo({ basicInfo, showEditButton = false, onEdit, f
         </button>
       )}
       
-      <h1 className={`${sizeClass} ${weightClass} ${alignClass} ${colorClass} mb-4`}>
+      <h1 className={`${sizeClass} ${weightClass} ${alignClass} ${colorClass} dark:text-gray-100 mb-4`}>
         {basicInfo.event_name}
       </h1>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm md:text-base">
         {showOrganiser && basicInfo.organiser && (
           <div>
-            <span className="font-semibold text-gray-700">Organiser:</span>{' '}
-            <span className="text-gray-600">{basicInfo.organiser}</span>
+            <span className="font-semibold text-gray-700 dark:text-gray-300">Organiser:</span>{' '}
+            <span className="text-gray-600 dark:text-gray-400">{basicInfo.organiser}</span>
           </div>
         )}
         {showGuide && basicInfo.guide && (
           <div>
-            <span className="font-semibold text-gray-700">Guide:</span>{' '}
-            <span className="text-gray-600">{basicInfo.guide}</span>
+            <span className="font-semibold text-gray-700 dark:text-gray-300">Guide:</span>{' '}
+            <span className="text-gray-600 dark:text-gray-400">{basicInfo.guide}</span>
           </div>
         )}
         {showMentor && basicInfo.mentor && (
           <div>
-            <span className="font-semibold text-gray-700">Mentor:</span>{' '}
-            <span className="text-gray-600">{basicInfo.mentor}</span>
+            <span className="font-semibold text-gray-700 dark:text-gray-300">Mentor:</span>{' '}
+            <span className="text-gray-600 dark:text-gray-400">{basicInfo.mentor}</span>
           </div>
         )}
         {showLocation && basicInfo.location && (
           <div>
-            <span className="font-semibold text-gray-700">Location:</span>{' '}
-            <span className="text-gray-600">{basicInfo.location}</span>
+            <span className="font-semibold text-gray-700 dark:text-gray-300">Location:</span>{' '}
+            <span className="text-gray-600 dark:text-gray-400">{basicInfo.location}</span>
           </div>
         )}
         {showDates && (basicInfo.event_start_date || basicInfo.event_end_date) && (
           <div>
-            <span className="font-semibold text-gray-700">Festival Dates:</span>{' '}
-            <span className="text-gray-600">
+            <span className="font-semibold text-gray-700 dark:text-gray-300">Festival Dates:</span>{' '}
+            <span className="text-gray-600 dark:text-gray-400">
               {basicInfo.event_start_date ? formatDate(basicInfo.event_start_date) : '—'}
               {' '}to{' '}
               {basicInfo.event_end_date ? formatDate(basicInfo.event_end_date) : '—'}
@@ -93,8 +93,8 @@ export default function BasicInfo({ basicInfo, showEditButton = false, onEdit, f
         )}
         {showDuration && basicInfo.event_start_date && basicInfo.event_end_date && (
           <div>
-            <span className="font-semibold text-gray-700">Duration:</span>{' '}
-            <span className="text-gray-600">
+            <span className="font-semibold text-gray-700 dark:text-gray-300">Duration:</span>{' '}
+            <span className="text-gray-600 dark:text-gray-400">
               {(() => {
                 const start = new Date(basicInfo.event_start_date as string).getTime();
                 const end = new Date(basicInfo.event_end_date as string).getTime();
@@ -106,8 +106,8 @@ export default function BasicInfo({ basicInfo, showEditButton = false, onEdit, f
         )}
         {basicInfo.event_date && !basicInfo.event_start_date && !basicInfo.event_end_date && (
           <div>
-            <span className="font-semibold text-gray-700">Event Date:</span>{' '}
-            <span className="text-gray-600">{formatDate(basicInfo.event_date)}</span>
+            <span className="font-semibold text-gray-700 dark:text-gray-300">Event Date:</span>{' '}
+            <span className="text-gray-600 dark:text-gray-400">{formatDate(basicInfo.event_date)}</span>
           </div>
         )}
       </div>

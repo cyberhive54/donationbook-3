@@ -132,12 +132,12 @@ function HelpAdminStructure({ festivalCode }: { festivalCode: string }) {
 
   return (
     <div className="space-y-4">
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Admin Dashboard Structure</h2>
-        <p className="text-sm text-gray-600 mb-4">Navigate the admin dashboard with this visual guide. Click links to open sections in a new tab.</p>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Admin Dashboard Structure</h2>
+        <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">Navigate the admin dashboard with this visual guide. Click links to open sections in a new tab.</p>
         
         {adminStructure.map((tab, idx) => (
-          <div key={idx} className="mb-4 border border-gray-200 rounded-lg overflow-hidden">
+          <div key={idx} className="mb-4 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
             <div 
               className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 cursor-pointer hover:from-blue-100 hover:to-blue-200 transition-colors"
               onClick={() => toggleSection(`admin-tab-${idx}`)}
@@ -145,19 +145,19 @@ function HelpAdminStructure({ festivalCode }: { festivalCode: string }) {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">{tab.icon}</span>
-                  <h3 className="text-lg font-bold text-gray-900">{tab.title}</h3>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">{tab.title}</h3>
                 </div>
                 {collapsed[`admin-tab-${idx}`] ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
               </div>
             </div>
             
             {!collapsed[`admin-tab-${idx}`] && (
-              <div className="p-4 bg-white">
+              <div className="p-4 bg-white dark:bg-gray-800">
                 {tab.subTabs ? (
                   tab.subTabs.map((subTab, subIdx) => (
                     <div key={subIdx} className="mb-3 ml-4 border-l-2 border-blue-300 pl-4">
                       <div className="flex items-center gap-2 mb-2">
-                        <h4 className="font-semibold text-gray-800">{subTab.name}</h4>
+                        <h4 className="font-semibold text-gray-800 dark:text-gray-100">{subTab.name}</h4>
                         <a 
                           href={subTab.url}
                           target="_blank"
@@ -168,9 +168,9 @@ function HelpAdminStructure({ festivalCode }: { festivalCode: string }) {
                         </a>
                       </div>
                       {subTab.sections.map((section, secIdx) => (
-                        <div key={secIdx} className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                          <p className="text-sm font-medium text-gray-700">{section.name}</p>
-                          <p className="text-xs text-gray-500 mt-1">{section.desc}</p>
+                        <div key={secIdx} className="ml-4 mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{section.name}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{section.desc}</p>
                         </div>
                       ))}
                     </div>
@@ -189,9 +189,9 @@ function HelpAdminStructure({ festivalCode }: { festivalCode: string }) {
                       </a>
                     </div>
                     {tab.sections?.map((section, secIdx) => (
-                      <div key={secIdx} className="mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                        <p className="text-sm font-medium text-gray-700">{section.name}</p>
-                        <p className="text-xs text-gray-500 mt-1">{section.desc}</p>
+                      <div key={secIdx} className="mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{section.name}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{section.desc}</p>
                       </div>
                     ))}
                   </div>
@@ -335,12 +335,12 @@ function HelpSuperAdminStructure({ festivalCode }: { festivalCode: string }) {
 
   return (
     <div className="space-y-4">
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Super Admin Dashboard Structure</h2>
-        <p className="text-sm text-gray-600 mb-4">Navigate the super admin dashboard with this visual guide. Click links to open sections in a new tab.</p>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Super Admin Dashboard Structure</h2>
+        <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">Navigate the super admin dashboard with this visual guide. Click links to open sections in a new tab.</p>
         
         {superAdminStructure.map((tab, idx) => (
-          <div key={idx} className="mb-4 border border-gray-200 rounded-lg overflow-hidden">
+          <div key={idx} className="mb-4 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
             <div 
               className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 cursor-pointer hover:from-purple-100 hover:to-purple-200 transition-colors"
               onClick={() => toggleSection(`super-tab-${idx}`)}
@@ -348,18 +348,18 @@ function HelpSuperAdminStructure({ festivalCode }: { festivalCode: string }) {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">{tab.icon}</span>
-                  <h3 className="text-lg font-bold text-gray-900">{tab.title}</h3>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">{tab.title}</h3>
                 </div>
                 {collapsed[`super-tab-${idx}`] ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
               </div>
             </div>
             
             {!collapsed[`super-tab-${idx}`] && (
-              <div className="p-4 bg-white">
+              <div className="p-4 bg-white dark:bg-gray-800">
                 {tab.subTabs.map((subTab, subIdx) => (
                   <div key={subIdx} className="mb-3 ml-4 border-l-2 border-purple-300 pl-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <h4 className="font-semibold text-gray-800">{subTab.name}</h4>
+                      <h4 className="font-semibold text-gray-800 dark:text-gray-100">{subTab.name}</h4>
                       <a 
                         href={subTab.url}
                         target="_blank"
@@ -370,9 +370,9 @@ function HelpSuperAdminStructure({ festivalCode }: { festivalCode: string }) {
                       </a>
                     </div>
                     {subTab.sections.map((section, secIdx) => (
-                      <div key={secIdx} className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                        <p className="text-sm font-medium text-gray-700">{section.name}</p>
-                        <p className="text-xs text-gray-500 mt-1">{section.desc}</p>
+                      <div key={secIdx} className="ml-4 mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{section.name}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{section.desc}</p>
                       </div>
                     ))}
                   </div>
@@ -1779,25 +1779,25 @@ function AdminPageContent() {
         </div>
       ) : !festival ? (
         <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="theme-card bg-white rounded-lg shadow-md p-8 text-center">
-            <p className="text-gray-700">Festival not found.</p>
+          <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
+            <p className="text-gray-700 dark:text-gray-300">Festival not found.</p>
           </div>
         </div>
       ) : (
         <>
-          <div className="sticky top-0 z-40 bg-white border-b shadow-sm">
+          <div className="sticky top-0 z-40 bg-white dark:bg-gray-800 border-b shadow-sm">
             <div className="max-w-7xl mx-auto px-4">
-              <div className="py-3 border-b border-gray-200">
+              <div className="py-3 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <div>
-                      <p className="text-xs text-gray-500">Festival Code</p>
-                      <p className="text-sm font-bold text-gray-900">{festival.code}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Festival Code</p>
+                      <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{festival.code}</p>
                     </div>
                   </div>
                   
                   <div className="flex flex-wrap items-center gap-2 text-sm">
-                    <span className="text-gray-600">
+                    <span className="text-gray-600 dark:text-gray-300">
                       Logged in as <span className="font-semibold">{session?.type === "super_admin" ? "Super Admin" : "Admin"}</span>
                     </span>
                     
@@ -1823,7 +1823,7 @@ function AdminPageContent() {
               </div>
               
               <div className="overflow-x-auto">
-                <div className="flex border-b border-gray-200">
+                <div className="flex border-b border-gray-200 dark:border-gray-700">
                   <button
                     onClick={() => handleTabChange("dashboard")}
                     className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
@@ -1894,7 +1894,7 @@ function AdminPageContent() {
             {currentTab === "dashboard" && (
               <div className="space-y-6">
                 {/* Sub-tabs for Dashboard */}
-                <div className="bg-white border-b border-gray-200 rounded-t-lg">
+                <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 rounded-t-lg">
                   <div className="flex overflow-x-auto">
                     <button
                       onClick={() => handleSubTabChange("info")}
@@ -1943,16 +1943,16 @@ function AdminPageContent() {
                     
                     <StatsCards stats={stats} />
 
-                    <div className="theme-card bg-white rounded-lg shadow-md p-6">
-                      <h3 className="text-lg font-bold text-gray-800 mb-4">Title Style Settings</h3>
+                    <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                      <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Title Style Settings</h3>
                       <div className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Title Size</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title Size</label>
                             <select
                               value={titleStyleSettings.title_size}
                               onChange={(e) => setTitleStyleSettings({ ...titleStyleSettings, title_size: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                               <option value="text-2xl">Small</option>
                               <option value="text-3xl">Medium</option>
@@ -1961,11 +1961,11 @@ function AdminPageContent() {
                             </select>
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Title Weight</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title Weight</label>
                             <select
                               value={titleStyleSettings.title_weight}
                               onChange={(e) => setTitleStyleSettings({ ...titleStyleSettings, title_weight: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                               <option value="font-normal">Normal</option>
                               <option value="font-semibold">Semibold</option>
@@ -1976,11 +1976,11 @@ function AdminPageContent() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Title Alignment</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title Alignment</label>
                             <select
                               value={titleStyleSettings.title_align}
                               onChange={(e) => setTitleStyleSettings({ ...titleStyleSettings, title_align: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                               <option value="text-left">Left</option>
                               <option value="text-center">Center</option>
@@ -1988,12 +1988,12 @@ function AdminPageContent() {
                             </select>
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Title Color</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title Color</label>
                             <input
                               type="color"
                               value={titleStyleSettings.title_color}
                               onChange={(e) => setTitleStyleSettings({ ...titleStyleSettings, title_color: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-10"
+                              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-10"
                             />
                           </div>
                         </div>
@@ -2014,9 +2014,9 @@ function AdminPageContent() {
 
                 {/* Analytics Sub-tab */}
                 {currentSubTab === "analytics" && (
-                  <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                  <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-bold text-gray-800">Analytics Configuration</h3>
+                      <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">Analytics Configuration</h3>
                       <button
                         onClick={() => setIsAnalyticsConfigOpen(true)}
                         className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm"
@@ -2024,7 +2024,7 @@ function AdminPageContent() {
                         Open Analytics Config
                       </button>
                     </div>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
                       Configure collection targets, donation buckets, and time-of-day analytics for better insights.
                     </p>
                   </div>
@@ -2034,7 +2034,7 @@ function AdminPageContent() {
 
             {currentTab === "transaction" && (
               <div className="space-y-6">
-                <div className="bg-white border-b border-gray-200 rounded-t-lg">
+                <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 rounded-t-lg">
                   <div className="flex overflow-x-auto">
                     <button
                       onClick={() => handleSubTabChange("collection")}
@@ -2072,7 +2072,7 @@ function AdminPageContent() {
                 {(currentSubTab === "collection" || !currentSubTab) && (
                   <div>
                     <div className="flex justify-between items-center mb-4">
-                      <h2 className="text-2xl font-bold text-gray-800">Collections</h2>
+                      <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Collections</h2>
                       <div className="flex flex-wrap items-center gap-2">
                         <button
                           onClick={() => {
@@ -2086,13 +2086,13 @@ function AdminPageContent() {
                         </button>
                         <button
                           onClick={handleExportCollections}
-                          className="px-3 py-2 border rounded-lg hover:bg-gray-50 text-sm"
+                          className="px-3 py-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 text-sm"
                         >
                           Export JSON
                         </button>
                         <button
                           onClick={handleExportCollectionsImportFmt}
-                          className="px-3 py-2 border rounded-lg hover:bg-gray-50 text-sm"
+                          className="px-3 py-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 text-sm"
                         >
                           Export (Import Format)
                         </button>
@@ -2101,7 +2101,7 @@ function AdminPageContent() {
                             setIsImportCollectionsOpen(true)
                             setImportText("")
                           }}
-                          className="px-3 py-2 border rounded-lg hover:bg-gray-50 text-sm"
+                          className="px-3 py-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 text-sm"
                         >
                           Import JSON
                         </button>
@@ -2121,7 +2121,7 @@ function AdminPageContent() {
                 {currentSubTab === "expenses" && (
                   <div>
                     <div className="flex justify-between items-center mb-4">
-                      <h2 className="text-2xl font-bold text-gray-800">Expenses</h2>
+                      <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Expenses</h2>
                       <div className="flex flex-wrap items-center gap-2">
                         <button
                           onClick={() => {
@@ -2135,13 +2135,13 @@ function AdminPageContent() {
                         </button>
                         <button
                           onClick={handleExportExpenses}
-                          className="px-3 py-2 border rounded-lg hover:bg-gray-50 text-sm"
+                          className="px-3 py-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 text-sm"
                         >
                           Export JSON
                         </button>
                         <button
                           onClick={handleExportExpensesImportFmt}
-                          className="px-3 py-2 border rounded-lg hover:bg-gray-50 text-sm"
+                          className="px-3 py-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 text-sm"
                         >
                           Export (Import Format)
                         </button>
@@ -2150,7 +2150,7 @@ function AdminPageContent() {
                             setIsImportExpensesOpen(true)
                             setImportText("")
                           }}
-                          className="px-3 py-2 border rounded-lg hover:bg-gray-50 text-sm"
+                          className="px-3 py-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 text-sm"
                         >
                           Import JSON
                         </button>
@@ -2169,18 +2169,18 @@ function AdminPageContent() {
 
                 {currentSubTab === "configs" && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="theme-card bg-white rounded-lg shadow-md p-6">
-                      <h3 className="text-lg font-bold text-gray-800 mb-4">Collection Settings</h3>
+                    <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                      <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Collection Settings</h3>
 
                       <div className="mb-6">
-                        <h4 className="font-semibold text-gray-700 mb-2">Groups</h4>
+                        <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">Groups</h4>
                         <div className="flex gap-2 mb-3">
                           <input
                             type="text"
                             value={newGroup}
                             onChange={(e) => setNewGroup(e.target.value)}
                             placeholder="Add new group"
-                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                             onKeyPress={(e) => e.key === "Enter" && handleAddGroup()}
                           />
                           <button
@@ -2192,11 +2192,11 @@ function AdminPageContent() {
                         </div>
                         <div className="space-y-2 max-h-60 overflow-y-auto">
                           {groups.map((group) => (
-                            <div key={group} className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded">
-                              <span className="text-sm text-gray-700">{group}</span>
+                            <div key={group} className="flex justify-between items-center bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded">
+                              <span className="text-sm text-gray-700 dark:text-gray-300">{group}</span>
                               <button
                                 onClick={() => handleDeleteGroup(group)}
-                                className="p-1 hover:bg-red-100 rounded transition-colors"
+                                className="p-1 hover:bg-red-100 dark:bg-red-900 rounded transition-colors"
                               >
                                 <Trash2 className="w-4 h-4 text-red-600" />
                               </button>
@@ -2206,14 +2206,14 @@ function AdminPageContent() {
                       </div>
 
                       <div>
-                        <h4 className="font-semibold text-gray-700 mb-2">Collection Modes</h4>
+                        <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">Collection Modes</h4>
                         <div className="flex gap-2 mb-3">
                           <input
                             type="text"
                             value={newCollectionMode}
                             onChange={(e) => setNewCollectionMode(e.target.value)}
                             placeholder="Add new mode"
-                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                             onKeyPress={(e) => e.key === "Enter" && handleAddCollectionMode()}
                           />
                           <button
@@ -2225,11 +2225,11 @@ function AdminPageContent() {
                         </div>
                         <div className="space-y-2 max-h-60 overflow-y-auto">
                           {collectionModes.map((mode) => (
-                            <div key={mode} className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded">
-                              <span className="text-sm text-gray-700">{mode}</span>
+                            <div key={mode} className="flex justify-between items-center bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded">
+                              <span className="text-sm text-gray-700 dark:text-gray-300">{mode}</span>
                               <button
                                 onClick={() => handleDeleteCollectionMode(mode)}
-                                className="p-1 hover:bg-red-100 rounded transition-colors"
+                                className="p-1 hover:bg-red-100 dark:bg-red-900 rounded transition-colors"
                               >
                                 <Trash2 className="w-4 h-4 text-red-600" />
                               </button>
@@ -2239,18 +2239,18 @@ function AdminPageContent() {
                       </div>
                     </div>
 
-                    <div className="theme-card bg-white rounded-lg shadow-md p-6">
-                      <h3 className="text-lg font-bold text-gray-800 mb-4">Expense Settings</h3>
+                    <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                      <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Expense Settings</h3>
 
                       <div className="mb-6">
-                        <h4 className="font-semibold text-gray-700 mb-2">Categories</h4>
+                        <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">Categories</h4>
                         <div className="flex gap-2 mb-3">
                           <input
                             type="text"
                             value={newCategory}
                             onChange={(e) => setNewCategory(e.target.value)}
                             placeholder="Add new category"
-                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                             onKeyPress={(e) => e.key === "Enter" && handleAddCategory()}
                           />
                           <button
@@ -2262,11 +2262,11 @@ function AdminPageContent() {
                         </div>
                         <div className="space-y-2 max-h-60 overflow-y-auto">
                           {categories.map((category) => (
-                            <div key={category} className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded">
-                              <span className="text-sm text-gray-700">{category}</span>
+                            <div key={category} className="flex justify-between items-center bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded">
+                              <span className="text-sm text-gray-700 dark:text-gray-300">{category}</span>
                               <button
                                 onClick={() => handleDeleteCategory(category)}
-                                className="p-1 hover:bg-red-100 rounded transition-colors"
+                                className="p-1 hover:bg-red-100 dark:bg-red-900 rounded transition-colors"
                               >
                                 <Trash2 className="w-4 h-4 text-red-600" />
                               </button>
@@ -2276,14 +2276,14 @@ function AdminPageContent() {
                       </div>
 
                       <div>
-                        <h4 className="font-semibold text-gray-700 mb-2">Expense Modes</h4>
+                        <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">Expense Modes</h4>
                         <div className="flex gap-2 mb-3">
                           <input
                             type="text"
                             value={newExpenseMode}
                             onChange={(e) => setNewExpenseMode(e.target.value)}
                             placeholder="Add new mode"
-                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                             onKeyPress={(e) => e.key === "Enter" && handleAddExpenseMode()}
                           />
                           <button
@@ -2295,11 +2295,11 @@ function AdminPageContent() {
                         </div>
                         <div className="space-y-2 max-h-60 overflow-y-auto">
                           {expenseModes.map((mode) => (
-                            <div key={mode} className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded">
-                              <span className="text-sm text-gray-700">{mode}</span>
+                            <div key={mode} className="flex justify-between items-center bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded">
+                              <span className="text-sm text-gray-700 dark:text-gray-300">{mode}</span>
                               <button
                                 onClick={() => handleDeleteExpenseMode(mode)}
-                                className="p-1 hover:bg-red-100 rounded transition-colors"
+                                className="p-1 hover:bg-red-100 dark:bg-red-900 rounded transition-colors"
                               >
                                 <Trash2 className="w-4 h-4 text-red-600" />
                               </button>
@@ -2315,8 +2315,8 @@ function AdminPageContent() {
 
             {currentTab === "showcase" && (
               <div className="space-y-6">
-                <div className="theme-card bg-white rounded-lg shadow-md p-6">
-                  <h3 className="text-lg font-bold text-gray-800 mb-4">Media Download Control</h3>
+                <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                  <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Media Download Control</h3>
                   <div className="space-y-4">
                     <div className="flex flex-col gap-4">
                       <div className="flex items-start gap-3">
@@ -2325,18 +2325,18 @@ function AdminPageContent() {
                           id="allow-media-download"
                           checked={allowMediaDownload}
                           onChange={(e) => setAllowMediaDownload(e.target.checked)}
-                          className="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                          className="mt-1 w-4 h-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500"
                         />
                         <div className="flex-1">
-                          <label htmlFor="allow-media-download" className="text-sm font-medium text-gray-700 block mb-1 cursor-pointer">
+                          <label htmlFor="allow-media-download" className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-1 cursor-pointer">
                             Allow visitors to download media (festival-wide)
                           </label>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
                             When disabled, visitors cannot download any media from showcase
                           </p>
                         </div>
                       </div>
-                      <div className="flex justify-end pt-2 border-t border-gray-200">
+                      <div className="flex justify-end pt-2 border-t border-gray-200 dark:border-gray-700">
                         <button
                           onClick={handleSaveMediaDownload}
                           disabled={isSavingMediaDownload}
@@ -2349,34 +2349,34 @@ function AdminPageContent() {
                   </div>
                 </div>
 
-                <div className="theme-card bg-white rounded-lg shadow-md p-6">
-                  <h3 className="text-lg font-bold text-gray-800 mb-4">Showcase Albums</h3>
+                <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                  <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Showcase Albums</h3>
                   
                   {allMediaItems.length > 0 &&
                     (() => {
                       const storageStats = calculateStorageStats(allMediaItems, festival?.max_storage_mb)
                       return (
-                        <div className="mb-4 p-4 rounded-lg border bg-gray-50">
+                        <div className="mb-4 p-4 rounded-lg border bg-gray-50 dark:bg-gray-700">
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-2">
-                              <HardDrive className="w-5 h-5 text-gray-600" />
-                              <span className="text-sm font-medium text-gray-800">Storage Usage</span>
+                              <HardDrive className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                              <span className="text-sm font-medium text-gray-800 dark:text-gray-100">Storage Usage</span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <span className="text-sm text-gray-600">
+                              <span className="text-sm text-gray-600 dark:text-gray-300">
                                 {formatFileSize(storageStats.totalBytes)} / {formatFileSize(storageStats.maxBytes)}
                                 <span className="ml-2 text-xs">({storageStats.percentage.toFixed(1)}%)</span>
                               </span>
                               <button
                                 onClick={() => setIsStorageStatsOpen(true)}
-                                className="p-1 hover:bg-gray-200 rounded transition-colors"
+                                className="p-1 hover:bg-gray-200 dark:bg-gray-600 rounded transition-colors"
                                 title="View detailed storage breakdown"
                               >
-                                <Eye className="w-4 h-4 text-gray-600" />
+                                <Eye className="w-4 h-4 text-gray-600 dark:text-gray-300" />
                               </button>
                             </div>
                           </div>
-                          <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                          <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-3 overflow-hidden">
                             <div
                               className={`h-full rounded-full transition-all ${
                                 storageStats.percentage > 90
@@ -2393,7 +2393,7 @@ function AdminPageContent() {
                     })()}
                   
                   <div className="flex items-center justify-between mb-3">
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
                       Create albums and upload photos, videos, audio, and PDFs. Users can view under Showcase.
                     </p>
                     <button
@@ -2409,7 +2409,7 @@ function AdminPageContent() {
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {albums.map((a) => (
-                      <div key={a.id} className="border rounded-lg overflow-hidden bg-white">
+                      <div key={a.id} className="border rounded-lg overflow-hidden bg-white dark:bg-gray-800">
                         {a.cover_url && (
                           <img
                             src={a.cover_url || "/placeholder.svg"}
@@ -2418,16 +2418,16 @@ function AdminPageContent() {
                           />
                         )}
                         <div className="p-3">
-                          <div className="font-semibold text-gray-800 truncate">{a.title}</div>
-                          <div className="text-xs text-gray-500">{a.year || "Year N/A"}</div>
-                          <div className="text-sm text-gray-600 mt-1 line-clamp-2">{a.description}</div>
+                          <div className="font-semibold text-gray-800 dark:text-gray-100 truncate">{a.title}</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">{a.year || "Year N/A"}</div>
+                          <div className="text-sm text-gray-600 dark:text-gray-300 mt-1 line-clamp-2">{a.description}</div>
                           <div className="flex gap-2 mt-3">
                             <button
                               onClick={() => {
                                 setEditingAlbum(a)
                                 setIsAlbumModalOpen(true)
                               }}
-                              className="px-3 py-1 border rounded text-sm hover:bg-gray-50"
+                              className="px-3 py-1 border rounded text-sm hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700"
                             >
                               Edit
                             </button>
@@ -2443,7 +2443,7 @@ function AdminPageContent() {
                                 toast.success("Album deleted")
                                 fetchData()
                               }}
-                              className="px-3 py-1 border rounded text-sm hover:bg-gray-50"
+                              className="px-3 py-1 border rounded text-sm hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700"
                             >
                               Delete
                             </button>
@@ -2460,7 +2460,7 @@ function AdminPageContent() {
                         </div>
                       </div>
                     ))}
-                    {albums.length === 0 && <div className="text-sm text-gray-600">No albums yet.</div>}
+                    {albums.length === 0 && <div className="text-sm text-gray-600 dark:text-gray-300">No albums yet.</div>}
                   </div>
                 </div>
               </div>
@@ -2468,7 +2468,7 @@ function AdminPageContent() {
 
             {currentTab === "settings" && (
               <div className="space-y-6">
-                <div className="bg-white border-b border-gray-200 rounded-t-lg">
+                <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 rounded-t-lg">
                   <div className="flex overflow-x-auto">
                     <button
                       onClick={() => handleSubTabChange("personal")}
@@ -2504,33 +2504,33 @@ function AdminPageContent() {
                 </div>
 
                 {(currentSubTab === "personal" || (!currentSubTab && session?.type === "admin")) && currentAdmin && (
-                  <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                  <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                     {session?.type === "super_admin" && (
                       <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
                         <p className="text-sm text-purple-800 font-medium">Super Admin Mode</p>
                         <p className="text-xs text-purple-600 mt-1">Managing default admin account for password operations</p>
                       </div>
                     )}
-                    <h3 className="text-lg font-bold text-gray-800 mb-4">{session?.type === "super_admin" ? "Default Admin Account" : "Your Admin Account"}</h3>
+                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">{session?.type === "super_admin" ? "Default Admin Account" : "Your Admin Account"}</h3>
                     <div className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Admin Code</label>
-                          <div className="px-4 py-2 bg-gray-50 rounded-lg font-mono text-gray-800">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Admin Code</label>
+                          <div className="px-4 py-2 bg-gray-50 dark:bg-gray-700 rounded-lg font-mono text-gray-800 dark:text-gray-100">
                             {currentAdmin.admin_code}
                           </div>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Admin Name</label>
-                          <div className="px-4 py-2 bg-gray-50 rounded-lg text-gray-800">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Admin Name</label>
+                          <div className="px-4 py-2 bg-gray-50 dark:bg-gray-700 rounded-lg text-gray-800 dark:text-gray-100">
                             {currentAdmin.admin_name}
                           </div>
                         </div>
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">{session?.type === "super_admin" ? "Default Admin Login Password" : "Your Login Password"}</label>
-                        <p className="text-xs text-gray-600 mb-3">{session?.type === "super_admin" ? "This is the password for the default admin to login to the admin dashboard" : "This is your password for logging into the admin dashboard"}</p>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{session?.type === "super_admin" ? "Default Admin Login Password" : "Your Login Password"}</label>
+                        <p className="text-xs text-gray-600 dark:text-gray-300 mb-3">{session?.type === "super_admin" ? "This is the password for the default admin to login to the admin dashboard" : "This is your password for logging into the admin dashboard"}</p>
                         {editingAdminPassword ? (
                           <div className="space-y-3">
                             <input
@@ -2538,7 +2538,7 @@ function AdminPageContent() {
                               value={newAdminPassword}
                               onChange={(e) => setNewAdminPassword(e.target.value)}
                               placeholder="Enter new password"
-                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                             <div className="flex gap-2">
                               <button
@@ -2552,7 +2552,7 @@ function AdminPageContent() {
                                   setEditingAdminPassword(false)
                                   setNewAdminPassword("")
                                 }}
-                                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 transition-colors"
                               >
                                 Cancel
                               </button>
@@ -2560,7 +2560,7 @@ function AdminPageContent() {
                           </div>
                         ) : (
                           <div className="flex items-center gap-3">
-                            <div className="flex-1 px-4 py-2 bg-gray-50 rounded-lg font-mono text-gray-800">
+                            <div className="flex-1 px-4 py-2 bg-gray-50 dark:bg-gray-700 rounded-lg font-mono text-gray-800 dark:text-gray-100">
                               {showAdminPassword 
                                 ? (currentAdmin.admin_password_hash || "Not set") 
                                 : "•".repeat(currentAdmin.admin_password_hash?.length || 8)}
@@ -2568,7 +2568,7 @@ function AdminPageContent() {
                             <button
                               type="button"
                               onClick={() => setShowAdminPassword(!showAdminPassword)}
-                              className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                              className="p-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 transition-colors"
                               title={showAdminPassword ? "Hide password" : "Show password"}
                             >
                               {showAdminPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -2579,7 +2579,7 @@ function AdminPageContent() {
                                 setEditingAdminPassword(true)
                                 setNewAdminPassword("")
                               }}
-                              className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                              className="p-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 transition-colors"
                               title="Change password"
                             >
                               <Edit className="w-5 h-5" />
@@ -2592,11 +2592,11 @@ function AdminPageContent() {
                 )}
 
                 {currentSubTab === "user" && adminId && adminId.trim() && (
-                  <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                  <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                     <div className="flex items-center justify-between mb-4">
                       <div>
-                        <h3 className="text-lg font-bold text-gray-800">User Password Management</h3>
-                        <p className="text-sm text-gray-600 mt-1">Manage passwords for visitors to access the festival</p>
+                        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">User Password Management</h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Manage passwords for visitors to access the festival</p>
                       </div>
                       <button
                         onClick={() => setIsManagePasswordsOpen(true)}
@@ -2607,14 +2607,14 @@ function AdminPageContent() {
                       </button>
                     </div>
 
-                    <div className="bg-gray-50 rounded-lg p-4">
+                    <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-medium text-gray-700">Password Usage:</span>
-                        <span className="text-sm text-gray-600">
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Password Usage:</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-300">
                           {currentPasswordCount} of {maxUserPasswords} passwords created
                         </span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
                         <div
                           className={`h-2 rounded-full transition-all ${
                             currentPasswordCount >= maxUserPasswords
@@ -2627,7 +2627,7 @@ function AdminPageContent() {
                         />
                       </div>
                       {currentPasswordCount === 0 && (
-                        <p className="text-xs text-gray-500 mt-2">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                           No user passwords created yet. Click "Manage Passwords" to create one.
                         </p>
                       )}
@@ -2638,48 +2638,48 @@ function AdminPageContent() {
 
 
                 {(currentSubTab === "theme" || (session?.type === "super_admin" && !currentSubTab)) && (
-                  <div className="theme-card bg-white rounded-lg shadow-md p-6">
-                    <h3 className="text-lg font-bold text-gray-800 mb-4">Theme Settings</h3>
+                  <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Theme Settings</h3>
                     <div className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Background Color</label>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Background Color</label>
                           <input
                             type="color"
                             value={themeSettings.theme_bg_color}
                             onChange={(e) => setThemeSettings({ ...themeSettings, theme_bg_color: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-10"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-10"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Background Image URL</label>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Background Image URL</label>
                           <input
                             type="text"
                             value={themeSettings.theme_bg_image_url}
                             onChange={(e) => setThemeSettings({ ...themeSettings, theme_bg_image_url: e.target.value })}
                             placeholder="https://example.com/image.jpg"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                           />
                         </div>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Text Color</label>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Text Color</label>
                           <input
                             type="color"
                             value={themeSettings.theme_text_color}
                             onChange={(e) => setThemeSettings({ ...themeSettings, theme_text_color: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-10"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-10"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Border Color</label>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Border Color</label>
                           <input
                             type="color"
                             value={themeSettings.theme_border_color}
                             onChange={(e) => setThemeSettings({ ...themeSettings, theme_border_color: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-10"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-10"
                           />
                         </div>
                       </div>
@@ -2692,7 +2692,7 @@ function AdminPageContent() {
                             onChange={(e) => setThemeSettings({ ...themeSettings, theme_dark: e.target.checked })}
                             className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
                           />
-                          <span className="text-sm font-medium text-gray-700">Enable Dark Mode</span>
+                          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Enable Dark Mode</span>
                         </label>
                       </div>
 
@@ -2713,7 +2713,7 @@ function AdminPageContent() {
 
             {currentTab === "activity" && (
               <div className="space-y-6">
-                <div className="bg-white border-b border-gray-200 rounded-t-lg">
+                <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 rounded-t-lg">
                   <div className="flex overflow-x-auto">
                     <button
                       onClick={() => handleSubTabChange("my-activity")}
@@ -2749,7 +2749,7 @@ function AdminPageContent() {
                 </div>
 
                 {(currentSubTab === "my-activity" || !currentSubTab) && (
-                  <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                  <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                     <div className="space-y-4">
                       <div className="flex flex-col sm:flex-row gap-2">
                         <div className="relative flex-1">
@@ -2762,7 +2762,7 @@ function AdminPageContent() {
                               setOwnSearchTerm(e.target.value)
                               setOwnCurrentPage(1)
                             }}
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                           />
                         </div>
                         <select
@@ -2771,7 +2771,7 @@ function AdminPageContent() {
                             setOwnActionFilter(e.target.value)
                             setOwnCurrentPage(1)
                           }}
-                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                          className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                         >
                           <option value="all">All Actions</option>
                           {actionTypes.map(type => (
@@ -2782,40 +2782,40 @@ function AdminPageContent() {
 
                       <div className="overflow-x-auto">
                         <table className="w-full">
-                          <thead className="bg-gray-50">
+                          <thead className="bg-gray-50 dark:bg-gray-700">
                             <tr>
-                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Date & Time</th>
-                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Action</th>
-                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Target</th>
-                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Details</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Date & Time</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Action</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Target</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Details</th>
                             </tr>
                           </thead>
-                          <tbody className="divide-y divide-gray-200">
+                          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                             {paginatedOwnActivity.length === 0 ? (
                               <tr>
-                                <td colSpan={4} className="px-4 py-8 text-center text-gray-500">
+                                <td colSpan={4} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                                   No activity found
                                 </td>
                               </tr>
                             ) : (
                               paginatedOwnActivity.map((log) => (
-                                <tr key={log.log_id} className="hover:bg-gray-50">
-                                  <td className="px-4 py-3 text-sm text-gray-900">
+                                <tr key={log.log_id} className="hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700">
+                                  <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                                     {formatDate(log.timestamp)}
                                     <br />
-                                    <span className="text-xs text-gray-500">
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">
                                       {new Date(log.timestamp).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
                                     </span>
                                   </td>
                                   <td className="px-4 py-3 text-sm">
-                                    <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                                    <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 rounded-full text-xs font-medium">
                                       {log.action_type}
                                     </span>
                                   </td>
-                                  <td className="px-4 py-3 text-sm text-gray-900">
+                                  <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                                     {log.target_type || "N/A"}
                                   </td>
-                                  <td className="px-4 py-3 text-sm text-gray-600">
+                                  <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
                                     {log.action_details ? JSON.stringify(log.action_details).substring(0, 50) + "..." : "N/A"}
                                   </td>
                                 </tr>
@@ -2827,7 +2827,7 @@ function AdminPageContent() {
 
                       {ownTotalPages > 1 && (
                         <div className="flex items-center justify-between mt-4">
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-gray-600 dark:text-gray-300">
                             Showing {((ownCurrentPage - 1) * ownRecordsPerPage) + 1} to{" "}
                             {Math.min(ownCurrentPage * ownRecordsPerPage, filteredOwnActivity.length)} of{" "}
                             {filteredOwnActivity.length} entries
@@ -2836,17 +2836,17 @@ function AdminPageContent() {
                             <button
                               onClick={() => setOwnCurrentPage(p => Math.max(1, p - 1))}
                               disabled={ownCurrentPage === 1}
-                              className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="p-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                               <ChevronLeft className="w-4 h-4" />
                             </button>
-                            <span className="text-sm text-gray-600">
+                            <span className="text-sm text-gray-600 dark:text-gray-300">
                               Page {ownCurrentPage} of {ownTotalPages}
                             </span>
                             <button
                               onClick={() => setOwnCurrentPage(p => Math.min(ownTotalPages, p + 1))}
                               disabled={ownCurrentPage === ownTotalPages}
-                              className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="p-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                               <ChevronRight className="w-4 h-4" />
                             </button>
@@ -2858,7 +2858,7 @@ function AdminPageContent() {
                 )}
 
                 {currentSubTab === "transactions" && (
-                  <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                  <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                     <div className="space-y-4">
                       <div className="flex flex-col sm:flex-row gap-2">
                         <div className="relative flex-1">
@@ -2871,7 +2871,7 @@ function AdminPageContent() {
                               setTxnSearchTerm(e.target.value)
                               setTxnCurrentPage(1)
                             }}
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                           />
                         </div>
                         <select
@@ -2880,7 +2880,7 @@ function AdminPageContent() {
                             setTxnTypeFilter(e.target.value as any)
                             setTxnCurrentPage(1)
                           }}
-                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                          className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                         >
                           <option value="all">All Types</option>
                           <option value="collection">Collections Only</option>
@@ -2890,27 +2890,27 @@ function AdminPageContent() {
 
                       <div className="overflow-x-auto">
                         <table className="w-full">
-                          <thead className="bg-gray-50">
+                          <thead className="bg-gray-50 dark:bg-gray-700">
                             <tr>
-                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Type</th>
-                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Date</th>
-                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Time</th>
-                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Name/Item</th>
-                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Amount</th>
-                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Transaction To</th>
-                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">By Admin</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Type</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Date</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Time</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Name/Item</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Amount</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Transaction To</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">By Admin</th>
                             </tr>
                           </thead>
-                          <tbody className="divide-y divide-gray-200">
+                          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                             {paginatedTransactions.length === 0 ? (
                               <tr>
-                                <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
+                                <td colSpan={7} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                                   No transactions found
                                 </td>
                               </tr>
                             ) : (
                               paginatedTransactions.map((txn) => (
-                                <tr key={txn.id} className="hover:bg-gray-50">
+                                <tr key={txn.id} className="hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700">
                                   <td className="px-4 py-3">
                                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                                       txn.type === "collection"
@@ -2920,11 +2920,11 @@ function AdminPageContent() {
                                       {txn.type === "collection" ? "Collection" : "Expense"}
                                     </span>
                                   </td>
-                                  <td className="px-4 py-3 text-sm text-gray-900">{formatDate(txn.date)}</td>
-                                  <td className="px-4 py-3 text-sm text-gray-600">
+                                  <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{formatDate(txn.date)}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
                                     {formatTime(txn.time_hour, txn.time_minute) || "N/A"}
                                   </td>
-                                  <td className="px-4 py-3 text-sm text-gray-900">
+                                  <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                                     {txn.type === "collection" ? txn.name : txn.item}
                                   </td>
                                   <td className={`px-4 py-3 text-sm font-semibold ${
@@ -2932,10 +2932,10 @@ function AdminPageContent() {
                                   }`}>
                                     {formatCurrency(txn.type === "collection" ? txn.amount : txn.total_amount)}
                                   </td>
-                                  <td className="px-4 py-3 text-sm text-gray-900">
+                                  <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                                     {txn.type === "collection" ? txn.name : txn.item}
                                   </td>
-                                  <td className="px-4 py-3 text-sm text-gray-900">
+                                  <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                                     {getAdminDisplay(txn.admin_code, txn.admin_name)}
                                   </td>
                                 </tr>
@@ -2947,7 +2947,7 @@ function AdminPageContent() {
 
                       {txnTotalPages > 1 && (
                         <div className="flex items-center justify-between mt-4">
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-gray-600 dark:text-gray-300">
                             Showing {((txnCurrentPage - 1) * txnRecordsPerPage) + 1} to{" "}
                             {Math.min(txnCurrentPage * txnRecordsPerPage, filteredTransactions.length)} of{" "}
                             {filteredTransactions.length} entries
@@ -2956,17 +2956,17 @@ function AdminPageContent() {
                             <button
                               onClick={() => setTxnCurrentPage(p => Math.max(1, p - 1))}
                               disabled={txnCurrentPage === 1}
-                              className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="p-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                               <ChevronLeft className="w-4 h-4" />
                             </button>
-                            <span className="text-sm text-gray-600">
+                            <span className="text-sm text-gray-600 dark:text-gray-300">
                               Page {txnCurrentPage} of {txnTotalPages}
                             </span>
                             <button
                               onClick={() => setTxnCurrentPage(p => Math.min(txnTotalPages, p + 1))}
                               disabled={txnCurrentPage === txnTotalPages}
-                              className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="p-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                               <ChevronRight className="w-4 h-4" />
                             </button>
@@ -2978,7 +2978,7 @@ function AdminPageContent() {
                 )}
 
                 {currentSubTab === "visitors" && (
-                  <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                  <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                     <div className="space-y-4">
                       <div className="relative">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -2990,39 +2990,39 @@ function AdminPageContent() {
                             setVisitorSearchTerm(e.target.value)
                             setVisitorCurrentPage(1)
                           }}
-                          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                          className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                         />
                       </div>
 
                       <div className="overflow-x-auto">
                         <table className="w-full">
-                          <thead className="bg-gray-50">
+                          <thead className="bg-gray-50 dark:bg-gray-700">
                             <tr>
-                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Visitor Name</th>
-                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Login Time</th>
-                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Login Using</th>
-                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Access Method</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Visitor Name</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Login Time</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Login Using</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Access Method</th>
                             </tr>
                           </thead>
-                          <tbody className="divide-y divide-gray-200">
+                          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                             {paginatedVisitors.length === 0 ? (
                               <tr>
-                                <td colSpan={4} className="px-4 py-8 text-center text-gray-500">
+                                <td colSpan={4} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                                   No visitors found
                                 </td>
                               </tr>
                             ) : (
                               paginatedVisitors.map((log) => (
-                                <tr key={log.id} className="hover:bg-gray-50">
-                                  <td className="px-4 py-3 text-sm text-gray-900 font-medium">{log.visitor_name}</td>
-                                  <td className="px-4 py-3 text-sm text-gray-900">
+                                <tr key={log.id} className="hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700">
+                                  <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 font-medium">{log.visitor_name}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                                     {formatDate(log.accessed_at)}
                                     <br />
-                                    <span className="text-xs text-gray-500">
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">
                                       {new Date(log.accessed_at).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
                                     </span>
                                   </td>
-                                  <td className="px-4 py-3 text-sm text-gray-900">
+                                  <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                                     {log.admin_id ? (
                                       <div>
                                         <div className="font-medium">
@@ -3031,7 +3031,7 @@ function AdminPageContent() {
                                             admins.find(a => a.admin_id === log.admin_id)?.admin_name
                                           )}
                                         </div>
-                                        <div className="text-xs text-gray-500">{log.password_used}</div>
+                                        <div className="text-xs text-gray-500 dark:text-gray-400">{log.password_used}</div>
                                       </div>
                                     ) : "N/A"}
                                   </td>
@@ -3053,7 +3053,7 @@ function AdminPageContent() {
 
                       {visitorTotalPages > 1 && (
                         <div className="flex items-center justify-between mt-4">
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-gray-600 dark:text-gray-300">
                             Showing {((visitorCurrentPage - 1) * visitorRecordsPerPage) + 1} to{" "}
                             {Math.min(visitorCurrentPage * visitorRecordsPerPage, filteredVisitors.length)} of{" "}
                             {filteredVisitors.length} entries
@@ -3062,17 +3062,17 @@ function AdminPageContent() {
                             <button
                               onClick={() => setVisitorCurrentPage(p => Math.max(1, p - 1))}
                               disabled={visitorCurrentPage === 1}
-                              className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="p-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                               <ChevronLeft className="w-4 h-4" />
                             </button>
-                            <span className="text-sm text-gray-600">
+                            <span className="text-sm text-gray-600 dark:text-gray-300">
                               Page {visitorCurrentPage} of {visitorTotalPages}
                             </span>
                             <button
                               onClick={() => setVisitorCurrentPage(p => Math.min(visitorTotalPages, p + 1))}
                               disabled={visitorCurrentPage === visitorTotalPages}
-                              className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="p-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                               <ChevronRight className="w-4 h-4" />
                             </button>
@@ -3089,7 +3089,7 @@ function AdminPageContent() {
             {currentTab === "help" && (
               <div className="space-y-6">
                 {/* Sub-tabs for Help */}
-                <div className="bg-white border-b border-gray-200 rounded-t-lg">
+                <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 rounded-t-lg">
                   <div className="flex overflow-x-auto">
                     <button
                       onClick={() => handleSubTabChange("admin")}
@@ -3198,12 +3198,12 @@ function AdminPageContent() {
 
       {isImportCollectionsOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-            <div className="sticky top-0 bg-white border-b border-gray-200 p-6 pb-4 z-10">
-              <h3 className="text-lg font-bold text-gray-800">Import Collections (JSON)</h3>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+            <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 pb-4 z-10">
+              <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">Import Collections (JSON)</h3>
             </div>
             <div className="flex-1 overflow-y-auto p-6 pt-4">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
+              <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 rounded-lg p-3 mb-3">
                 <p className="text-sm font-semibold text-blue-900 mb-2">Required Fields:</p>
                 <p className="text-xs text-blue-800 mb-1">• name (string) - Collection name</p>
                 <p className="text-xs text-blue-800 mb-1">• amount (number) - Collection amount (positive number)</p>
@@ -3227,11 +3227,11 @@ function AdminPageContent() {
                     : "For super admin, can be null or any valid admin ID."}
                 </p>
               </div>
-              <p className="text-xs text-gray-600 mb-2">
+              <p className="text-xs text-gray-600 dark:text-gray-300 mb-2">
                 💡 Group & Mode are matched case-insensitively. Dates must be within the festival's Collection/Expense
                 date range.
               </p>
-              <div className="bg-gray-50 p-3 rounded border text-xs mb-3 font-mono overflow-x-auto">
+              <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded border text-xs mb-3 font-mono overflow-x-auto">
                 {JSON.stringify(exampleCollections, null, 2)}
               </div>
               <textarea
@@ -3241,16 +3241,16 @@ function AdminPageContent() {
                 placeholder="Paste your JSON array here..."
               />
             </div>
-            <div className="sticky bottom-0 bg-white border-t border-gray-200 p-6 pt-4 flex justify-end gap-2 z-10">
+            <div className="sticky bottom-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-6 pt-4 flex justify-end gap-2 z-10">
               <button
                 onClick={() => setImportText(JSON.stringify(exampleCollections, null, 2))}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 transition-colors"
               >
                 Copy Example
               </button>
               <button 
                 onClick={() => setIsImportCollectionsOpen(false)} 
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 transition-colors"
               >
                 Cancel
               </button>
@@ -3267,12 +3267,12 @@ function AdminPageContent() {
 
       {isImportExpensesOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-            <div className="sticky top-0 bg-white border-b border-gray-200 p-6 pb-4 z-10">
-              <h3 className="text-lg font-bold text-gray-800">Import Expenses (JSON)</h3>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+            <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 pb-4 z-10">
+              <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">Import Expenses (JSON)</h3>
             </div>
             <div className="flex-1 overflow-y-auto p-6 pt-4">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
+              <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 rounded-lg p-3 mb-3">
                 <p className="text-sm font-semibold text-blue-900 mb-2">Required Fields:</p>
                 <p className="text-xs text-blue-800 mb-1">• item (string) - Expense item name</p>
                 <p className="text-xs text-blue-800 mb-1">• pieces (number) - Number of pieces (positive integer)</p>
@@ -3300,11 +3300,11 @@ function AdminPageContent() {
                     : "For super admin, can be null or any valid admin ID."}
                 </p>
               </div>
-              <p className="text-xs text-gray-600 mb-2">
+              <p className="text-xs text-gray-600 dark:text-gray-300 mb-2">
                 💡 Category & Mode are matched case-insensitively. Dates must be within the festival's Collection/Expense
                 date range. Total amount can be manually adjusted (e.g., for discounts or rounding).
               </p>
-              <div className="bg-gray-50 p-3 rounded border text-xs mb-3 font-mono overflow-x-auto">
+              <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded border text-xs mb-3 font-mono overflow-x-auto">
                 {JSON.stringify(exampleExpenses, null, 2)}
               </div>
               <textarea
@@ -3314,16 +3314,16 @@ function AdminPageContent() {
                 placeholder="Paste your JSON array here..."
               />
             </div>
-            <div className="sticky bottom-0 bg-white border-t border-gray-200 p-6 pt-4 flex justify-end gap-2 z-10">
+            <div className="sticky bottom-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-6 pt-4 flex justify-end gap-2 z-10">
               <button
                 onClick={() => setImportText(JSON.stringify(exampleExpenses, null, 2))}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 transition-colors"
               >
                 Copy Example
               </button>
               <button 
                 onClick={() => setIsImportExpensesOpen(false)} 
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 transition-colors"
               >
                 Cancel
               </button>

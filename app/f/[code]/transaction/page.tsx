@@ -142,10 +142,10 @@ export default function TransactionPage() {
             <>
               <StatsCards stats={stats} />
 
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">Transaction History</h2>
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Transaction History</h2>
               <TransactionTable transactions={transactions} modes={allModes} />
 
-              <h2 className="text-2xl font-bold text-gray-800 mt-12 mb-6">Statistics</h2>
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mt-12 mb-6">Statistics</h2>
               <div className="space-y-6">
                 <CollectionVsExpenseChart collections={collections} expenses={expenses} festivalStartDate={festival.ce_start_date} festivalEndDate={festival.ce_end_date} />
 
