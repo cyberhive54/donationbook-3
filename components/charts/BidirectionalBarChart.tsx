@@ -55,7 +55,14 @@ export default function BidirectionalBarChart({ data, title }: BidirectionalBarC
 
   return (
     <div className="theme-card bg-white rounded-lg shadow-md p-4 sm:p-6">
-      <h3 className="text-base md:text-lg font-semibold text-gray-800 mb-4">{title}</h3>
+      <h3 className="text-base md:text-lg font-semibold text-gray-800 mb-2">{title}</h3>
+      
+      {/* Mobile scroll indicator */}
+      <div className="flex items-center justify-center gap-2 mb-2 text-gray-500 text-xs sm:hidden">
+        <span>←</span>
+        <span>Scroll</span>
+        <span>→</span>
+      </div>
       
       {data.length === 0 ? (
         <div className="h-64 flex items-center justify-center text-gray-500">

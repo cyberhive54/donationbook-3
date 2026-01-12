@@ -307,27 +307,27 @@ function PublicAnalyticsContent() {
         
         return (
           <div key={card.id} className="col-span-full lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm p-6 h-full">
+            <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 h-full">
               <div className="flex items-center gap-2 mb-4">
-                <Calendar className="w-5 h-5 text-gray-600" />
-                <h2 className="text-xl font-bold text-gray-900">Previous Year Summary</h2>
+                <Calendar className="w-5 h-5 text-gray-600 flex-shrink-0" />
+                <h2 className="text-base sm:text-xl font-bold text-gray-900 break-words">Previous Year Summary</h2>
               </div>
               <div className="space-y-4">
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="text-gray-600">Collection</span>
-                  <span className="text-lg font-semibold text-gray-900">
+                <div className="flex justify-between items-center gap-2 p-3 bg-gray-50 rounded-lg">
+                  <span className="text-gray-600 text-sm sm:text-base">Collection</span>
+                  <span className="text-sm sm:text-lg font-semibold text-gray-900 break-all text-right">
                     ₹{(analyticsConfig.previous_year_total_collection || 0).toLocaleString()}
                   </span>
                 </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="text-gray-600">Expense</span>
-                  <span className="text-lg font-semibold text-gray-900">
+                <div className="flex justify-between items-center gap-2 p-3 bg-gray-50 rounded-lg">
+                  <span className="text-gray-600 text-sm sm:text-base">Expense</span>
+                  <span className="text-sm sm:text-lg font-semibold text-gray-900 break-all text-right">
                     ₹{(analyticsConfig.previous_year_total_expense || 0).toLocaleString()}
                   </span>
                 </div>
-                <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
-                  <span className="text-gray-600 font-medium">Net Balance</span>
-                  <span className={`text-lg font-bold ${prevYearNetBalance >= 0 ? "text-blue-600" : "text-orange-600"}`}>
+                <div className="flex justify-between items-center gap-2 p-3 bg-blue-50 rounded-lg">
+                  <span className="text-gray-600 font-medium text-sm sm:text-base">Net Balance</span>
+                  <span className={`text-sm sm:text-lg font-bold break-all text-right ${prevYearNetBalance >= 0 ? "text-blue-600" : "text-orange-600"}`}>
                     ₹{prevYearNetBalance.toLocaleString()}
                   </span>
                 </div>
@@ -345,6 +345,12 @@ function PublicAnalyticsContent() {
               <CardHeader>
                 <CardTitle className="text-base md:text-lg">Collections by Donation Amount</CardTitle>
                 <CardDescription className="text-xs md:text-sm">Distribution across amount ranges</CardDescription>
+                {/* Mobile scroll indicator */}
+                <div className="flex items-center justify-center gap-2 mt-2 text-gray-500 text-xs sm:hidden">
+                  <span>←</span>
+                  <span>Scroll</span>
+                  <span>→</span>
+                </div>
               </CardHeader>
               <CardContent className="overflow-x-auto">
                 <ChartContainer
@@ -384,9 +390,9 @@ function PublicAnalyticsContent() {
                           className="w-3 h-3 rounded-full flex-shrink-0"
                           style={{ backgroundColor: COLORS[idx % COLORS.length] }}
                         ></div>
-                        <span className="text-gray-700 text-sm">{item.bucket_label}</span>
+                        <span className="text-gray-700 text-sm break-words">{item.bucket_label}</span>
                       </div>
-                      <div className="text-right">
+                      <div className="text-right flex-shrink-0">
                         <p className="font-semibold text-gray-900 text-sm">₹{item.total_amount.toLocaleString()}</p>
                         <p className="text-xs text-gray-600">{item.donation_count} donations</p>
                       </div>
@@ -407,6 +413,12 @@ function PublicAnalyticsContent() {
               <CardHeader>
                 <CardTitle className="text-base md:text-lg">Collections by Time of Day</CardTitle>
                 <CardDescription className="text-xs md:text-sm">When collections happen throughout the day</CardDescription>
+                {/* Mobile scroll indicator */}
+                <div className="flex items-center justify-center gap-2 mt-2 text-gray-500 text-xs sm:hidden">
+                  <span>←</span>
+                  <span>Scroll</span>
+                  <span>→</span>
+                </div>
               </CardHeader>
               <CardContent className="overflow-x-auto">
                 <ChartContainer
@@ -442,9 +454,9 @@ function PublicAnalyticsContent() {
                           className="w-3 h-3 rounded-full flex-shrink-0"
                           style={{ backgroundColor: COLORS[idx % COLORS.length] }}
                         ></div>
-                        <span className="text-gray-700 text-sm">{item.bucket_label}</span>
+                        <span className="text-gray-700 text-sm break-words">{item.bucket_label}</span>
                       </div>
-                      <div className="text-right">
+                      <div className="text-right flex-shrink-0">
                         <p className="font-semibold text-gray-900 text-sm">₹{item.total_amount.toLocaleString()}</p>
                         <p className="text-xs text-gray-600">{item.collection_count} collections</p>
                       </div>
@@ -465,6 +477,12 @@ function PublicAnalyticsContent() {
               <CardHeader>
                 <CardTitle className="text-base md:text-lg">Daily Net Balance</CardTitle>
                 <CardDescription className="text-xs md:text-sm">Collection minus expense per day</CardDescription>
+                {/* Mobile scroll indicator */}
+                <div className="flex items-center justify-center gap-2 mt-2 text-gray-500 text-xs sm:hidden">
+                  <span>←</span>
+                  <span>Scroll</span>
+                  <span>→</span>
+                </div>
               </CardHeader>
               <CardContent className="overflow-x-auto">
                 <ChartContainer
@@ -552,6 +570,12 @@ function PublicAnalyticsContent() {
               <CardHeader>
                 <CardTitle className="text-base md:text-lg">Transactions Per Day</CardTitle>
                 <CardDescription className="text-xs md:text-sm">Number of collections and expenses daily</CardDescription>
+                {/* Mobile scroll indicator */}
+                <div className="flex items-center justify-center gap-2 mt-2 text-gray-500 text-xs sm:hidden">
+                  <span>←</span>
+                  <span>Scroll</span>
+                  <span>→</span>
+                </div>
               </CardHeader>
               <CardContent className="overflow-x-auto">
                 <ChartContainer
@@ -672,6 +696,12 @@ function PublicAnalyticsContent() {
               <CardHeader>
                 <CardTitle className="text-base md:text-lg">Collection vs Expense Over Time</CardTitle>
                 <CardDescription className="text-xs md:text-sm">Daily comparison of collections and expenses</CardDescription>
+                {/* Mobile scroll indicator */}
+                <div className="flex items-center justify-center gap-2 mt-2 text-gray-500 text-xs sm:hidden">
+                  <span>←</span>
+                  <span>Scroll</span>
+                  <span>→</span>
+                </div>
               </CardHeader>
               <CardContent className="overflow-x-auto">
                 <ChartContainer
