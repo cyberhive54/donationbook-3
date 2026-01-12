@@ -88,27 +88,68 @@ export function useSession(festivalCode: string) {
                 return;
               }
               
-              // Get IST date string for login time using same method as getTodayIST
-              const formatter = new Intl.DateTimeFormat('en-CA', {
-                timeZone: 'Asia/Kolkata',
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-              });
-              const sessionDateIST = formatter.format(loginTime);
+              // More lenient date validation - check if session is from today OR within last 30 seconds
+              // This handles timezone issues and fresh logins on mobile devices
+              const now = new Date();
+              const sessionAge = now.getTime() - loginTime.getTime();
+              const thirtySecondsInMs = 30 * 1000;
               
-              console.log('[useSession] Today IST:', todayIST);
-              console.log('[useSession] Session Date IST:', sessionDateIST);
-              
-              // Check if session is from today (IST)
-              if (sessionDateIST === todayIST) {
-                console.log('[useSession] Session valid, setting session');
+              // If session was just created (within 30 seconds), consider it valid
+              if (sessionAge < thirtySecondsInMs) {
+                console.log('[useSession] ✅ Fresh session detected (age:', sessionAge, 'ms), bypassing date validation');
+                console.log('[useSession] Session details:', {
+                  loginTime: parsedSession.loginTime,
+                  type: parsedSession.type,
+                  festivalCode: parsedSession.festivalCode || parsedSession.type
+                });
                 setSession(parsedSession);
-              } else {
-                console.log('[useSession] Session expired (not from today), removing');
-                // Session expired (not from today in IST), remove it
-                localStorage.removeItem(sessionKey);
-                setSession(null);
+                setIsLoading(false);
+                return;
+              }
+              
+              // For older sessions, check if from today using IST timezone
+              try {
+                const formatter = new Intl.DateTimeFormat('en-CA', {
+                  timeZone: 'Asia/Kolkata',
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                });
+                const sessionDateIST = formatter.format(loginTime);
+                
+                console.log('[useSession] Today IST:', todayIST);
+                console.log('[useSession] Session Date IST:', sessionDateIST);
+                console.log('[useSession] Session age (hours):', (sessionAge / 1000 / 60 / 60).toFixed(2));
+                
+                // Check if session is from today (IST)
+                if (sessionDateIST === todayIST) {
+                  console.log('[useSession] Session valid (same day), setting session');
+                  setSession(parsedSession);
+                } else {
+                  console.log('[useSession] ⚠️ Session expired (not from today), removing');
+                  console.log('[useSession] Session details:', {
+                    loginTime: parsedSession.loginTime,
+                    sessionDateIST,
+                    todayIST,
+                    festivalCode,
+                    type: parsedSession.type
+                  });
+                  // Session expired (not from today in IST), remove it
+                  localStorage.removeItem(sessionKey);
+                  setSession(null);
+                }
+              } catch (dateError) {
+                // If date formatting fails (old browsers), fall back to 24-hour check
+                console.warn('[useSession] Date formatting failed, using 24h fallback:', dateError);
+                const twentyFourHours = 24 * 60 * 60 * 1000;
+                if (sessionAge < twentyFourHours) {
+                  console.log('[useSession] Session within 24h, setting session');
+                  setSession(parsedSession);
+                } else {
+                  console.log('[useSession] Session older than 24h, removing');
+                  localStorage.removeItem(sessionKey);
+                  setSession(null);
+                }
               }
             } else {
               console.warn('[useSession] Invalid session type:', parsedSession);
@@ -177,6 +218,8 @@ export function useSession(festivalCode: string) {
 
   const logout = () => {
     const sessionKey = `session:${festivalCode}`;
+    console.log('[useSession] LOGOUT called for:', festivalCode);
+    console.trace('[useSession] Logout stack trace');
     localStorage.removeItem(sessionKey);
     setSession(null);
     setValidationResult(null);

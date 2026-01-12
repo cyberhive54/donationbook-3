@@ -422,14 +422,11 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
         toast.success('Access granted!');
       }
       
-      // Wait a bit longer on mobile to ensure localStorage is fully written
-      await new Promise(resolve => setTimeout(resolve, 150));
+      // Wait for mobile browsers to fully write localStorage
+      await new Promise(resolve => setTimeout(resolve, 200));
       
-      // Force a re-render by setting isVerifying to false
+      // Clear verifying state - component will re-render and detect the session
       setIsVerifying(false);
-      
-      // Trigger a window location check to ensure page updates
-      window.dispatchEvent(new Event('storage'));
       
     } catch (error: any) {
       console.error('Login error:', error);
