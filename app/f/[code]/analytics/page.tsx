@@ -10,6 +10,7 @@ import GlobalSessionBar from "@/components/GlobalSessionBar"
 import { useSession } from "@/lib/hooks/useSession"
 import { TrendingUp, TrendingDown, Target, Calendar, Users, FileText, BarChart3, ArrowUp, ArrowDown } from "lucide-react"
 import toast from "react-hot-toast"
+import { getThemeStyles, getThemeClasses } from "@/lib/theme"
 import {
   BarChart,
   Bar,
@@ -95,6 +96,14 @@ function PublicAnalyticsContent() {
 
   const prevYearNetBalance =
     (analyticsConfig?.previous_year_total_collection || 0) - (analyticsConfig?.previous_year_total_expense || 0)
+
+  // Theme styling
+  const bgStyle: React.CSSProperties = festival?.theme_bg_image_url
+    ? { backgroundImage: `url(${festival.theme_bg_image_url})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+    : { backgroundColor: festival?.theme_bg_color || '#f8fafc' };
+
+  const themeStyles = getThemeStyles(festival);
+  const themeClasses = getThemeClasses(festival);
 
   const collectionsByBuckets = useMemo(() => {
     return donationBuckets.length > 0 ? getCollectionsByBuckets(collections, donationBuckets) : []
@@ -766,14 +775,14 @@ function PublicAnalyticsContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className={`min-h-screen flex items-center justify-center ${themeClasses}`} style={{ ...bgStyle, ...themeStyles }}>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400"></div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-6 pb-24">
+    <div className={`min-h-screen p-4 md:p-6 pb-24 ${themeClasses}`} style={{ ...bgStyle, ...themeStyles }}>
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">Festival Analytics</h1>
