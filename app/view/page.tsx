@@ -6,6 +6,8 @@ import { supabase } from '@/lib/supabase';
 import { resolveCurrentFestivalCode } from '@/lib/festivalCodeRedirect';
 import toast from 'react-hot-toast';
 import { AlertCircle, CheckCircle, Users, Shield } from 'lucide-react';
+import ThemeToggle from '@/components/ThemeToggle';
+import Link from 'next/link';
 
 export default function ViewFestival() {
   const [code, setCode] = useState('');
@@ -113,10 +115,16 @@ export default function ViewFestival() {
   const validationError = validateCode(code);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-md w-full max-w-md p-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2 text-center">Access Festival</h1>
-        <p className="text-sm text-gray-600 mb-6 text-center">Enter the festival code to continue</p>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4 transition-colors relative">
+      <div className="absolute top-4 right-4 z-10 flex items-center gap-3">
+        <Link href="/" className="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 font-medium">
+          Home
+        </Link>
+        <ThemeToggle />
+      </div>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md w-full max-w-md p-8 border border-gray-200 dark:border-gray-700">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2 text-center">Access Festival</h1>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 text-center">Enter the festival code to continue</p>
         
         {success && (
           <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3">
