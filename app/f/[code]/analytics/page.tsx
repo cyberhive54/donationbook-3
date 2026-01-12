@@ -805,6 +805,10 @@ function PublicAnalyticsContent() {
           </div>
         )}
       </div>
+      
+      {/* Navigation Components */}
+      <BottomNav code={code} />
+      <GlobalSessionBar festivalCode={code} currentPage="analytics" />
     </div>
   )
 }
@@ -815,11 +819,7 @@ export default function PublicAnalyticsPage() {
   
   return (
     <PasswordGate code={code}>
-      <>
-        <PublicAnalyticsContent />
-        <BottomNav code={code} />
-        <GlobalSessionBar festivalCode={code} currentPage="analytics" />
-      </>
+      <PublicAnalyticsContent />
     </PasswordGate>
   )
 }
