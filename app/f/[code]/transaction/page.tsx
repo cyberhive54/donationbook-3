@@ -1,27 +1,27 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Festival, Collection, Expense, Stats, Transaction } from '@/types';
 import { calculateStats, combineTransactions, groupBy, groupByDateBetween } from '@/lib/utils';
 import PasswordGate from '@/components/PasswordGate';
-import BasicInfo from '@/components/BasicInfo';
 import StatsCards from '@/components/StatsCards';
 import BottomNav from '@/components/BottomNav';
 import GlobalSessionBar from '@/components/GlobalSessionBar';
 import TransactionTable from '@/components/tables/TransactionTable';
 import CollectionVsExpenseChart from '@/components/charts/CollectionVsExpenseChart';
 import PieChart from '@/components/charts/PieChart';
-import { InfoSkeleton, CardSkeleton, TableSkeleton, ChartSkeleton } from '@/components/Loader';
+import DateRangeDualBarChart from '@/components/charts/DateRangeDualBarChart';
+import { CardSkeleton, TableSkeleton, ChartSkeleton } from '@/components/Loader';
 import toast from 'react-hot-toast';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { getThemeStyles, getThemeClasses } from '@/lib/theme';
-import { format } from 'date-fns';
+import { BarChart3 } from 'lucide-react';
 
 export default function TransactionPage() {
   const params = useParams<{ code: string }>();
   const code = (params?.code as string) || '';
+  const router = useRouter();
 
   const [festival, setFestival] = useState<Festival | null>(null);
   const [collections, setCollections] = useState<Collection[]>([]);
@@ -114,32 +114,6 @@ export default function TransactionPage() {
     }));
   }, [expenses]);
 
-  const dailyCollectionExpense = useMemo(() => {
-    const collectionsByDate = groupByDateBetween(collections, festival?.ce_start_date || null, festival?.ce_end_date || null);
-    const expensesByDate = groupByDateBetween(expenses, festival?.ce_start_date || null, festival?.ce_end_date || null);
-
-    const dateMap = new Map<string, { collection: number; expense: number }>();
-
-    collectionsByDate.forEach((item) => {
-      dateMap.set(item.date, { collection: item.amount, expense: 0 });
-    });
-
-    expensesByDate.forEach((item) => {
-      const existing = dateMap.get(item.date);
-      if (existing) {
-        existing.expense = item.amount;
-      } else {
-        dateMap.set(item.date, { collection: 0, expense: item.amount });
-      }
-    });
-
-    return Array.from(dateMap.entries()).map(([date, values]) => ({
-      date,
-      collection: values.collection,
-      expense: -values.expense,
-    }));
-  }, [collections, expenses]);
-
   const bgStyle: React.CSSProperties = festival?.theme_bg_image_url
     ? { backgroundImage: `url(${festival.theme_bg_image_url})`, backgroundSize: 'cover', backgroundPosition: 'center' }
     : { backgroundColor: festival?.theme_bg_color || '#f8fafc' };
@@ -153,7 +127,6 @@ export default function TransactionPage() {
         <div className="max-w-7xl mx-auto px-4 py-6">
           {loading ? (
             <>
-              <InfoSkeleton />
               <CardSkeleton />
               <TableSkeleton rows={10} />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
@@ -167,20 +140,6 @@ export default function TransactionPage() {
             </div>
           ) : (
             <>
-              <BasicInfo 
-                basicInfo={{
-                  id: festival.id,
-                  event_name: festival.event_name,
-                  organiser: festival.organiser || '',
-                  mentor: festival.mentor || '',
-                  guide: festival.guide || '',
-                  event_start_date: festival.event_start_date,
-                  event_end_date: festival.event_end_date,
-                  location: festival.location,
-                  other_data: festival.other_data,
-                } as any}
-                festival={festival}
-              />
               <StatsCards stats={stats} />
 
               <h2 className="text-2xl font-bold text-gray-800 mb-6">Transaction History</h2>
@@ -200,30 +159,21 @@ export default function TransactionPage() {
                   <PieChart data={expensesByMode} title="Expenses by Mode" />
                 </div>
 
-                <div className="theme-card bg-white rounded-lg shadow-md p-6">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                    Daily Collection & Expense (Festival Month Range)
-                  </h3>
-                  {dailyCollectionExpense.length === 0 ? (
-                    <div className="h-64 flex items-center justify-center text-gray-500">
-                      No data available
-                    </div>
-                  ) : (
-                    <ResponsiveContainer width="100%" height={300}>
-                      <BarChart data={dailyCollectionExpense}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="date" tick={{ fontSize: 12 }} />
-                        <YAxis tick={{ fontSize: 12 }} />
-                        <Tooltip
-                          formatter={(value: number | undefined) => `₹${Math.abs(value ?? 0).toFixed(2)}`}
-                          labelFormatter={(label) => `Date: ${label}`}
-                        />
-                        <ReferenceLine y={0} stroke="#000" />
-                        <Bar dataKey="collection" fill="#10b981" name="Collection" />
-                        <Bar dataKey="expense" fill="#ef4444" name="Expense" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  )}
+                <DateRangeDualBarChart
+                  collections={collections}
+                  expenses={expenses}
+                  title="Daily Collection & Expense (Dynamic Range)"
+                />
+
+                {/* View Full Analytics Button */}
+                <div className="flex justify-center mt-8">
+                  <button
+                    onClick={() => router.push(`/f/${code}/analytics`)}
+                    className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-md hover:shadow-lg font-semibold"
+                  >
+                    <BarChart3 className="w-5 h-5" />
+                    <span>View Full Analytics</span>
+                  </button>
                 </div>
               </div>
             </>

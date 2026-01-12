@@ -54,8 +54,15 @@ export default function BidirectionalBarChart({ data, title }: BidirectionalBarC
   };
 
   return (
-    <div className="theme-card bg-white rounded-lg shadow-md p-6">
-      <h3 className="text-lg font-semibold text-gray-800 mb-4">{title}</h3>
+    <div className="theme-card bg-white rounded-lg shadow-md p-4 sm:p-6">
+      <h3 className="text-base md:text-lg font-semibold text-gray-800 mb-2">{title}</h3>
+      
+      {/* Mobile scroll indicator */}
+      <div className="flex items-center justify-center gap-2 mb-2 text-gray-500 text-xs sm:hidden">
+        <span>←</span>
+        <span>Scroll</span>
+        <span>→</span>
+      </div>
       
       {data.length === 0 ? (
         <div className="h-64 flex items-center justify-center text-gray-500">
@@ -63,40 +70,45 @@ export default function BidirectionalBarChart({ data, title }: BidirectionalBarC
         </div>
       ) : (
         <>
-          <div className="mb-4 flex items-center justify-center gap-6">
+          <div className="mb-4 flex flex-col xs:flex-row items-center justify-center gap-3 xs:gap-6">
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 bg-green-500 rounded"></div>
-              <span className="text-sm text-gray-700">Collection (Above)</span>
+              <span className="text-xs sm:text-sm text-gray-700">Collection (Above)</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 bg-red-500 rounded"></div>
-              <span className="text-sm text-gray-700">Expense (Below)</span>
+              <span className="text-xs sm:text-sm text-gray-700">Expense (Below)</span>
             </div>
           </div>
           
-          <ResponsiveContainer width="100%" height={350}>
-            <BarChart 
-              data={chartData}
-              margin={{ top: 20, right: 30, left: 20, bottom: 80 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis 
-                dataKey="date" 
-                angle={-45} 
-                textAnchor="end" 
-                height={80}
-                tick={{ fontSize: 11 }}
-              />
-              <YAxis 
-                tickFormatter={(value) => `₹${Math.abs(value)}`}
-                tick={{ fontSize: 11 }}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <ReferenceLine y={0} stroke="#666" strokeWidth={2} />
-              <Bar dataKey="collection" fill="#10b981" radius={[8, 8, 0, 0]} />
-              <Bar dataKey="expense" fill="#ef4444" radius={[0, 0, 8, 8]} />
-            </BarChart>
-          </ResponsiveContainer>
+          <div className="overflow-x-auto -mx-4 sm:mx-0">
+            <div className="min-w-[300px] px-4 sm:px-0">
+              <ResponsiveContainer width="100%" height={380} minWidth={300}>
+                <BarChart 
+                  data={chartData}
+                  margin={{ top: 20, right: 10, left: 0, bottom: 100 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis 
+                    dataKey="date" 
+                    angle={-45} 
+                    textAnchor="end" 
+                    height={100}
+                    tick={{ fontSize: 10 }}
+                  />
+                  <YAxis 
+                    tickFormatter={(value) => `₹${Math.abs(value)}`}
+                    tick={{ fontSize: 10 }}
+                    width={60}
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <ReferenceLine y={0} stroke="#666" strokeWidth={2} />
+                  <Bar dataKey="collection" fill="#10b981" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="expense" fill="#ef4444" radius={[0, 0, 8, 8]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
         </>
       )}
     </div>

@@ -328,24 +328,12 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
         session_id: visitorSession.sessionId
       });
       
-      // Try calling with new parameters first (if function is updated)
+      // Log access - simplified to avoid function overload conflict
+      // Due to duplicate function signatures in database, use simpler version without UUID params
       let logAccessData, logAccessError;
       try {
-        const result = await supabase.rpc('log_festival_access', {
-          p_festival_id: festival.id,
-          p_visitor_name: sanitizedName,
-          p_access_method: 'password_modal',
-          p_password_used: password.trim(),
-          p_session_id: visitorSession.sessionId,
-          p_admin_id: passwordData.admin_id,
-          p_user_password_id: passwordData.password_id
-        });
-        logAccessData = result.data;
-        logAccessError = result.error;
-      } catch (firstAttemptError: any) {
-        console.warn('[PasswordGate] New function signature failed, trying old signature:', firstAttemptError);
-        
-        // Fallback to old function signature (without admin_id and user_password_id)
+        // Use simpler function signature (without admin_id and user_password_id UUIDs)
+        // to avoid PGRST203 overload error
         const result = await supabase.rpc('log_festival_access', {
           p_festival_id: festival.id,
           p_visitor_name: sanitizedName,
@@ -355,6 +343,21 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
         });
         logAccessData = result.data;
         logAccessError = result.error;
+        
+        // If successful but admin_id/user_password_id tracking is needed,
+        // update the access_logs record directly
+        if (!logAccessError && logAccessData) {
+          await supabase
+            .from('access_logs')
+            .update({
+              admin_id: passwordData.admin_id,
+              user_password_id: passwordData.password_id
+            })
+            .eq('id', logAccessData);
+        }
+      } catch (logError: any) {
+        console.warn('[PasswordGate] Access logging error:', logError);
+        logAccessError = logError;
       }
       
       console.log('[PasswordGate] log_festival_access result:', {
@@ -367,7 +370,6 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
       
       if (logAccessError) {
         console.error('[PasswordGate] ❌ CRITICAL: Failed to log access:', logAccessError);
-        toast.error('Warning: Login not recorded. Please contact admin.');
       } else {
         console.log('[PasswordGate] ✅ Access logged successfully, record ID:', logAccessData);
       }
@@ -393,13 +395,24 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
       // Clear password field for security
       setPassword('');
       
-      // Verify session was saved correctly
+      // CRITICAL: Force multiple verification attempts for mobile browsers
       const sessionKey = `session:${code}`;
-      await new Promise(resolve => setTimeout(resolve, 50)); // Small delay for localStorage write
-      const savedSession = localStorage.getItem(sessionKey);
+      let verificationAttempts = 0;
+      let savedSession = null;
+      
+      // Try up to 5 times with increasing delays to ensure write completes
+      while (verificationAttempts < 5 && !savedSession) {
+        await new Promise(resolve => setTimeout(resolve, 50 + (verificationAttempts * 50)));
+        savedSession = localStorage.getItem(sessionKey) || sessionStorage.getItem(sessionKey);
+        verificationAttempts++;
+        
+        if (!savedSession) {
+          console.warn(`[PasswordGate] Session verification attempt ${verificationAttempts} failed, retrying...`);
+        }
+      }
       
       if (!savedSession) {
-        throw new Error('Failed to save session. Please try again.');
+        throw new Error('Failed to save session after multiple attempts. Please try again.');
       }
       
       // Parse and verify the saved session
@@ -408,16 +421,29 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
         if (parsed.type !== 'visitor' || parsed.festivalCode !== code) {
           throw new Error('Session saved incorrectly');
         }
+        console.log('[PasswordGate] ✅ Session verified successfully after', verificationAttempts, 'attempts');
       } catch (verifyError) {
         console.error('Session verification failed:', verifyError);
         throw new Error('Session verification failed. Please try again.');
       }
       
-      toast.success('Access granted!');
+      // Show success message only if logging succeeded
+      if (logAccessError) {
+        toast('Access granted! (Warning: Login not recorded, contact admin)', {
+          duration: 5000,
+          icon: '⚠️'
+        });
+      } else {
+        toast.success('Access granted!');
+      }
       
-      // Keep isVerifying true briefly - component will detect session and show children
-      // The session check at the top will handle the redirect
-      // Don't set isVerifying to false here - let the component re-render detect session
+      // Give a final moment for state to propagate (already verified above)
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Clear verifying state - component will re-render and detect the session
+      setIsVerifying(false);
+      
+      console.log('[PasswordGate] ✅ Login complete, rendering children');
       
     } catch (error: any) {
       console.error('Login error:', error);

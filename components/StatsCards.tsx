@@ -50,10 +50,10 @@ export default function StatsCards({ stats }: StatsCardsProps) {
             className={`${card.bgColor} rounded-lg shadow-md p-4 transition-transform hover:scale-105`}
           >
             <div className="flex items-center justify-between mb-2">
-              <Icon className={`w-6 h-6 ${card.color}`} />
+              <p className="text-xs md:text-sm text-gray-600 font-medium">{card.label}</p>
+              <Icon className={`w-5 h-5 md:w-6 md:h-6 ${card.color} flex-shrink-0`} />
             </div>
-            <p className="text-xs md:text-sm text-gray-600 mb-1">{card.label}</p>
-            <p className={`text-lg md:text-xl font-bold ${card.color}`}>
+            <p className={`text-lg md:text-2xl font-bold ${card.color}`}>
               {card.value}
             </p>
           </div>

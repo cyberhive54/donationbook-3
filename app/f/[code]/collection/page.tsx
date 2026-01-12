@@ -1,27 +1,26 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Festival, Collection, Expense, Stats } from '@/types';
 import { calculateStats, groupBy, groupByDateBetween } from '@/lib/utils';
 import PasswordGate from '@/components/PasswordGate';
-import BasicInfo from '@/components/BasicInfo';
 import StatsCards from '@/components/StatsCards';
 import BottomNav from '@/components/BottomNav';
 import GlobalSessionBar from '@/components/GlobalSessionBar';
 import CollectionTable from '@/components/tables/CollectionTable';
-import CollectionVsExpenseChart from '@/components/charts/CollectionVsExpenseChart';
 import PieChart from '@/components/charts/PieChart';
-import BarChart from '@/components/charts/BarChart';
-import TopDonatorsChart from '@/components/charts/TopDonatorsChart';
-import { InfoSkeleton, CardSkeleton, TableSkeleton, ChartSkeleton } from '@/components/Loader';
+import DateRangeBarChart from '@/components/charts/DateRangeBarChart';
+import { CardSkeleton, TableSkeleton, ChartSkeleton } from '@/components/Loader';
 import toast from 'react-hot-toast';
 import { getThemeStyles, getThemeClasses } from '@/lib/theme';
+import { BarChart3 } from 'lucide-react';
 
 export default function CollectionPage() {
   const params = useParams<{ code: string }>();
   const code = (params?.code as string) || '';
+  const router = useRouter();
 
   const [festival, setFestival] = useState<Festival | null>(null);
   const [collections, setCollections] = useState<Collection[]>([]);
@@ -94,10 +93,6 @@ export default function CollectionPage() {
     }));
   }, [collections]);
 
-  const dailyCollections = useMemo(() => {
-    return groupByDateBetween(collections, festival?.ce_start_date || null, festival?.ce_end_date || null);
-  }, [collections, festival]);
-
   const bgStyle: React.CSSProperties = festival?.theme_bg_image_url
     ? { backgroundImage: `url(${festival.theme_bg_image_url})`, backgroundSize: 'cover', backgroundPosition: 'center' }
     : { backgroundColor: festival?.theme_bg_color || '#f8fafc' };
@@ -111,7 +106,6 @@ export default function CollectionPage() {
         <div className="max-w-7xl mx-auto px-4 py-6">
           {loading ? (
             <>
-              <InfoSkeleton />
               <CardSkeleton />
               <TableSkeleton rows={10} />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
@@ -125,20 +119,6 @@ export default function CollectionPage() {
             </div>
           ) : (
             <>
-              <BasicInfo 
-                basicInfo={{
-                  id: festival.id,
-                  event_name: festival.event_name,
-                  organiser: festival.organiser || '',
-                  mentor: festival.mentor || '',
-                  guide: festival.guide || '',
-                  event_start_date: festival.event_start_date,
-                  event_end_date: festival.event_end_date,
-                  location: festival.location,
-                  other_data: festival.other_data,
-                } as any}
-                festival={festival}
-              />
               <StatsCards stats={stats} />
 
               <h2 className="text-2xl font-bold text-gray-800 mb-6">Collection History</h2>
@@ -146,22 +126,27 @@ export default function CollectionPage() {
 
               <h2 className="text-2xl font-bold text-gray-800 mt-12 mb-6">Statistics</h2>
               <div className="space-y-6">
-                <CollectionVsExpenseChart collections={collections} expenses={expenses} festivalStartDate={festival.ce_start_date} festivalEndDate={festival.ce_end_date} />
-
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <PieChart data={collectionsByGroup} title="Collections by Group" />
                   <PieChart data={collectionsByMode} title="Collections by Mode" />
                 </div>
 
-                <BarChart
-                  data={dailyCollections}
-                  title="Daily Collection (Festival Month Range)"
-                  dataKey="amount"
-                  xAxisKey="date"
+                <DateRangeBarChart
+                  data={collections}
+                  title="Daily Collection (Dynamic Range)"
                   color="#10b981"
                 />
 
-                <TopDonatorsChart collections={collections} topN={5} />
+                {/* View Full Analytics Button */}
+                <div className="flex justify-center mt-8">
+                  <button
+                    onClick={() => router.push(`/f/${code}/analytics`)}
+                    className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-md hover:shadow-lg font-semibold"
+                  >
+                    <BarChart3 className="w-5 h-5" />
+                    <span>View Full Analytics</span>
+                  </button>
+                </div>
               </div>
             </>
           )}

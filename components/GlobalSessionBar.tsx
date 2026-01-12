@@ -290,16 +290,16 @@ export default function GlobalSessionBar({ festivalCode, currentPage = 'other' }
                   onClick={handleGoHome}
                   className="flex items-center gap-1 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
-                  <Home className="w-4 h-4" />
-                  <span className="hidden sm:inline">Go to Home</span>
+                  <Home className="w-4 h-4 sm:hidden" />
+                  <span>Home</span>
                 </button>
               ) : (
                 <button
                   onClick={handleViewActivity}
                   className="flex items-center gap-1 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
-                  <Activity className="w-4 h-4" />
-                  <span className="hidden sm:inline">View Activity</span>
+                  <Activity className="w-4 h-4 sm:hidden" />
+                  <span>My Activity</span>
                 </button>
               )
             )}
@@ -308,8 +308,8 @@ export default function GlobalSessionBar({ festivalCode, currentPage = 'other' }
               onClick={handleLogout}
               className="flex items-center gap-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
             >
-              <LogOut className="w-4 h-4" />
-              <span className="hidden sm:inline">Logout</span>
+              <LogOut className="w-4 h-4 sm:hidden" />
+              <span>Logout</span>
             </button>
           </div>
         </div>
