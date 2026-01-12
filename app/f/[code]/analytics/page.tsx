@@ -343,10 +343,10 @@ function PublicAnalyticsContent() {
           <div key={card.id} className="col-span-full lg:col-span-1">
             <Card className="h-full">
               <CardHeader>
-                <CardTitle>Collections by Donation Amount</CardTitle>
-                <CardDescription>Distribution across amount ranges</CardDescription>
+                <CardTitle className="text-base md:text-lg">Collections by Donation Amount</CardTitle>
+                <CardDescription className="text-xs md:text-sm">Distribution across amount ranges</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="overflow-x-auto">
                 <ChartContainer
                   config={Object.fromEntries(
                     collectionsByBuckets.map((item, idx) => [
@@ -354,13 +354,20 @@ function PublicAnalyticsContent() {
                       { color: COLORS[idx % COLORS.length] },
                     ]),
                   )}
-                  className="h-[300px]"
+                  className="h-[350px] sm:h-[300px] min-w-[300px]"
                 >
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={collectionsByBuckets}>
+                  <ResponsiveContainer width="100%" height="100%" minWidth={300}>
+                    <BarChart data={collectionsByBuckets} margin={{ top: 5, right: 10, left: 0, bottom: 100 }}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="bucket_label" angle={-45} textAnchor="end" height={80} interval={0} />
-                      <YAxis />
+                      <XAxis 
+                        dataKey="bucket_label" 
+                        angle={-45} 
+                        textAnchor="end" 
+                        height={100} 
+                        interval={0}
+                        tick={{ fontSize: 10 }}
+                      />
+                      <YAxis tick={{ fontSize: 11 }} />
                       <ChartTooltip content={<ChartTooltipContent />} />
                       <Bar dataKey="total_amount" fill="#3b82f6" />
                     </BarChart>
@@ -374,13 +381,13 @@ function PublicAnalyticsContent() {
                     >
                       <div className="flex items-center gap-3">
                         <div
-                          className="w-3 h-3 rounded-full"
+                          className="w-3 h-3 rounded-full flex-shrink-0"
                           style={{ backgroundColor: COLORS[idx % COLORS.length] }}
                         ></div>
-                        <span className="text-gray-700">{item.bucket_label}</span>
+                        <span className="text-gray-700 text-sm">{item.bucket_label}</span>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold text-gray-900">₹{item.total_amount.toLocaleString()}</p>
+                        <p className="font-semibold text-gray-900 text-sm">₹{item.total_amount.toLocaleString()}</p>
                         <p className="text-xs text-gray-600">{item.donation_count} donations</p>
                       </div>
                     </div>
@@ -398,21 +405,27 @@ function PublicAnalyticsContent() {
           <div key={card.id} className="col-span-full lg:col-span-1">
             <Card className="h-full">
               <CardHeader>
-                <CardTitle>Collections by Time of Day</CardTitle>
-                <CardDescription>When collections happen throughout the day</CardDescription>
+                <CardTitle className="text-base md:text-lg">Collections by Time of Day</CardTitle>
+                <CardDescription className="text-xs md:text-sm">When collections happen throughout the day</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="overflow-x-auto">
                 <ChartContainer
                   config={Object.fromEntries(
                     collectionsByTime.map((item, idx) => [item.bucket_label, { color: COLORS[idx % COLORS.length] }]),
                   )}
-                  className="h-[300px]"
+                  className="h-[350px] sm:h-[300px] min-w-[300px]"
                 >
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={collectionsByTime}>
+                  <ResponsiveContainer width="100%" height="100%" minWidth={300}>
+                    <BarChart data={collectionsByTime} margin={{ top: 5, right: 10, left: 0, bottom: 100 }}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="bucket_label" angle={-45} textAnchor="end" height={80} />
-                      <YAxis />
+                      <XAxis 
+                        dataKey="bucket_label" 
+                        angle={-45} 
+                        textAnchor="end" 
+                        height={100}
+                        tick={{ fontSize: 10 }}
+                      />
+                      <YAxis tick={{ fontSize: 11 }} />
                       <ChartTooltip content={<ChartTooltipContent />} />
                       <Bar dataKey="total_amount" fill="#10b981" />
                     </BarChart>
@@ -426,13 +439,13 @@ function PublicAnalyticsContent() {
                     >
                       <div className="flex items-center gap-3">
                         <div
-                          className="w-3 h-3 rounded-full"
+                          className="w-3 h-3 rounded-full flex-shrink-0"
                           style={{ backgroundColor: COLORS[idx % COLORS.length] }}
                         ></div>
-                        <span className="text-gray-700">{item.bucket_label}</span>
+                        <span className="text-gray-700 text-sm">{item.bucket_label}</span>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold text-gray-900">₹{item.total_amount.toLocaleString()}</p>
+                        <p className="font-semibold text-gray-900 text-sm">₹{item.total_amount.toLocaleString()}</p>
                         <p className="text-xs text-gray-600">{item.collection_count} collections</p>
                       </div>
                     </div>
@@ -450,21 +463,27 @@ function PublicAnalyticsContent() {
           <div key={card.id} className="col-span-full lg:col-span-1">
             <Card className="h-full">
               <CardHeader>
-                <CardTitle>Daily Net Balance</CardTitle>
-                <CardDescription>Collection minus expense per day</CardDescription>
+                <CardTitle className="text-base md:text-lg">Daily Net Balance</CardTitle>
+                <CardDescription className="text-xs md:text-sm">Collection minus expense per day</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="overflow-x-auto">
                 <ChartContainer
                   config={{
                     net_balance: { label: "Net Balance", color: "#3b82f6" },
                   }}
-                  className="h-[300px]"
+                  className="h-[350px] sm:h-[300px] min-w-[300px]"
                 >
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={dailyNetBalance}>
+                  <ResponsiveContainer width="100%" height="100%" minWidth={300}>
+                    <BarChart data={dailyNetBalance} margin={{ top: 5, right: 10, left: 0, bottom: 100 }}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" angle={-45} textAnchor="end" height={80} />
-                      <YAxis />
+                      <XAxis 
+                        dataKey="date" 
+                        angle={-45} 
+                        textAnchor="end" 
+                        height={100}
+                        tick={{ fontSize: 10 }}
+                      />
+                      <YAxis tick={{ fontSize: 11 }} />
                       <ChartTooltip content={<ChartTooltipContent />} />
                       <Bar
                         dataKey="net_balance"
@@ -531,24 +550,30 @@ function PublicAnalyticsContent() {
           <div key={card.id} className="col-span-full lg:col-span-1">
             <Card className="h-full">
               <CardHeader>
-                <CardTitle>Transactions Per Day</CardTitle>
-                <CardDescription>Number of collections and expenses daily</CardDescription>
+                <CardTitle className="text-base md:text-lg">Transactions Per Day</CardTitle>
+                <CardDescription className="text-xs md:text-sm">Number of collections and expenses daily</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="overflow-x-auto">
                 <ChartContainer
                   config={{
                     collection_count: { label: "Collections", color: "#10b981" },
                     expense_count: { label: "Expenses", color: "#ef4444" },
                   }}
-                  className="h-[300px]"
+                  className="h-[350px] sm:h-[300px] min-w-[300px]"
                 >
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={transactionCounts}>
+                  <ResponsiveContainer width="100%" height="100%" minWidth={300}>
+                    <BarChart data={transactionCounts} margin={{ top: 5, right: 10, left: 0, bottom: 100 }}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" angle={-45} textAnchor="end" height={80} />
-                      <YAxis />
+                      <XAxis 
+                        dataKey="date" 
+                        angle={-45} 
+                        textAnchor="end" 
+                        height={100}
+                        tick={{ fontSize: 10 }}
+                      />
+                      <YAxis tick={{ fontSize: 11 }} />
                       <ChartTooltip content={<ChartTooltipContent />} />
-                      <Legend />
+                      <Legend wrapperStyle={{ fontSize: '12px' }} />
                       <Bar dataKey="collection_count" fill="#10b981" name="Collections" />
                       <Bar dataKey="expense_count" fill="#ef4444" name="Expenses" />
                     </BarChart>
