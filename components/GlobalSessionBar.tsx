@@ -84,7 +84,6 @@ export default function GlobalSessionBar({ festivalCode, currentPage = 'other' }
           // Continue with logout even if logging fails
         }
       } else if (session.type === 'visitor') {
-        // Log visitor logout
         console.log('[GlobalSessionBar] Logging visitor logout:', {
           festival_id: session.festivalId,
           visitor_name: session.visitorName,
@@ -92,25 +91,43 @@ export default function GlobalSessionBar({ festivalCode, currentPage = 'other' }
         });
         
         try {
-          const { data: logData, error: logError } = await supabase.rpc('log_visitor_logout', {
-            p_festival_id: session.festivalId,
-            p_visitor_name: session.visitorName,
-            p_session_id: session.sessionId,
-            p_logout_method: 'manual'
-          });
+          const logoutTime = new Date().toISOString();
           
-          console.log('[GlobalSessionBar] Visitor logout log result:', {
-            data: logData,
-            error: logError
-          });
+          const { data: loginRecord, error: findError } = await supabase
+            .from('access_logs')
+            .select('id, accessed_at')
+            .eq('festival_id', session.festivalId)
+            .eq('visitor_name', session.visitorName)
+            .eq('session_id', session.sessionId)
+            .is('logout_at', null)
+            .order('accessed_at', { ascending: false })
+            .limit(1)
+            .single();
           
-          if (logError) {
-            console.error('[GlobalSessionBar] Error logging visitor logout:', logError);
-            // Continue with logout even if logging fails
+          if (findError || !loginRecord) {
+            console.error('[GlobalSessionBar] Login record not found for logout:', findError);
+          } else {
+            const loginTime = new Date(loginRecord.accessed_at).getTime();
+            const logoutTimeMs = new Date(logoutTime).getTime();
+            const durationSeconds = Math.floor((logoutTimeMs - loginTime) / 1000);
+            
+            const { error: updateError } = await supabase
+              .from('access_logs')
+              .update({
+                logout_at: logoutTime,
+                session_duration_seconds: durationSeconds,
+                logout_method: 'manual'
+              })
+              .eq('id', loginRecord.id);
+            
+            if (updateError) {
+              console.error('[GlobalSessionBar] Failed to update logout:', updateError);
+            } else {
+              console.log('[GlobalSessionBar] ✅ Visitor logout logged successfully');
+            }
           }
-        } catch (logError: any) {
+        } catch (logError) {
           console.error('[GlobalSessionBar] Exception logging visitor logout:', logError);
-          // Continue with logout even if logging fails
         }
       }
     }

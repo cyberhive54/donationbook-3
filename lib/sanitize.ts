@@ -49,28 +49,27 @@ export function sanitizeForStorage(input: string): string {
  * @returns Object with isValid flag and sanitized name or error message
  */
 export function validateAndSanitizeName(name: string): { isValid: boolean; sanitized?: string; error?: string } {
-  if (!name || !name.trim()) {
+  if (!name || name.trim().length === 0) {
     return { isValid: false, error: 'Name is required' };
   }
-  
-  const trimmed = name.trim();
-  
-  if (trimmed.length > 50) {
-    return { isValid: false, error: 'Name must be 50 characters or less' };
+
+  const trimmedName = name.trim();
+
+  if (trimmedName.length < 2) {
+    return { isValid: false, error: 'Name must be at least 2 characters' };
   }
-  
-  // Check for only whitespace
-  if (!trimmed.replace(/\s/g, '').length) {
-    return { isValid: false, error: 'Name cannot be only whitespace' };
+
+  if (trimmedName.length > 100) {
+    return { isValid: false, error: 'Name must be less than 100 characters' };
   }
-  
-  const sanitized = sanitizeForStorage(trimmed);
-  
-  // Check if sanitization removed too much (likely malicious content)
-  if (sanitized.length < trimmed.length * 0.7 && trimmed.length > 10) {
-    return { isValid: false, error: 'Name contains invalid characters' };
+
+  const validPattern = /^[a-zA-Z0-9\s]+$/;
+  if (!validPattern.test(trimmedName)) {
+    return { isValid: false, error: 'Name can only contain letters, numbers, and spaces' };
   }
-  
+
+  const sanitized = trimmedName.toLowerCase().replace(/\s+/g, '-');
+
   return { isValid: true, sanitized };
 }
 

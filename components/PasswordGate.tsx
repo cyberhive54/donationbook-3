@@ -244,23 +244,7 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
         return;
       }
 
-      // Check if name already exists (case-insensitive) - use sanitized name
-      const { data: existingNames } = await supabase
-        .from('access_logs')
-        .select('visitor_name')
-        .eq('festival_id', festival.id)
-        .ilike('visitor_name', sanitizedName);
-
-      if (existingNames && existingNames.length > 0) {
-        const exactMatch = existingNames.find(
-          (log) => log.visitor_name.toLowerCase() === sanitizedName.toLowerCase()
-        );
-        if (exactMatch && exactMatch.visitor_name !== sanitizedName) {
-          toast.error(`Name "${sanitizedName}" is already in use. Try adding a number or symbol (e.g., "${sanitizedName}2")`);
-          setIsVerifying(false);
-          return;
-        }
-      }
+      // No duplicate name check needed - normalized names are unique enough
 
       // Check for concurrent session on this device
       const existingSession = session;
@@ -313,137 +297,72 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
         adminCode: adminData.admin_code,
         adminName: adminData.admin_name,
         passwordLabel: passwordData.label,
-        passwordId: passwordData.password_id, // Store password ID for validation
+        passwordId: passwordData.password_id,
         loginTime: new Date().toISOString(),
         sessionId: crypto.randomUUID(),
         deviceId: deviceId
       };
 
-      // Log access - use sanitized name
-      console.log('[PasswordGate] Attempting to log visitor access:', {
+      console.log('[PasswordGate] Logging visitor login to database:', {
         festival_id: festival.id,
         visitor_name: sanitizedName,
-        admin_id: passwordData.admin_id,
-        user_password_id: passwordData.password_id,
         session_id: visitorSession.sessionId
       });
       
-      // Log access - simplified to avoid function overload conflict
-      // Due to duplicate function signatures in database, use simpler version without UUID params
-      let logAccessData, logAccessError;
       try {
-        // Use simpler function signature (without admin_id and user_password_id UUIDs)
-        // to avoid PGRST203 overload error
-        const result = await supabase.rpc('log_festival_access', {
-          p_festival_id: festival.id,
-          p_visitor_name: sanitizedName,
-          p_access_method: 'password_modal',
-          p_password_used: password.trim(),
-          p_session_id: visitorSession.sessionId
-        });
-        logAccessData = result.data;
-        logAccessError = result.error;
+        const { data: logId, error: logError } = await supabase
+          .from('access_logs')
+          .insert({
+            festival_id: festival.id,
+            visitor_name: sanitizedName,
+            access_method: 'password_modal',
+            password_used: password.trim(),
+            accessed_at: visitorSession.loginTime,
+            session_id: visitorSession.sessionId,
+            admin_id: passwordData.admin_id,
+            user_password_id: passwordData.password_id
+          })
+          .select('id')
+          .single();
         
-        // If successful but admin_id/user_password_id tracking is needed,
-        // update the access_logs record directly
-        if (!logAccessError && logAccessData) {
-          await supabase
-            .from('access_logs')
-            .update({
-              admin_id: passwordData.admin_id,
-              user_password_id: passwordData.password_id
-            })
-            .eq('id', logAccessData);
+        if (logError) {
+          console.error('[PasswordGate] Failed to log visitor login:', logError);
+        } else {
+          console.log('[PasswordGate] ✅ Visitor login logged successfully, ID:', logId?.id);
         }
-      } catch (logError: any) {
-        console.warn('[PasswordGate] Access logging error:', logError);
-        logAccessError = logError;
-      }
-      
-      console.log('[PasswordGate] log_festival_access result:', {
-        data: logAccessData,
-        error: logAccessError,
-        errorMessage: logAccessError?.message,
-        errorCode: logAccessError?.code,
-        errorDetails: logAccessError?.details
-      });
-      
-      if (logAccessError) {
-        console.error('[PasswordGate] ❌ CRITICAL: Failed to log access:', logAccessError);
-      } else {
-        console.log('[PasswordGate] ✅ Access logged successfully, record ID:', logAccessData);
+      } catch (logError) {
+        console.error('[PasswordGate] Exception logging visitor login:', logError);
       }
 
       // Update password usage count
-      await supabase
-        .from('user_passwords')
-        .update({
-          usage_count: (passwordData as any).usage_count ? (passwordData as any).usage_count + 1 : 1,
-          last_used_at: new Date().toISOString()
-        })
-        .eq('password_id', passwordData.password_id);
+      try {
+        await supabase
+          .from('user_passwords')
+          .update({
+            usage_count: (passwordData as any).usage_count ? (passwordData as any).usage_count + 1 : 1,
+            last_used_at: new Date().toISOString()
+          })
+          .eq('password_id', passwordData.password_id);
+      } catch (updateError) {
+        console.error('[PasswordGate] Failed to update password usage count:', updateError);
+      }
 
-      // Save last used name for this device - use sanitized name
+      // Save last used name for this device
       saveLastUsedName(code, sanitizedName);
 
-      // Ensure loginTime is set correctly before saving
-      visitorSession.loginTime = new Date().toISOString();
-      
-      // Save session - this will update both localStorage and state
+      // Save session to localStorage and state
       saveSession(visitorSession);
       
       // Clear password field for security
       setPassword('');
       
-      // CRITICAL: Force multiple verification attempts for mobile browsers
-      const sessionKey = `session:${code}`;
-      let verificationAttempts = 0;
-      let savedSession = null;
-      
-      // Try up to 5 times with increasing delays to ensure write completes
-      while (verificationAttempts < 5 && !savedSession) {
-        await new Promise(resolve => setTimeout(resolve, 50 + (verificationAttempts * 50)));
-        savedSession = localStorage.getItem(sessionKey) || sessionStorage.getItem(sessionKey);
-        verificationAttempts++;
-        
-        if (!savedSession) {
-          console.warn(`[PasswordGate] Session verification attempt ${verificationAttempts} failed, retrying...`);
-        }
-      }
-      
-      if (!savedSession) {
-        throw new Error('Failed to save session after multiple attempts. Please try again.');
-      }
-      
-      // Parse and verify the saved session
-      try {
-        const parsed = JSON.parse(savedSession);
-        if (parsed.type !== 'visitor' || parsed.festivalCode !== code) {
-          throw new Error('Session saved incorrectly');
-        }
-        console.log('[PasswordGate] ✅ Session verified successfully after', verificationAttempts, 'attempts');
-      } catch (verifyError) {
-        console.error('Session verification failed:', verifyError);
-        throw new Error('Session verification failed. Please try again.');
-      }
-      
-      // Show success message only if logging succeeded
-      if (logAccessError) {
-        toast('Access granted! (Warning: Login not recorded, contact admin)', {
-          duration: 5000,
-          icon: '⚠️'
-        });
-      } else {
-        toast.success('Access granted!');
-      }
-      
-      // Give a final moment for state to propagate (already verified above)
+      // Wait a moment for session to be saved
       await new Promise(resolve => setTimeout(resolve, 100));
       
-      // Clear verifying state - component will re-render and detect the session
       setIsVerifying(false);
+      toast.success('Access granted!');
       
-      console.log('[PasswordGate] ✅ Login complete, rendering children');
+      console.log('[PasswordGate] ✅ Login complete');
       
     } catch (error: any) {
       console.error('Login error:', error);

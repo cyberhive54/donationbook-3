@@ -17,21 +17,8 @@ import toast from 'react-hot-toast';
 import { getThemeStyles, getThemeClasses } from '@/lib/theme';
 import { useRouter } from 'next/navigation';
 
-function generateSessionId() {
-  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-}
-
-function formatName(name: string): string {
-  return name.trim().toLowerCase().replace(/\s+/g, '-');
-}
-
-function todayStr() {
-  return new Date().toISOString().split('T')[0];
-}
-
 export default function FestivalHomePage() {
   const params = useParams<{ code: string }>();
-  const searchParams = useSearchParams();
   const code = (params?.code as string) || '';
   const router = useRouter();
 
@@ -42,95 +29,9 @@ export default function FestivalHomePage() {
   const [recentTransactions, setRecentTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Handle direct link authentication
-  useEffect(() => {
-    const mode = searchParams.get('mode');
-    const password = searchParams.get('p');
-    const name = searchParams.get('name');
-
-    if (mode === 'login' && password && name) {
-      handleDirectLinkAuth(password, name);
-    }
-  }, [searchParams, code]);
-
   useEffect(() => {
     if (code) fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code]);
-
-  const handleDirectLinkAuth = async (password: string, name: string) => {
-    try {
-      // Fetch festival
-      const { data: fest, error: festErr } = await supabase
-        .from('festivals')
-        .select('id, user_password, user_password_updated_at, updated_at, requires_user_password')
-        .eq('code', code)
-        .single();
-
-      if (festErr) throw festErr;
-      if (!fest) {
-        toast.error('Festival not found');
-        window.history.replaceState({}, '', `/f/${code}`);
-        return;
-      }
-
-      // Check if password is required
-      if (!fest.requires_user_password) {
-        // No password needed, just remove query params
-        window.history.replaceState({}, '', `/f/${code}`);
-        return;
-      }
-
-      // Verify password
-      if (fest.user_password !== password) {
-        toast.error('Invalid password in URL');
-        window.history.replaceState({}, '', `/f/${code}`);
-        return;
-      }
-
-      // Format name
-      const formattedName = formatName(name);
-      const sessionId = generateSessionId();
-      const loggedAt = new Date().toISOString();
-
-      // Log access to database
-      try {
-        await supabase.rpc('log_festival_access', {
-          p_festival_id: fest.id,
-          p_visitor_name: formattedName,
-          p_access_method: 'direct_link',
-          p_password_used: password,
-          p_session_id: sessionId,
-        });
-      } catch (logError) {
-        console.error('Error logging access:', logError);
-        // Continue even if logging fails
-      }
-
-      // Create session in localStorage
-      const session = {
-        authenticated: true,
-        date: todayStr(),
-        token: fest.user_password_updated_at || fest.updated_at,
-        visitorName: formattedName,
-        sessionId,
-        accessMethod: 'direct_link',
-        passwordUsed: password,
-        loggedAt,
-      };
-
-      localStorage.setItem(`userPasswordAuth:${code}`, JSON.stringify(session));
-
-      // Remove query params and reload
-      window.history.replaceState({}, '', `/f/${code}`);
-      toast.success(`Welcome, ${formattedName}!`);
-      window.location.reload();
-    } catch (error) {
-      console.error('Direct link auth error:', error);
-      toast.error('Authentication failed');
-      window.history.replaceState({}, '', `/f/${code}`);
-    }
-  };
 
   const fetchData = async () => {
     try {
