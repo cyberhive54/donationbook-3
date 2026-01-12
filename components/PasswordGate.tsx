@@ -69,13 +69,14 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
   const [festivalLoaded, setFestivalLoaded] = useState(false);
   const [info, setInfo] = useState<{ name: string; organiser?: string | null; start?: string | null; end?: string | null; location?: string | null } | null>(null);
   const [deviceId, setDeviceId] = useState<string>('');
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
     const loadInfo = async () => {
       try {
         const { data, error } = await supabase
           .from('festivals')
-          .select('event_name, organiser, event_start_date, event_end_date, location, requires_password, requires_user_password')
+          .select('event_name, organiser, event_start_date, event_end_date, location, requires_password, requires_user_password, theme_dark')
           .eq('code', code)
           .single();
         
@@ -98,6 +99,7 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
           // If either is explicitly false, password is not required
           const needsPassword = data.requires_password !== false && data.requires_user_password !== false;
           setRequiresPassword(needsPassword);
+          setIsDarkMode(data.theme_dark || false);
           setFestivalLoaded(true);
         }
       } catch (error) {
@@ -141,10 +143,10 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
   // This prevents race condition where protected content flashes before validation completes
   if (isLoading || !festivalLoaded || requiresPassword === null) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'dark bg-gray-900' : 'bg-gray-50'}`}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <p className="text-gray-600 dark:text-gray-300">Loading...</p>
         </div>
       </div>
     );
@@ -180,10 +182,10 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
           setIsVerifying(false);
           // Component will re-render and detect session
           return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-              <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full text-center">
+            <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'dark bg-gray-900' : 'bg-gray-50'} p-4`}>
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 max-w-md w-full text-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                <p className="text-gray-600">Access granted! Redirecting...</p>
+                <p className="text-gray-600 dark:text-gray-300">Access granted! Redirecting...</p>
               </div>
             </div>
           );
@@ -194,10 +196,10 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
     }
     
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-        <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full text-center">
+      <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'dark bg-gray-900' : 'bg-gray-50'} p-4`}>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 max-w-md w-full text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Verifying credentials...</p>
+          <p className="text-gray-600 dark:text-gray-300">Verifying credentials...</p>
         </div>
       </div>
     );
@@ -386,48 +388,48 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
 
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
+    <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'dark bg-gray-900' : 'bg-gray-50'} p-4`}>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 max-w-md w-full">
         {info && (
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4 text-sm">
-            <div className="font-semibold text-gray-800">{info.name || 'Festival Information'}</div>
-            {info.organiser && <div className="text-gray-600">Organiser: {info.organiser}</div>}
-            {info.location && <div className="text-gray-600">Location: {info.location}</div>}
+          <div className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 mb-4 text-sm">
+            <div className="font-semibold text-gray-800 dark:text-gray-100">{info.name || 'Festival Information'}</div>
+            {info.organiser && <div className="text-gray-600 dark:text-gray-300">Organiser: {info.organiser}</div>}
+            {info.location && <div className="text-gray-600 dark:text-gray-300">Location: {info.location}</div>}
             {(info.start || info.end) && (
-              <div className="text-gray-600">
+              <div className="text-gray-600 dark:text-gray-300">
                 Dates: {info.start || '—'} to {info.end || '—'}
               </div>
             )}
           </div>
         )}
         <div className="flex justify-center mb-6">
-          <div className="bg-blue-100 rounded-full p-4">
-            <Lock className="w-8 h-8 text-blue-600" />
+          <div className="bg-blue-100 dark:bg-blue-900 rounded-full p-4">
+            <Lock className="w-8 h-8 text-blue-600 dark:text-blue-400" />
           </div>
         </div>
 
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-2">
+        <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-gray-100 mb-2">
           Enter Your Details
         </h2>
-        <p className="text-center text-gray-600 mb-6">
+        <p className="text-center text-gray-600 dark:text-gray-300 mb-6">
           Please provide your name and password to continue
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Your Name <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <User className="h-5 w-5 text-gray-400" />
+                <User className="h-5 w-5 text-gray-400 dark:text-gray-500" />
               </div>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Enter your name"
-                className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                 disabled={isVerifying || !isNameEditable}
                 required
                 maxLength={50}
@@ -436,14 +438,14 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
                 <button
                   type="button"
                   onClick={() => setIsNameEditable(true)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center hover:bg-gray-50 rounded-r-lg transition-colors"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center hover:bg-gray-50 dark:hover:bg-gray-600 rounded-r-lg transition-colors"
                   title="Edit name"
                 >
-                  <Edit2 className="h-5 w-5 text-gray-400 hover:text-blue-600" />
+                  <Edit2 className="h-5 w-5 text-gray-400 hover:text-blue-600 dark:text-gray-500 dark:hover:text-blue-400" />
                 </button>
               )}
             </div>
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
               {!isNameEditable && name
                 ? 'Click the pencil icon to edit your name'
                 : 'Max 50 characters. Letters, numbers, and symbols allowed.'}
@@ -451,36 +453,36 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Password <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Lock className="h-5 w-5 text-gray-400" />
+                <Lock className="h-5 w-5 text-gray-400 dark:text-gray-500" />
               </div>
               <input
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter password"
-                className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                 disabled={isVerifying}
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center hover:bg-gray-50 rounded-r-lg transition-colors"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center hover:bg-gray-50 dark:hover:bg-gray-600 rounded-r-lg transition-colors"
                 disabled={isVerifying}
               >
                 {showPassword ? (
-                  <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                  <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
                 ) : (
-                  <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                  <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
                 )}
               </button>
             </div>
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
               Ask admin for password
             </p>
           </div>
@@ -494,13 +496,13 @@ export default function PasswordGate({ children, code }: PasswordGateProps) {
           </button>
         </form>
 
-        <div className="mt-6 space-y-3 pt-4 border-t border-gray-200">
+        <div className="mt-6 space-y-3 pt-4 border-t border-gray-200 dark:border-gray-700">
           <div className="text-center">
-            <p className="text-xs text-gray-600">
+            <p className="text-xs text-gray-600 dark:text-gray-400">
               Admin?{' '}
               <button
                 onClick={() => window.location.href = `/f/${code}/admin/login`}
-                className="text-blue-600 hover:text-blue-800 font-medium underline"
+                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium underline"
               >
                 Go to Admin Login
               </button>

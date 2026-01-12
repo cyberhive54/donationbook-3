@@ -27,6 +27,7 @@ export default function AdminLoginPage() {
     start?: string;
     end?: string;
   } | null>(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   // Redirect if already logged in as admin or super_admin
   useEffect(() => {
@@ -40,7 +41,7 @@ export default function AdminLoginPage() {
     const loadInfo = async () => {
       const { data } = await supabase
         .from('festivals')
-        .select('event_name, organiser, location, event_start_date, event_end_date')
+        .select('event_name, organiser, location, event_start_date, event_end_date, theme_dark')
         .eq('code', code)
         .single();
       if (data) {
@@ -51,6 +52,7 @@ export default function AdminLoginPage() {
           start: data.event_start_date,
           end: data.event_end_date
         });
+        setIsDarkMode(data.theme_dark || false);
       }
     };
     if (code) loadInfo();
@@ -124,35 +126,35 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
+    <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'dark bg-gray-900' : 'bg-gray-50'} p-4`}>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 max-w-md w-full">
         {festivalInfo && (
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4 text-sm">
-            <div className="font-semibold text-gray-800">{festivalInfo.name}</div>
-            <div className="text-gray-600">{festivalInfo.organiser ? `Organiser: ${festivalInfo.organiser}` : null}</div>
-            <div className="text-gray-600">{festivalInfo.location ? `Location: ${festivalInfo.location}` : null}</div>
-            <div className="text-gray-600">
+          <div className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 mb-4 text-sm">
+            <div className="font-semibold text-gray-800 dark:text-gray-100">{festivalInfo.name}</div>
+            <div className="text-gray-600 dark:text-gray-300">{festivalInfo.organiser ? `Organiser: ${festivalInfo.organiser}` : null}</div>
+            <div className="text-gray-600 dark:text-gray-300">{festivalInfo.location ? `Location: ${festivalInfo.location}` : null}</div>
+            <div className="text-gray-600 dark:text-gray-300">
               {festivalInfo.start || festivalInfo.end ? `Dates: ${festivalInfo.start || '—'} to ${festivalInfo.end || '—'}` : null}
             </div>
           </div>
         )}
 
         <div className="flex justify-center mb-6">
-          <div className="bg-red-100 rounded-full p-4">
-            <ShieldAlert className="w-8 h-8 text-red-600" />
+          <div className="bg-red-100 dark:bg-red-900 rounded-full p-4">
+            <ShieldAlert className="w-8 h-8 text-red-600 dark:text-red-400" />
           </div>
         </div>
 
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-2">
+        <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-gray-100 mb-2">
           Admin Login
         </h2>
-        <p className="text-center text-gray-600 mb-6">
+        <p className="text-center text-gray-600 dark:text-gray-300 mb-6">
           Enter your admin code/name and password
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Admin Code or Name <span className="text-red-500">*</span>
             </label>
             <input
@@ -160,14 +162,14 @@ export default function AdminLoginPage() {
               value={formData.adminCodeOrName}
               onChange={(e) => handleInputChange('adminCodeOrName', e.target.value)}
               placeholder="Enter admin code or name"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
               disabled={isLoading}
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Password <span className="text-red-500">*</span>
             </label>
             <div className="relative">
@@ -176,20 +178,20 @@ export default function AdminLoginPage() {
                 value={formData.password}
                 onChange={(e) => handleInputChange('password', e.target.value)}
                 placeholder="Enter password"
-                className="w-full pl-3 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                className="w-full pl-3 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                 disabled={isLoading}
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center hover:bg-gray-50 rounded-r-lg transition-colors"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center hover:bg-gray-50 dark:hover:bg-gray-600 rounded-r-lg transition-colors"
                 disabled={isLoading}
               >
                 {showPassword ? (
-                  <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                  <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
                 ) : (
-                  <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                  <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
                 )}
               </button>
             </div>
@@ -207,30 +209,30 @@ export default function AdminLoginPage() {
 
         <div className="mt-6 space-y-3">
           <div className="text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               Super Admin?{' '}
               <button
                 onClick={() => router.push(`/f/${code}/admin/sup/login`)}
-                className="text-blue-600 hover:text-blue-800 font-medium"
+                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
               >
                 Login Here
               </button>
             </p>
           </div>
           
-          <div className="text-center pt-3 border-t border-gray-200 space-y-2">
+          <div className="text-center pt-3 border-t border-gray-200 dark:border-gray-700 space-y-2">
             <button
               onClick={() => router.push(`/f/${code}`)}
-              className="flex items-center justify-center gap-2 text-sm text-gray-600 hover:text-gray-800 mx-auto"
+              className="flex items-center justify-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 mx-auto"
             >
               <Home className="w-4 h-4" />
               Back to Festival Home
             </button>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-500 dark:text-gray-400">
               Visitor?{' '}
               <button
                 onClick={() => router.push(`/f/${code}`)}
-                className="text-blue-600 hover:text-blue-800 underline"
+                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline"
               >
                 Go to Visitor Login
               </button>
