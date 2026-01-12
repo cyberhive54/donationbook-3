@@ -670,31 +670,37 @@ function PublicAnalyticsContent() {
           <div key={card.id} className="col-span-full lg:col-span-1">
             <Card className="h-full">
               <CardHeader>
-                <CardTitle>Collection vs Expense Over Time</CardTitle>
-                <CardDescription>Daily comparison of collections and expenses</CardDescription>
+                <CardTitle className="text-base md:text-lg">Collection vs Expense Over Time</CardTitle>
+                <CardDescription className="text-xs md:text-sm">Daily comparison of collections and expenses</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="overflow-x-auto">
                 <ChartContainer
                   config={{
                     collection: { label: "Collection", color: "#10b981" },
                     expense: { label: "Expense", color: "#ef4444" },
                   }}
-                  className="h-[300px]"
+                  className="h-[350px] sm:h-[300px] min-w-[300px]"
                 >
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={collectionVsExpenseData}>
+                  <ResponsiveContainer width="100%" height="100%" minWidth={300}>
+                    <LineChart data={collectionVsExpenseData} margin={{ top: 5, right: 10, left: 0, bottom: 100 }}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" angle={-45} textAnchor="end" height={80} />
-                      <YAxis />
+                      <XAxis 
+                        dataKey="date" 
+                        angle={-45} 
+                        textAnchor="end" 
+                        height={100}
+                        tick={{ fontSize: 10 }}
+                      />
+                      <YAxis tick={{ fontSize: 11 }} />
                       <ChartTooltip content={<ChartTooltipContent />} />
-                      <Legend />
+                      <Legend wrapperStyle={{ fontSize: '12px' }} />
                       <Line 
                         type="monotone" 
                         dataKey="collection" 
                         stroke="#10b981" 
                         strokeWidth={2}
                         name="Collection"
-                        dot={{ fill: "#10b981", r: 4 }}
+                        dot={{ fill: "#10b981", r: 3 }}
                       />
                       <Line 
                         type="monotone" 
@@ -702,7 +708,7 @@ function PublicAnalyticsContent() {
                         stroke="#ef4444" 
                         strokeWidth={2}
                         name="Expense"
-                        dot={{ fill: "#ef4444", r: 4 }}
+                        dot={{ fill: "#ef4444", r: 3 }}
                       />
                     </LineChart>
                   </ResponsiveContainer>
