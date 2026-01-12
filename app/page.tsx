@@ -5,15 +5,16 @@ import ThemeToggle from '@/components/ThemeToggle';
 
 export default function SuperHome() {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <header className="bg-white border-b">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col transition-colors">
+      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-gray-800">Donation Book</h1>
-          <nav className="text-sm text-gray-600 flex items-center gap-4">
-            <Link href="/docs" className="hover:text-blue-600 font-medium">Documentation</Link>
-            <Link href="#features" className="hover:text-blue-600">Features</Link>
-            <Link href="#how" className="hover:text-blue-600">How it works</Link>
-            <Link href="#about" className="hover:text-blue-600">About</Link>
+          <h1 className="text-xl font-bold text-gray-800 dark:text-gray-100">Donation Book</h1>
+          <nav className="text-sm text-gray-600 dark:text-gray-300 flex items-center gap-4">
+            <Link href="/docs" className="hover:text-blue-600 dark:hover:text-blue-400 font-medium">Documentation</Link>
+            <Link href="#features" className="hover:text-blue-600 dark:hover:text-blue-400">Features</Link>
+            <Link href="#how" className="hover:text-blue-600 dark:hover:text-blue-400">How it works</Link>
+            <Link href="#about" className="hover:text-blue-600 dark:hover:text-blue-400">About</Link>
+            <ThemeToggle />
           </nav>
         </div>
       </header>
