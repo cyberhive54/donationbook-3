@@ -92,10 +92,10 @@ export default function SuperHome() {
         </section>
       </main>
 
-      <footer className="bg-white border-t">
-        <div className="max-w-7xl mx-auto px-4 py-6 text-sm text-gray-600 flex items-center justify-between">
+      <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+        <div className="max-w-7xl mx-auto px-4 py-6 text-sm text-gray-600 dark:text-gray-400 flex items-center justify-between">
           <span>© {new Date().getFullYear()} Donation Book</span>
-          <span>Built with Next.js & Supabase</span>
+          <span>Made with ❤️ for communities</span>
         </div>
       </footer>
     </div>
