@@ -12,11 +12,10 @@ import GlobalSessionBar from '@/components/GlobalSessionBar';
 import TransactionTable from '@/components/tables/TransactionTable';
 import CollectionVsExpenseChart from '@/components/charts/CollectionVsExpenseChart';
 import PieChart from '@/components/charts/PieChart';
+import DateRangeDualBarChart from '@/components/charts/DateRangeDualBarChart';
 import { CardSkeleton, TableSkeleton, ChartSkeleton } from '@/components/Loader';
 import toast from 'react-hot-toast';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { getThemeStyles, getThemeClasses } from '@/lib/theme';
-import { format } from 'date-fns';
 import { BarChart3 } from 'lucide-react';
 
 export default function TransactionPage() {
@@ -115,32 +114,6 @@ export default function TransactionPage() {
     }));
   }, [expenses]);
 
-  const dailyCollectionExpense = useMemo(() => {
-    const collectionsByDate = groupByDateBetween(collections, festival?.ce_start_date || null, festival?.ce_end_date || null);
-    const expensesByDate = groupByDateBetween(expenses, festival?.ce_start_date || null, festival?.ce_end_date || null);
-
-    const dateMap = new Map<string, { collection: number; expense: number }>();
-
-    collectionsByDate.forEach((item) => {
-      dateMap.set(item.date, { collection: item.amount, expense: 0 });
-    });
-
-    expensesByDate.forEach((item) => {
-      const existing = dateMap.get(item.date);
-      if (existing) {
-        existing.expense = item.amount;
-      } else {
-        dateMap.set(item.date, { collection: 0, expense: item.amount });
-      }
-    });
-
-    return Array.from(dateMap.entries()).map(([date, values]) => ({
-      date,
-      collection: values.collection,
-      expense: -values.expense,
-    }));
-  }, [collections, expenses]);
-
   const bgStyle: React.CSSProperties = festival?.theme_bg_image_url
     ? { backgroundImage: `url(${festival.theme_bg_image_url})`, backgroundSize: 'cover', backgroundPosition: 'center' }
     : { backgroundColor: festival?.theme_bg_color || '#f8fafc' };
@@ -186,31 +159,11 @@ export default function TransactionPage() {
                   <PieChart data={expensesByMode} title="Expenses by Mode" />
                 </div>
 
-                <div className="theme-card bg-white rounded-lg shadow-md p-6">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                    Daily Collection & Expense (Festival Month Range)
-                  </h3>
-                  {dailyCollectionExpense.length === 0 ? (
-                    <div className="h-64 flex items-center justify-center text-gray-500">
-                      No data available
-                    </div>
-                  ) : (
-                    <ResponsiveContainer width="100%" height={300}>
-                      <BarChart data={dailyCollectionExpense}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="date" tick={{ fontSize: 12 }} />
-                        <YAxis tick={{ fontSize: 12 }} />
-                        <Tooltip
-                          formatter={(value: number | undefined) => `₹${Math.abs(value ?? 0).toFixed(2)}`}
-                          labelFormatter={(label) => `Date: ${label}`}
-                        />
-                        <ReferenceLine y={0} stroke="#000" />
-                        <Bar dataKey="collection" fill="#10b981" name="Collection" />
-                        <Bar dataKey="expense" fill="#ef4444" name="Expense" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  )}
-                </div>
+                <DateRangeDualBarChart
+                  collections={collections}
+                  expenses={expenses}
+                  title="Daily Collection & Expense (Dynamic Range)"
+                />
 
                 {/* View Full Analytics Button */}
                 <div className="flex justify-center mt-8">

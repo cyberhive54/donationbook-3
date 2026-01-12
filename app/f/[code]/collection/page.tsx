@@ -11,7 +11,7 @@ import BottomNav from '@/components/BottomNav';
 import GlobalSessionBar from '@/components/GlobalSessionBar';
 import CollectionTable from '@/components/tables/CollectionTable';
 import PieChart from '@/components/charts/PieChart';
-import BarChart from '@/components/charts/BarChart';
+import DateRangeBarChart from '@/components/charts/DateRangeBarChart';
 import { CardSkeleton, TableSkeleton, ChartSkeleton } from '@/components/Loader';
 import toast from 'react-hot-toast';
 import { getThemeStyles, getThemeClasses } from '@/lib/theme';
@@ -93,10 +93,6 @@ export default function CollectionPage() {
     }));
   }, [collections]);
 
-  const dailyCollections = useMemo(() => {
-    return groupByDateBetween(collections, festival?.ce_start_date || null, festival?.ce_end_date || null);
-  }, [collections, festival]);
-
   const bgStyle: React.CSSProperties = festival?.theme_bg_image_url
     ? { backgroundImage: `url(${festival.theme_bg_image_url})`, backgroundSize: 'cover', backgroundPosition: 'center' }
     : { backgroundColor: festival?.theme_bg_color || '#f8fafc' };
@@ -135,11 +131,9 @@ export default function CollectionPage() {
                   <PieChart data={collectionsByMode} title="Collections by Mode" />
                 </div>
 
-                <BarChart
-                  data={dailyCollections}
-                  title="Daily Collection (Festival Month Range)"
-                  dataKey="amount"
-                  xAxisKey="date"
+                <DateRangeBarChart
+                  data={collections}
+                  title="Daily Collection (Dynamic Range)"
                   color="#10b981"
                 />
 

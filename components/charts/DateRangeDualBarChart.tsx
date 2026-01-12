@@ -1,23 +1,21 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
+import { format, parseISO, subDays } from 'date-fns';
 import { Collection, Expense } from '@/types';
-import { format, parseISO, subDays, startOfDay, endOfDay } from 'date-fns';
 
-interface CollectionVsExpenseChartProps {
+interface DateRangeDualBarChartProps {
   collections: Collection[];
   expenses: Expense[];
-  festivalStartDate?: string | null;
-  festivalEndDate?: string | null;
+  title: string;
 }
 
-export default function CollectionVsExpenseChart({
+export default function DateRangeDualBarChart({
   collections,
   expenses,
-  festivalStartDate,
-  festivalEndDate,
-}: CollectionVsExpenseChartProps) {
+  title,
+}: DateRangeDualBarChartProps) {
   const [rangeType, setRangeType] = useState<'all' | '7days' | 'custom'>('all');
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
@@ -89,15 +87,15 @@ export default function CollectionVsExpenseChart({
       .sort((a, b) => a[0].localeCompare(b[0]))
       .map(([date, values]) => ({
         date: format(parseISO(date), 'dd MMM'),
-        Collection: values.collection,
-        Expense: values.expense,
+        collection: values.collection,
+        expense: -values.expense,
       }));
   }, [collections, expenses, rangeType, customStartDate, customEndDate, minDate, maxDate]);
 
   return (
     <div className="theme-card bg-white rounded-lg shadow-md p-4 sm:p-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
-        <h3 className="text-base sm:text-lg font-semibold text-gray-800">Collection vs Expense</h3>
+        <h3 className="text-base sm:text-lg font-semibold text-gray-800">{title}</h3>
         <div className="flex flex-col xs:flex-row gap-2 w-full sm:w-auto">
           <select
             value={rangeType}
@@ -147,27 +145,15 @@ export default function CollectionVsExpenseChart({
         <div className="overflow-x-auto">
           <div className="min-w-[300px]">
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+              <BarChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" tick={{ fontSize: 11 }} />
                 <YAxis tick={{ fontSize: 11 }} />
-                <Tooltip formatter={(value: number | undefined) => `₹${(value ?? 0).toFixed(2)}`} />
-                <Legend wrapperStyle={{ fontSize: '12px' }} />
-                <Line
-                  type="monotone"
-                  dataKey="Collection"
-                  stroke="#10b981"
-                  strokeWidth={2}
-                  dot={{ fill: '#10b981', r: 3 }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="Expense"
-                  stroke="#ef4444"
-                  strokeWidth={2}
-                  dot={{ fill: '#ef4444', r: 3 }}
-                />
-              </LineChart>
+                <Tooltip formatter={(value: number | undefined) => `₹${Math.abs(value ?? 0).toFixed(2)}`} />
+                <ReferenceLine y={0} stroke="#666" strokeWidth={2} />
+                <Bar dataKey="collection" fill="#10b981" name="Collection" />
+                <Bar dataKey="expense" fill="#ef4444" name="Expense" />
+              </BarChart>
             </ResponsiveContainer>
           </div>
         </div>

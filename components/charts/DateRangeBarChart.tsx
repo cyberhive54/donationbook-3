@@ -1,38 +1,30 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Collection, Expense } from '@/types';
-import { format, parseISO, subDays, startOfDay, endOfDay } from 'date-fns';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { format, parseISO, subDays } from 'date-fns';
 
-interface CollectionVsExpenseChartProps {
-  collections: Collection[];
-  expenses: Expense[];
-  festivalStartDate?: string | null;
-  festivalEndDate?: string | null;
+interface DateRangeBarChartProps {
+  data: { date: string; amount?: number; total_amount?: number }[];
+  title: string;
+  color?: string;
 }
 
-export default function CollectionVsExpenseChart({
-  collections,
-  expenses,
-  festivalStartDate,
-  festivalEndDate,
-}: CollectionVsExpenseChartProps) {
+export default function DateRangeBarChart({
+  data,
+  title,
+  color = '#3b82f6',
+}: DateRangeBarChartProps) {
   const [rangeType, setRangeType] = useState<'all' | '7days' | 'custom'>('all');
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
 
   const { minDate, maxDate } = useMemo(() => {
-    const allDates = [
-      ...collections.map(c => c.date),
-      ...expenses.map(e => e.date)
-    ].filter(Boolean);
-
-    if (allDates.length === 0) {
+    if (data.length === 0) {
       return { minDate: null, maxDate: null };
     }
 
-    const dates = allDates.map(d => new Date(d));
+    const dates = data.map(d => new Date(d.date));
     const min = new Date(Math.min(...dates.map(d => d.getTime())));
     const max = new Date(Math.max(...dates.map(d => d.getTime())));
 
@@ -40,10 +32,10 @@ export default function CollectionVsExpenseChart({
       minDate: format(min, 'yyyy-MM-dd'),
       maxDate: format(max, 'yyyy-MM-dd')
     };
-  }, [collections, expenses]);
+  }, [data]);
 
   const chartData = useMemo(() => {
-    if (!minDate || !maxDate) return [];
+    if (!minDate || !maxDate || data.length === 0) return [];
 
     let startDate: Date;
     let endDate: Date;
@@ -60,44 +52,35 @@ export default function CollectionVsExpenseChart({
       endDate = parseISO(customEndDate);
     }
 
-    const dateMap = new Map<string, { collection: number; expense: number }>();
+    const dateMap = new Map<string, number>();
     
     let current = new Date(startDate);
     while (current <= endDate) {
       const dateStr = format(current, 'yyyy-MM-dd');
-      dateMap.set(dateStr, { collection: 0, expense: 0 });
+      dateMap.set(dateStr, 0);
       current.setDate(current.getDate() + 1);
     }
 
-    collections.forEach((item) => {
+    data.forEach((item) => {
       const itemDate = format(new Date(item.date), 'yyyy-MM-dd');
       if (dateMap.has(itemDate)) {
-        const existing = dateMap.get(itemDate)!;
-        existing.collection += Number(item.amount || 0);
-      }
-    });
-
-    expenses.forEach((item) => {
-      const itemDate = format(new Date(item.date), 'yyyy-MM-dd');
-      if (dateMap.has(itemDate)) {
-        const existing = dateMap.get(itemDate)!;
-        existing.expense += Number(item.total_amount || 0);
+        const amount = item.amount ?? item.total_amount ?? 0;
+        dateMap.set(itemDate, dateMap.get(itemDate)! + Number(amount));
       }
     });
 
     return Array.from(dateMap.entries())
       .sort((a, b) => a[0].localeCompare(b[0]))
-      .map(([date, values]) => ({
+      .map(([date, amount]) => ({
         date: format(parseISO(date), 'dd MMM'),
-        Collection: values.collection,
-        Expense: values.expense,
+        amount,
       }));
-  }, [collections, expenses, rangeType, customStartDate, customEndDate, minDate, maxDate]);
+  }, [data, rangeType, customStartDate, customEndDate, minDate, maxDate]);
 
   return (
     <div className="theme-card bg-white rounded-lg shadow-md p-4 sm:p-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
-        <h3 className="text-base sm:text-lg font-semibold text-gray-800">Collection vs Expense</h3>
+        <h3 className="text-base sm:text-lg font-semibold text-gray-800">{title}</h3>
         <div className="flex flex-col xs:flex-row gap-2 w-full sm:w-auto">
           <select
             value={rangeType}
@@ -147,27 +130,13 @@ export default function CollectionVsExpenseChart({
         <div className="overflow-x-auto">
           <div className="min-w-[300px]">
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+              <BarChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" tick={{ fontSize: 11 }} />
                 <YAxis tick={{ fontSize: 11 }} />
                 <Tooltip formatter={(value: number | undefined) => `₹${(value ?? 0).toFixed(2)}`} />
-                <Legend wrapperStyle={{ fontSize: '12px' }} />
-                <Line
-                  type="monotone"
-                  dataKey="Collection"
-                  stroke="#10b981"
-                  strokeWidth={2}
-                  dot={{ fill: '#10b981', r: 3 }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="Expense"
-                  stroke="#ef4444"
-                  strokeWidth={2}
-                  dot={{ fill: '#ef4444', r: 3 }}
-                />
-              </LineChart>
+                <Bar dataKey="amount" fill={color} />
+              </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
