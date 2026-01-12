@@ -590,27 +590,27 @@ function SuperAdminDashboardContent() {
         </div>
       ) : !festival ? (
         <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="theme-card bg-white rounded-lg shadow-md p-8 text-center">
-            <p className="text-gray-700">Festival not found.</p>
+          <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
+            <p className="text-gray-700 dark:text-gray-300">Festival not found.</p>
           </div>
         </div>
       ) : (
         <>
           {/* Fixed Top Navbar - 2 Lines */}
-          <div className="sticky top-0 z-40 bg-white border-b shadow-sm">
+          <div className="sticky top-0 z-40 bg-white dark:bg-gray-800 border-b shadow-sm">
             <div className="max-w-7xl mx-auto px-4">
               {/* Line 1: Festival Code, Login Info, Switch to Admin, Logout */}
-              <div className="py-3 border-b border-gray-200">
+              <div className="py-3 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <div>
-                      <p className="text-xs text-gray-500">Festival Code</p>
-                      <p className="text-sm font-bold text-gray-900">{festival.code}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Festival Code</p>
+                      <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{festival.code}</p>
                     </div>
                   </div>
                   
                   <div className="flex flex-wrap items-center gap-2 text-sm">
-                    <span className="text-gray-600">
+                    <span className="text-gray-600 dark:text-gray-300">
                       Logged in as <span className="font-semibold text-purple-600">Super Admin</span>
                     </span>
                     
@@ -635,7 +635,7 @@ function SuperAdminDashboardContent() {
               
               {/* Line 2: Main Tabs */}
               <div className="overflow-x-auto">
-                <div className="flex border-b border-gray-200">
+                <div className="flex border-b border-gray-200 dark:border-gray-700">
                   <button
                     onClick={() => handleTabChange("home")}
                     className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
@@ -687,7 +687,7 @@ function SuperAdminDashboardContent() {
             {currentTab === "home" && (
               <div className="space-y-6">
                 {/* Sub-tabs for Home */}
-                <div className="bg-white border-b border-gray-200 rounded-t-lg">
+                <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 rounded-t-lg">
                   <div className="flex overflow-x-auto">
                     <button
                       onClick={() => handleSubTabChange("info")}
@@ -725,9 +725,9 @@ function SuperAdminDashboardContent() {
                 {/* Info Sub-tab */}
                 {(currentSubTab === "info" || !currentSubTab) && (
                   <div className="space-y-6">
-                    <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                    <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                       <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-bold text-gray-800">Festival Information</h3>
+                        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">Festival Information</h3>
                         <div className="group relative">
                           <HelpCircle className="w-5 h-5 text-gray-400 hover:text-purple-600 cursor-help" />
                           <div className="absolute right-0 top-full mt-2 w-64 bg-gray-900 text-white text-xs rounded-lg p-3 shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
@@ -761,20 +761,20 @@ function SuperAdminDashboardContent() {
 
                 {/* Banner Sub-tab */}
                 {currentSubTab === "banner" && (
-                  <div className="theme-card bg-white rounded-lg shadow-md p-6">
-                    <h3 className="text-lg font-bold text-gray-800 mb-4">Banner Visibility Settings</h3>
-                    <p className="text-sm text-gray-600 mb-4">Control what information is displayed in the festival banner</p>
+                  <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Banner Visibility Settings</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">Control what information is displayed in the festival banner</p>
 
                     <div className="space-y-3">
-                      <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg bg-gray-50">
-                        <span className="text-sm text-gray-700">
-                          Festival Name <span className="text-xs text-gray-500">(always shown)</span>
+                      <div className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700">
+                        <span className="text-sm text-gray-700 dark:text-gray-300">
+                          Festival Name <span className="text-xs text-gray-500 dark:text-gray-400">(always shown)</span>
                         </span>
                         <Toggle id="banner_name" checked={true} onChange={() => {}} disabled={true} />
                       </div>
 
-                      <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
-                        <span className="text-sm text-gray-700">Organiser</span>
+                      <div className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700">
+                        <span className="text-sm text-gray-700 dark:text-gray-300">Organiser</span>
                         <Toggle
                           id="banner_organiser"
                           checked={bannerSettings.banner_show_organiser}
@@ -782,8 +782,8 @@ function SuperAdminDashboardContent() {
                         />
                       </div>
 
-                      <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
-                        <span className="text-sm text-gray-700">Guide</span>
+                      <div className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700">
+                        <span className="text-sm text-gray-700 dark:text-gray-300">Guide</span>
                         <Toggle
                           id="banner_guide"
                           checked={bannerSettings.banner_show_guide}
@@ -791,8 +791,8 @@ function SuperAdminDashboardContent() {
                         />
                       </div>
 
-                      <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
-                        <span className="text-sm text-gray-700">Mentor</span>
+                      <div className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700">
+                        <span className="text-sm text-gray-700 dark:text-gray-300">Mentor</span>
                         <Toggle
                           id="banner_mentor"
                           checked={bannerSettings.banner_show_mentor}
@@ -800,8 +800,8 @@ function SuperAdminDashboardContent() {
                         />
                       </div>
 
-                      <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
-                        <span className="text-sm text-gray-700">Location</span>
+                      <div className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700">
+                        <span className="text-sm text-gray-700 dark:text-gray-300">Location</span>
                         <Toggle
                           id="banner_location"
                           checked={bannerSettings.banner_show_location}
@@ -809,8 +809,8 @@ function SuperAdminDashboardContent() {
                         />
                       </div>
 
-                      <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
-                        <span className="text-sm text-gray-700">Festival Dates</span>
+                      <div className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700">
+                        <span className="text-sm text-gray-700 dark:text-gray-300">Festival Dates</span>
                         <Toggle
                           id="banner_dates"
                           checked={bannerSettings.banner_show_dates}
@@ -818,8 +818,8 @@ function SuperAdminDashboardContent() {
                         />
                       </div>
 
-                      <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
-                        <span className="text-sm text-gray-700">Duration</span>
+                      <div className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700">
+                        <span className="text-sm text-gray-700 dark:text-gray-300">Duration</span>
                         <Toggle
                           id="banner_duration"
                           checked={bannerSettings.banner_show_duration}
@@ -827,8 +827,8 @@ function SuperAdminDashboardContent() {
                         />
                       </div>
 
-                      <div className="pt-3 border-t border-gray-200">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Admin Display Preference</label>
+                      <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Admin Display Preference</label>
                         <div className="flex gap-4">
                           <label className="flex items-center gap-2">
                             <input
@@ -837,9 +837,9 @@ function SuperAdminDashboardContent() {
                               value="code"
                               checked={bannerSettings.admin_display_preference === "code"}
                               onChange={(e) => setBannerSettings({ ...bannerSettings, admin_display_preference: "code" })}
-                              className="w-4 h-4 text-purple-600 border-gray-300 focus:ring-purple-500"
+                              className="w-4 h-4 text-purple-600 border-gray-300 dark:border-gray-600 focus:ring-purple-500"
                             />
-                            <span className="text-sm text-gray-700">Show Admin Code</span>
+                            <span className="text-sm text-gray-700 dark:text-gray-300">Show Admin Code</span>
                           </label>
                           <label className="flex items-center gap-2">
                             <input
@@ -848,9 +848,9 @@ function SuperAdminDashboardContent() {
                               value="name"
                               checked={bannerSettings.admin_display_preference === "name"}
                               onChange={(e) => setBannerSettings({ ...bannerSettings, admin_display_preference: "name" })}
-                              className="w-4 h-4 text-purple-600 border-gray-300 focus:ring-purple-500"
+                              className="w-4 h-4 text-purple-600 border-gray-300 dark:border-gray-600 focus:ring-purple-500"
                             />
-                            <span className="text-sm text-gray-700">Show Admin Name</span>
+                            <span className="text-sm text-gray-700 dark:text-gray-300">Show Admin Name</span>
                           </label>
                         </div>
                       </div>
@@ -867,7 +867,7 @@ function SuperAdminDashboardContent() {
 
                 {/* Festival Code Sub-tab */}
                 {currentSubTab === "festival-code" && (
-                  <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                  <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-2">
                         <Shield className="w-5 h-5" />
@@ -879,7 +879,7 @@ function SuperAdminDashboardContent() {
                       <div>
                         <label className="block text-sm font-medium mb-2">Current Festival Code</label>
                         <div className="flex items-center gap-2">
-                          <div className="flex-1 bg-gray-100 rounded px-3 py-2 font-mono font-bold">{festival?.code}</div>
+                          <div className="flex-1 bg-gray-100 dark:bg-gray-700 rounded px-3 py-2 font-mono font-bold">{festival?.code}</div>
                           <button
                             onClick={() => {
                               setNewFestivalCode(festival?.code || "")
@@ -891,7 +891,7 @@ function SuperAdminDashboardContent() {
                             Edit Code
                           </button>
                         </div>
-                        <p className="text-xs text-gray-500 mt-2">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                           Format: 6-12 characters, alphanumeric and hyphens only. Old code links will redirect automatically.
                         </p>
                       </div>
@@ -921,12 +921,12 @@ function SuperAdminDashboardContent() {
                                 setEditingFestivalCode(false)
                                 setNewFestivalCode("")
                               }}
-                              className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition"
+                              className="px-4 py-2 bg-gray-300 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-400 transition"
                             >
                               Cancel
                             </button>
                           </div>
-                          <div className="mt-2 text-xs text-gray-600">
+                          <div className="mt-2 text-xs text-gray-600 dark:text-gray-300">
                             <p>• Must be 6-12 characters long</p>
                             <p>• Can contain letters, numbers, and hyphens only</p>
                             <p>• All old links will automatically redirect to the new code</p>
@@ -943,7 +943,7 @@ function SuperAdminDashboardContent() {
             {currentTab === "settings" && (
               <div className="space-y-6">
                 {/* Sub-tabs for Settings */}
-                <div className="bg-white border-b border-gray-200 rounded-t-lg">
+                <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 rounded-t-lg">
                   <div className="flex overflow-x-auto">
                     <button
                       onClick={() => handleSubTabChange("personal")}
@@ -1000,7 +1000,7 @@ function SuperAdminDashboardContent() {
 
                 {/* Personal (Super Admin Password) Sub-tab */}
                 {(currentSubTab === "personal" || !currentSubTab) && (
-                  <div className="theme-card bg-white rounded-lg shadow-md p-6 border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-white">
+                  <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-white">
                     <div className="flex items-center gap-2 mb-4">
                       <h3 className="text-lg font-bold text-purple-900">Super Admin Password</h3>
                       <span className="px-2 py-1 bg-purple-600 text-white text-xs rounded-full">Advanced</span>
@@ -1066,11 +1066,11 @@ function SuperAdminDashboardContent() {
 
                 {/* Admin Management Sub-tab */}
                 {currentSubTab === "admin-management" && (
-                  <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                  <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-2">
                         <Shield className="w-6 h-6 text-purple-600" />
-                        <h2 className="text-2xl font-bold text-gray-800">Admin Management</h2>
+                        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Admin Management</h2>
                       </div>
                       <button
                         onClick={() => setIsCreateAdminOpen(true)}
@@ -1090,13 +1090,13 @@ function SuperAdminDashboardContent() {
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
                           placeholder="Search by code or name..."
-                          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                       </div>
                       <select
                         value={filterActive}
                         onChange={(e) => setFilterActive(e.target.value as any)}
-                        className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                       >
                         <option value="all">All Admins</option>
                         <option value="active">Active Only</option>
@@ -1105,7 +1105,7 @@ function SuperAdminDashboardContent() {
                       <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value as any)}
-                        className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                       >
                         <option value="created">Sort by Created</option>
                         <option value="name">Sort by Name</option>
@@ -1114,33 +1114,33 @@ function SuperAdminDashboardContent() {
                     </div>
 
                     {/* Admin Count */}
-                    <div className="text-sm text-gray-600 mb-4">
+                    <div className="text-sm text-gray-600 dark:text-gray-300 mb-4">
                       Total Admins: {admins.length} | Active: {admins.filter((a) => a.is_active).length} | Inactive:{" "}
                       {admins.filter((a) => !a.is_active).length}
                     </div>
 
                     {/* Admin Table */}
                     {filteredAdmins.length === 0 ? (
-                      <div className="text-center py-8 text-gray-500">
+                      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                         {searchQuery || filterActive !== "all" ? "No admins match your filters" : "No admins created yet"}
                       </div>
                     ) : (
                       <div className="overflow-x-auto">
                         <table className="w-full">
-                          <thead className="bg-gray-50 border-b border-gray-200">
+                          <thead className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-700">
                             <tr>
-                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Code</th>
-                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Code</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Name</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Type</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                                 Max Passwords
                               </th>
-                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
-                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Created</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
                             </tr>
                           </thead>
-                          <tbody className="divide-y divide-gray-200">
+                          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                             {filteredAdmins.map((admin) => {
                               // Find the oldest admin with null created_by - that's the default admin
                               const nullCreatedByAdmins = admins.filter(a => !a.created_by || a.created_by === null || a.created_by === '');
@@ -1154,12 +1154,12 @@ function SuperAdminDashboardContent() {
                               const isSuperAdminCreated = (!admin.created_by || admin.created_by === null || admin.created_by === '') && !isDefaultAdmin;
                               
                               return (
-                                <tr key={admin.admin_id} className="hover:bg-gray-50">
-                                  <td className="px-4 py-3 text-sm font-mono text-gray-900">{admin.admin_code}</td>
-                                  <td className="px-4 py-3 text-sm text-gray-900">{admin.admin_name}</td>
+                                <tr key={admin.admin_id} className="hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700">
+                                  <td className="px-4 py-3 text-sm font-mono text-gray-900 dark:text-gray-100">{admin.admin_code}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{admin.admin_name}</td>
                                   <td className="px-4 py-3 text-sm">
                                     {isDefaultAdmin ? (
-                                      <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
+                                      <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 rounded-full text-xs font-medium">
                                         Default
                                       </span>
                                     ) : isSuperAdminCreated ? (
@@ -1167,32 +1167,32 @@ function SuperAdminDashboardContent() {
                                         Super Admin
                                       </span>
                                     ) : (
-                                      <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">
+                                      <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full text-xs">
                                         Regular
                                       </span>
                                     )}
                                   </td>
                                   <td className="px-4 py-3 text-sm">
                                     {admin.is_active ? (
-                                      <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">Active</span>
+                                      <span className="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-700 rounded-full text-xs">Active</span>
                                     ) : (
-                                      <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs">Inactive</span>
+                                      <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs">Inactive</span>
                                     )}
                                   </td>
-                                  <td className="px-4 py-3 text-sm text-gray-600">{admin.max_user_passwords}</td>
-                                  <td className="px-4 py-3 text-sm text-gray-600">{formatDate(admin.created_at)}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{admin.max_user_passwords}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{formatDate(admin.created_at)}</td>
                                   <td className="px-4 py-3 text-sm">
                                     <div className="flex gap-2">
                                       <button
                                         onClick={() => handleEditAdmin(admin)}
-                                        className="p-1 hover:bg-blue-100 rounded transition-colors"
+                                        className="p-1 hover:bg-blue-100 dark:bg-blue-900 rounded transition-colors"
                                         title="Edit"
                                       >
                                         <Edit className="w-4 h-4 text-blue-600" />
                                       </button>
                                       <button
                                         onClick={() => handleDeleteAdmin(admin)}
-                                        className="p-1 hover:bg-red-100 rounded transition-colors"
+                                        className="p-1 hover:bg-red-100 dark:bg-red-900 rounded transition-colors"
                                         title="Delete"
                                       >
                                         <Trash2 className="w-4 h-4 text-red-600" />
@@ -1211,7 +1211,7 @@ function SuperAdminDashboardContent() {
 
                 {/* Media Storage Sub-tab */}
                 {currentSubTab === "media-storage" && (
-                  <div className="theme-card bg-white rounded-lg shadow-md p-6 border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white">
+                  <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white">
                     <div className="flex items-center gap-2 mb-4">
                       <h3 className="text-lg font-bold text-blue-900">Storage Limit Settings</h3>
                       <span className="px-2 py-1 bg-blue-600 text-white text-xs rounded-full">Media</span>
@@ -1221,7 +1221,7 @@ function SuperAdminDashboardContent() {
                     {editingStorageSettings ? (
                       <div className="space-y-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Total Storage Limit (MB) <span className="text-red-500">*</span>
                           </label>
                           <input
@@ -1232,11 +1232,11 @@ function SuperAdminDashboardContent() {
                             onChange={(e) => setStorageSettings({...storageSettings, max_storage_mb: Number(e.target.value)})}
                             className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                           />
-                          <p className="text-xs text-gray-500 mt-1">Range: 100MB - 10000MB (10GB). Default: 400MB</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Range: 100MB - 10000MB (10GB). Default: 400MB</p>
                         </div>
                         
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Max Video File Size (MB) <span className="text-red-500">*</span>
                           </label>
                           <input
@@ -1247,11 +1247,11 @@ function SuperAdminDashboardContent() {
                             onChange={(e) => setStorageSettings({...storageSettings, max_video_size_mb: Number(e.target.value)})}
                             className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                           />
-                          <p className="text-xs text-gray-500 mt-1">Range: 10MB - 500MB. Default: 50MB</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Range: 10MB - 500MB. Default: 50MB</p>
                         </div>
                         
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Max File Size (MB) - Images, Audio, PDFs <span className="text-red-500">*</span>
                           </label>
                           <input
@@ -1262,7 +1262,7 @@ function SuperAdminDashboardContent() {
                             onChange={(e) => setStorageSettings({...storageSettings, max_file_size_mb: Number(e.target.value)})}
                             className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                           />
-                          <p className="text-xs text-gray-500 mt-1">Range: 1MB - 100MB. Default: 15MB</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Range: 1MB - 100MB. Default: 15MB</p>
                         </div>
                         
                         <div className="flex gap-2 pt-2">
@@ -1281,7 +1281,7 @@ function SuperAdminDashboardContent() {
                                 max_file_size_mb: festival?.max_file_size_mb || 15,
                               })
                             }}
-                            className="px-4 py-2 border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors"
+                            className="px-4 py-2 border border-blue-300 rounded-lg hover:bg-blue-50 dark:bg-blue-950 dark:hover:bg-blue-900 transition-colors"
                           >
                             Cancel
                           </button>
@@ -1289,21 +1289,21 @@ function SuperAdminDashboardContent() {
                       </div>
                     ) : (
                       <div className="space-y-3">
-                        <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
-                          <span className="text-sm font-medium text-gray-700">Total Storage Limit</span>
+                        <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200">
+                          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Total Storage Limit</span>
                           <span className="text-sm font-bold text-blue-900">{festival.max_storage_mb || 400} MB</span>
                         </div>
-                        <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
-                          <span className="text-sm font-medium text-gray-700">Max Video File Size</span>
+                        <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200">
+                          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Max Video File Size</span>
                           <span className="text-sm font-bold text-blue-900">{festival.max_video_size_mb || 50} MB</span>
                         </div>
-                        <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
-                          <span className="text-sm font-medium text-gray-700">Max Other File Size</span>
+                        <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200">
+                          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Max Other File Size</span>
                           <span className="text-sm font-bold text-blue-900">{festival.max_file_size_mb || 15} MB</span>
                         </div>
                         <button
                           onClick={() => setEditingStorageSettings(true)}
-                          className="w-full px-4 py-2 border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors flex items-center justify-center gap-2"
+                          className="w-full px-4 py-2 border border-blue-300 rounded-lg hover:bg-blue-50 dark:bg-blue-950 dark:hover:bg-blue-900 transition-colors flex items-center justify-center gap-2"
                         >
                           <Edit className="w-4 h-4" />
                           Edit Storage Limits
@@ -1320,11 +1320,11 @@ function SuperAdminDashboardContent() {
 
                 {/* Analytics Sub-tab */}
                 {currentSubTab === "analytics" && (
-                  <div className="theme-card bg-white rounded-lg shadow-md p-6">
+                  <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                     <div className="flex items-center justify-between mb-4">
                       <div>
-                        <h3 className="text-lg font-bold text-gray-800">Analytics Cards Configuration</h3>
-                        <p className="text-sm text-gray-600 mt-1">Manage which analytics cards are shown on the visitor analytics page</p>
+                        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">Analytics Cards Configuration</h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Manage which analytics cards are shown on the visitor analytics page</p>
                       </div>
                       <button
                         onClick={() => setIsAnalyticsCardsOpen(true)}
@@ -1345,7 +1345,7 @@ function SuperAdminDashboardContent() {
 
                 {/* Danger Sub-tab */}
                 {currentSubTab === "danger" && (
-                  <div className="theme-card bg-white rounded-lg shadow-md p-6 border-2 border-red-200 bg-gradient-to-br from-red-50 to-white">
+                  <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-2 border-red-200 bg-gradient-to-br from-red-50 to-white">
                     <div className="flex items-center gap-2 mb-4">
                       <h3 className="text-lg font-bold text-red-900">Danger Zone</h3>
                       <span className="px-2 py-1 bg-red-600 text-white text-xs rounded-full">Destructive</span>
@@ -1369,7 +1369,7 @@ function SuperAdminDashboardContent() {
             {currentTab === "activity" && (
               <div className="space-y-6">
                 {/* Sub-tabs for Activity */}
-                <div className="bg-white border-b border-gray-200 rounded-t-lg">
+                <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 rounded-t-lg">
                   <div className="flex overflow-x-auto">
                     <button
                       onClick={() => handleSubTabChange("own")}
@@ -1416,9 +1416,9 @@ function SuperAdminDashboardContent() {
 
                 {/* Own Activity Sub-tab */}
                 {(currentSubTab === "own" || !currentSubTab) && (
-                  <div className="theme-card bg-white rounded-lg shadow-md p-6">
-                    <h3 className="text-lg font-bold text-gray-800 mb-4">My Activity</h3>
-                    <p className="text-sm text-gray-600 mb-4">Super admin actions and system activities</p>
+                  <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">My Activity</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">Super admin actions and system activities</p>
                     
                     {/* Search and Filters */}
                     <div className="flex flex-col sm:flex-row gap-2 mb-4">
@@ -1432,7 +1432,7 @@ function SuperAdminDashboardContent() {
                             setOwnSearchTerm(e.target.value)
                             setOwnCurrentPage(1)
                           }}
-                          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+                          className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
                         />
                       </div>
                       <select
@@ -1441,7 +1441,7 @@ function SuperAdminDashboardContent() {
                           setOwnActionFilter(e.target.value)
                           setOwnCurrentPage(1)
                         }}
-                        className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
                       >
                         <option value="all">All Actions</option>
                         {ownActionTypes.map((type: string) => (
@@ -1453,28 +1453,28 @@ function SuperAdminDashboardContent() {
                     {/* Table */}
                     <div className="overflow-x-auto">
                       <table className="w-full">
-                        <thead className="bg-gray-50">
+                        <thead className="bg-gray-50 dark:bg-gray-700">
                           <tr>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Date & Time</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Action</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Target</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Details</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Date & Time</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Action</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Target</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Details</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-200">
+                        <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                           {paginatedOwnActivity.length === 0 ? (
                             <tr>
-                              <td colSpan={4} className="px-4 py-8 text-center text-gray-500">
+                              <td colSpan={4} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                                 No activity found
                               </td>
                             </tr>
                           ) : (
                             paginatedOwnActivity.map((log) => (
-                              <tr key={log.log_id} className="hover:bg-gray-50">
-                                <td className="px-4 py-3 text-sm text-gray-900">
+                              <tr key={log.log_id} className="hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700">
+                                <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                                   {formatDate(log.timestamp)}
                                   <br />
-                                  <span className="text-xs text-gray-500">
+                                  <span className="text-xs text-gray-500 dark:text-gray-400">
                                     {new Date(log.timestamp).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
                                   </span>
                                 </td>
@@ -1483,10 +1483,10 @@ function SuperAdminDashboardContent() {
                                     {log.action_type}
                                   </span>
                                 </td>
-                                <td className="px-4 py-3 text-sm text-gray-900">
+                                <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                                   {log.target_type || "N/A"}
                                 </td>
-                                <td className="px-4 py-3 text-sm text-gray-600">
+                                <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
                                   {log.action_details ? JSON.stringify(log.action_details).substring(0, 50) + "..." : "N/A"}
                                 </td>
                               </tr>
@@ -1499,7 +1499,7 @@ function SuperAdminDashboardContent() {
                     {/* Pagination */}
                     {ownTotalPages > 1 && (
                       <div className="flex items-center justify-between mt-4">
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-600 dark:text-gray-300">
                           Showing {((ownCurrentPage - 1) * ownRecordsPerPage) + 1} to{" "}
                           {Math.min(ownCurrentPage * ownRecordsPerPage, filteredOwnActivity.length)} of{" "}
                           {filteredOwnActivity.length} entries
@@ -1508,17 +1508,17 @@ function SuperAdminDashboardContent() {
                           <button
                             onClick={() => setOwnCurrentPage(p => Math.max(1, p - 1))}
                             disabled={ownCurrentPage === 1}
-                            className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="p-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             <ChevronLeft className="w-4 h-4" />
                           </button>
-                          <span className="text-sm text-gray-600">
+                          <span className="text-sm text-gray-600 dark:text-gray-300">
                             Page {ownCurrentPage} of {ownTotalPages}
                           </span>
                           <button
                             onClick={() => setOwnCurrentPage(p => Math.min(ownTotalPages, p + 1))}
                             disabled={ownCurrentPage === ownTotalPages}
-                            className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="p-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             <ChevronRight className="w-4 h-4" />
                           </button>
@@ -1530,9 +1530,9 @@ function SuperAdminDashboardContent() {
 
                 {/* Transactions Sub-tab */}
                 {currentSubTab === "transactions" && (
-                  <div className="theme-card bg-white rounded-lg shadow-md p-6">
-                    <h3 className="text-lg font-bold text-gray-800 mb-4">All Transactions</h3>
-                    <p className="text-sm text-gray-600 mb-4">Complete collection and expense history with management</p>
+                  <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">All Transactions</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">Complete collection and expense history with management</p>
                     
                     {/* Search and Filters */}
                     <div className="flex flex-col sm:flex-row gap-2 mb-4">
@@ -1546,7 +1546,7 @@ function SuperAdminDashboardContent() {
                             setTxnSearchTerm(e.target.value)
                             setTxnCurrentPage(1)
                           }}
-                          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+                          className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
                         />
                       </div>
                       <select
@@ -1555,7 +1555,7 @@ function SuperAdminDashboardContent() {
                           setTxnTypeFilter(e.target.value as any)
                           setTxnCurrentPage(1)
                         }}
-                        className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
                       >
                         <option value="all">All Types</option>
                         <option value="collection">Collections Only</option>
@@ -1566,28 +1566,28 @@ function SuperAdminDashboardContent() {
                     {/* Table */}
                     <div className="overflow-x-auto">
                       <table className="w-full">
-                        <thead className="bg-gray-50">
+                        <thead className="bg-gray-50 dark:bg-gray-700">
                           <tr>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Type</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Date</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Time</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Name/Item</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Amount</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Transaction To</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">By Admin</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Actions</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Type</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Date</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Time</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Name/Item</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Amount</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Transaction To</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">By Admin</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Actions</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-200">
+                        <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                           {paginatedTransactions.length === 0 ? (
                             <tr>
-                              <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                              <td colSpan={8} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                                 No transactions found
                               </td>
                             </tr>
                           ) : (
                             paginatedTransactions.map((txn) => (
-                              <tr key={txn.id} className="hover:bg-gray-50">
+                              <tr key={txn.id} className="hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700">
                                 <td className="px-4 py-3">
                                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                                     txn.type === "collection"
@@ -1597,32 +1597,32 @@ function SuperAdminDashboardContent() {
                                     {txn.type === "collection" ? "Collection" : "Expense"}
                                   </span>
                                 </td>
-                                <td className="px-4 py-3 text-sm text-gray-900">{formatDate(txn.date)}</td>
-                                <td className="px-4 py-3 text-sm text-gray-600">
+                                <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{formatDate(txn.date)}</td>
+                                <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
                                   {formatTime(txn.time_hour, txn.time_minute) || "N/A"}
                                 </td>
-                                <td className="px-4 py-3 text-sm text-gray-900">{txn.name}</td>
+                                <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{txn.name}</td>
                                 <td className={`px-4 py-3 text-sm font-semibold ${
                                   txn.type === "collection" ? "text-green-600" : "text-red-600"
                                 }`}>
                                   {formatCurrency(txn.amount)}
                                 </td>
-                                <td className="px-4 py-3 text-sm text-gray-900">{txn.collected_by}</td>
-                                <td className="px-4 py-3 text-sm text-gray-900">
+                                <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{txn.collected_by}</td>
+                                <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                                   {getAdminDisplay(txn.admin_code, txn.admin_name)}
                                 </td>
                                 <td className="px-4 py-3">
                                   <div className="flex items-center gap-2">
                                     <button
                                       onClick={() => toast("Edit functionality coming soon")}
-                                      className="p-1 hover:bg-blue-100 rounded transition-colors"
+                                      className="p-1 hover:bg-blue-100 dark:bg-blue-900 rounded transition-colors"
                                       title="Edit"
                                     >
                                       <Edit className="w-4 h-4 text-blue-600" />
                                     </button>
                                     <button
                                       onClick={() => handleDeleteTransaction(txn.id, txn.type)}
-                                      className="p-1 hover:bg-red-100 rounded transition-colors"
+                                      className="p-1 hover:bg-red-100 dark:bg-red-900 rounded transition-colors"
                                       title="Delete"
                                     >
                                       <Trash2 className="w-4 h-4 text-red-600" />
@@ -1639,7 +1639,7 @@ function SuperAdminDashboardContent() {
                     {/* Pagination */}
                     {txnTotalPages > 1 && (
                       <div className="flex items-center justify-between mt-4">
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-600 dark:text-gray-300">
                           Showing {((txnCurrentPage - 1) * txnRecordsPerPage) + 1} to{" "}
                           {Math.min(txnCurrentPage * txnRecordsPerPage, filteredTransactions.length)} of{" "}
                           {filteredTransactions.length} entries
@@ -1648,17 +1648,17 @@ function SuperAdminDashboardContent() {
                           <button
                             onClick={() => setTxnCurrentPage(p => Math.max(1, p - 1))}
                             disabled={txnCurrentPage === 1}
-                            className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="p-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             <ChevronLeft className="w-4 h-4" />
                           </button>
-                          <span className="text-sm text-gray-600">
+                          <span className="text-sm text-gray-600 dark:text-gray-300">
                             Page {txnCurrentPage} of {txnTotalPages}
                           </span>
                           <button
                             onClick={() => setTxnCurrentPage(p => Math.min(txnTotalPages, p + 1))}
                             disabled={txnCurrentPage === txnTotalPages}
-                            className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="p-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             <ChevronRight className="w-4 h-4" />
                           </button>
@@ -1670,9 +1670,9 @@ function SuperAdminDashboardContent() {
 
                 {/* Visitors Sub-tab */}
                 {currentSubTab === "visitors" && (
-                  <div className="theme-card bg-white rounded-lg shadow-md p-6">
-                    <h3 className="text-lg font-bold text-gray-800 mb-4">All Visitors</h3>
-                    <p className="text-sm text-gray-600 mb-4">Complete visitor access log and authentication history</p>
+                  <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">All Visitors</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">Complete visitor access log and authentication history</p>
                     
                     {/* Search */}
                     <div className="relative mb-4">
@@ -1685,40 +1685,40 @@ function SuperAdminDashboardContent() {
                           setVisitorSearchTerm(e.target.value)
                           setVisitorCurrentPage(1)
                         }}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
                       />
                     </div>
 
                     {/* Table */}
                     <div className="overflow-x-auto">
                       <table className="w-full">
-                        <thead className="bg-gray-50">
+                        <thead className="bg-gray-50 dark:bg-gray-700">
                           <tr>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Visitor Name</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Login Time</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Login Using</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Access Method</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Visitor Name</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Login Time</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Login Using</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Access Method</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-200">
+                        <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                           {paginatedVisitors.length === 0 ? (
                             <tr>
-                              <td colSpan={4} className="px-4 py-8 text-center text-gray-500">
+                              <td colSpan={4} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                                 No visitors found
                               </td>
                             </tr>
                           ) : (
                             paginatedVisitors.map((log) => (
-                              <tr key={log.id} className="hover:bg-gray-50">
-                                <td className="px-4 py-3 text-sm text-gray-900 font-medium">{log.visitor_name}</td>
-                                <td className="px-4 py-3 text-sm text-gray-900">
+                              <tr key={log.id} className="hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700">
+                                <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 font-medium">{log.visitor_name}</td>
+                                <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                                   {formatDate(log.accessed_at)}
                                   <br />
-                                  <span className="text-xs text-gray-500">
+                                  <span className="text-xs text-gray-500 dark:text-gray-400">
                                     {new Date(log.accessed_at).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
                                   </span>
                                 </td>
-                                <td className="px-4 py-3 text-sm text-gray-900">
+                                <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                                   {log.admin_id ? (
                                     <div>
                                       <div className="font-medium">
@@ -1727,7 +1727,7 @@ function SuperAdminDashboardContent() {
                                           admins.find((a: Admin) => a.admin_id === log.admin_id)?.admin_name
                                         )}
                                       </div>
-                                      <div className="text-xs text-gray-500">{log.password_used}</div>
+                                      <div className="text-xs text-gray-500 dark:text-gray-400">{log.password_used}</div>
                                     </div>
                                   ) : "N/A"}
                                 </td>
@@ -1750,7 +1750,7 @@ function SuperAdminDashboardContent() {
                     {/* Pagination */}
                     {visitorTotalPages > 1 && (
                       <div className="flex items-center justify-between mt-4">
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-600 dark:text-gray-300">
                           Showing {((visitorCurrentPage - 1) * visitorRecordsPerPage) + 1} to{" "}
                           {Math.min(visitorCurrentPage * visitorRecordsPerPage, filteredVisitors.length)} of{" "}
                           {filteredVisitors.length} entries
@@ -1759,17 +1759,17 @@ function SuperAdminDashboardContent() {
                           <button
                             onClick={() => setVisitorCurrentPage(p => Math.max(1, p - 1))}
                             disabled={visitorCurrentPage === 1}
-                            className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="p-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             <ChevronLeft className="w-4 h-4" />
                           </button>
-                          <span className="text-sm text-gray-600">
+                          <span className="text-sm text-gray-600 dark:text-gray-300">
                             Page {visitorCurrentPage} of {visitorTotalPages}
                           </span>
                           <button
                             onClick={() => setVisitorCurrentPage(p => Math.min(visitorTotalPages, p + 1))}
                             disabled={visitorCurrentPage === visitorTotalPages}
-                            className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="p-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             <ChevronRight className="w-4 h-4" />
                           </button>
@@ -1781,9 +1781,9 @@ function SuperAdminDashboardContent() {
 
                 {/* Admin Activity Sub-tab */}
                 {currentSubTab === "admins" && (
-                  <div className="theme-card bg-white rounded-lg shadow-md p-6">
-                    <h3 className="text-lg font-bold text-gray-800 mb-4">Admin Activity</h3>
-                    <p className="text-sm text-gray-600 mb-4">Track all admin actions and operations</p>
+                  <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Admin Activity</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">Track all admin actions and operations</p>
                     
                     {/* Search and Filters */}
                     <div className="flex flex-col sm:flex-row gap-2 mb-4">
@@ -1797,7 +1797,7 @@ function SuperAdminDashboardContent() {
                             setAdminSearchTerm(e.target.value)
                             setAdminCurrentPage(1)
                           }}
-                          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+                          className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
                         />
                       </div>
                       <select
@@ -1806,7 +1806,7 @@ function SuperAdminDashboardContent() {
                           setAdminActionFilter(e.target.value)
                           setAdminCurrentPage(1)
                         }}
-                        className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
                       >
                         <option value="all">All Actions</option>
                         {adminActionTypes.map((type: string) => (
@@ -1819,7 +1819,7 @@ function SuperAdminDashboardContent() {
                           setAdminFilterByAdmin(e.target.value)
                           setAdminCurrentPage(1)
                         }}
-                        className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
                       >
                         <option value="all">All Admins</option>
                         {admins.map((admin: Admin) => (
@@ -1833,44 +1833,44 @@ function SuperAdminDashboardContent() {
                     {/* Table */}
                     <div className="overflow-x-auto">
                       <table className="w-full">
-                        <thead className="bg-gray-50">
+                        <thead className="bg-gray-50 dark:bg-gray-700">
                           <tr>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Admin</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Date & Time</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Action</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Target</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Details</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Admin</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Date & Time</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Action</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Target</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Details</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-200">
+                        <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                           {paginatedAdminActivity.length === 0 ? (
                             <tr>
-                              <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
+                              <td colSpan={5} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                                 No admin activity found
                               </td>
                             </tr>
                           ) : (
                             paginatedAdminActivity.map((log) => (
-                              <tr key={log.log_id} className="hover:bg-gray-50">
-                                <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                              <tr key={log.log_id} className="hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700">
+                                <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 font-medium">
                                   {log.admin_name || "Unknown"}
                                 </td>
-                                <td className="px-4 py-3 text-sm text-gray-900">
+                                <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                                   {formatDate(log.timestamp)}
                                   <br />
-                                  <span className="text-xs text-gray-500">
+                                  <span className="text-xs text-gray-500 dark:text-gray-400">
                                     {new Date(log.timestamp).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
                                   </span>
                                 </td>
                                 <td className="px-4 py-3 text-sm">
-                                  <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                                  <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 rounded-full text-xs font-medium">
                                     {log.action_type}
                                   </span>
                                 </td>
-                                <td className="px-4 py-3 text-sm text-gray-900">
+                                <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                                   {log.target_type || "N/A"}
                                 </td>
-                                <td className="px-4 py-3 text-sm text-gray-600">
+                                <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
                                   {log.action_details ? JSON.stringify(log.action_details).substring(0, 50) + "..." : "N/A"}
                                 </td>
                               </tr>
@@ -1883,7 +1883,7 @@ function SuperAdminDashboardContent() {
                     {/* Pagination */}
                     {adminTotalPages > 1 && (
                       <div className="flex items-center justify-between mt-4">
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-600 dark:text-gray-300">
                           Showing {((adminCurrentPage - 1) * adminRecordsPerPage) + 1} to{" "}
                           {Math.min(adminCurrentPage * adminRecordsPerPage, filteredAdminActivity.length)} of{" "}
                           {filteredAdminActivity.length} entries
@@ -1892,17 +1892,17 @@ function SuperAdminDashboardContent() {
                           <button
                             onClick={() => setAdminCurrentPage(p => Math.max(1, p - 1))}
                             disabled={adminCurrentPage === 1}
-                            className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="p-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             <ChevronLeft className="w-4 h-4" />
                           </button>
-                          <span className="text-sm text-gray-600">
+                          <span className="text-sm text-gray-600 dark:text-gray-300">
                             Page {adminCurrentPage} of {adminTotalPages}
                           </span>
                           <button
                             onClick={() => setAdminCurrentPage(p => Math.min(adminTotalPages, p + 1))}
                             disabled={adminCurrentPage === adminTotalPages}
-                            className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="p-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             <ChevronRight className="w-4 h-4" />
                           </button>
@@ -1917,245 +1917,245 @@ function SuperAdminDashboardContent() {
             {/* NAVIGATION TAB */}
             {currentTab === "help" && (
               <div className="space-y-4">
-                <div className="bg-white rounded-lg shadow-md p-6">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Super Admin Dashboard Structure</h2>
-                  <p className="text-sm text-gray-600 mb-4">Navigate the super admin dashboard with this visual guide. Click links to open sections in a new tab.</p>
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Super Admin Dashboard Structure</h2>
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">Navigate the super admin dashboard with this visual guide. Click links to open sections in a new tab.</p>
                   
                   {/* Home Tab */}
-                  <div className="mb-4 border border-gray-200 rounded-lg overflow-hidden">
+                  <div className="mb-4 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                     <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4">
                       <div className="flex items-center gap-3">
                         <span className="text-2xl">🏠</span>
-                        <h3 className="text-lg font-bold text-gray-900">Home</h3>
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Home</h3>
                       </div>
                     </div>
-                    <div className="p-4 bg-white">
+                    <div className="p-4 bg-white dark:bg-gray-800">
                       <div className="mb-3 ml-4 border-l-2 border-purple-300 pl-4">
                         <div className="flex items-center gap-2 mb-2">
-                          <h4 className="font-semibold text-gray-800">Info</h4>
+                          <h4 className="font-semibold text-gray-800 dark:text-gray-100">Info</h4>
                           <a href={`/f/${code}/admin/sup/dashboard?tab=home&sub-tab=info`} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800">
                             <ExternalLink className="w-4 h-4" />
                           </a>
                         </div>
-                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                          <p className="text-sm font-medium text-gray-700">Festival Information</p>
-                          <p className="text-xs text-gray-500 mt-1">View-only festival details (edit via Admin Dashboard)</p>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Festival Information</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">View-only festival details (edit via Admin Dashboard)</p>
                         </div>
-                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                          <p className="text-sm font-medium text-gray-700">Statistics Cards</p>
-                          <p className="text-xs text-gray-500 mt-1">Total collection, expenses, donations, and balance</p>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Statistics Cards</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Total collection, expenses, donations, and balance</p>
                         </div>
                       </div>
                       <div className="mb-3 ml-4 border-l-2 border-purple-300 pl-4">
                         <div className="flex items-center gap-2 mb-2">
-                          <h4 className="font-semibold text-gray-800">Banner</h4>
+                          <h4 className="font-semibold text-gray-800 dark:text-gray-100">Banner</h4>
                           <a href={`/f/${code}/admin/sup/dashboard?tab=home&sub-tab=banner`} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800">
                             <ExternalLink className="w-4 h-4" />
                           </a>
                         </div>
-                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                          <p className="text-sm font-medium text-gray-700">Banner Visibility Settings</p>
-                          <p className="text-xs text-gray-500 mt-1">Toggle visibility of organiser, guide, mentor, location, dates, duration</p>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Banner Visibility Settings</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Toggle visibility of organiser, guide, mentor, location, dates, duration</p>
                         </div>
-                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                          <p className="text-sm font-medium text-gray-700">Admin Display Preference</p>
-                          <p className="text-xs text-gray-500 mt-1">Choose to display admin code or admin name</p>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Admin Display Preference</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Choose to display admin code or admin name</p>
                         </div>
                       </div>
                       <div className="mb-3 ml-4 border-l-2 border-purple-300 pl-4">
                         <div className="flex items-center gap-2 mb-2">
-                          <h4 className="font-semibold text-gray-800">Festival Code</h4>
+                          <h4 className="font-semibold text-gray-800 dark:text-gray-100">Festival Code</h4>
                           <a href={`/f/${code}/admin/sup/dashboard?tab=home&sub-tab=festival-code`} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800">
                             <ExternalLink className="w-4 h-4" />
                           </a>
                         </div>
-                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                          <p className="text-sm font-medium text-gray-700">Festival Code Management</p>
-                          <p className="text-xs text-gray-500 mt-1">View and update festival code (6-12 characters)</p>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Festival Code Management</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">View and update festival code (6-12 characters)</p>
                         </div>
-                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                          <p className="text-sm font-medium text-gray-700">Automatic Redirect</p>
-                          <p className="text-xs text-gray-500 mt-1">Old code links automatically redirect to new code</p>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Automatic Redirect</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Old code links automatically redirect to new code</p>
                         </div>
                       </div>
                     </div>
                   </div>
 
                   {/* Settings Tab */}
-                  <div className="mb-4 border border-gray-200 rounded-lg overflow-hidden">
+                  <div className="mb-4 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                     <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4">
                       <div className="flex items-center gap-3">
                         <span className="text-2xl">⚙️</span>
-                        <h3 className="text-lg font-bold text-gray-900">Settings</h3>
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Settings</h3>
                       </div>
                     </div>
-                    <div className="p-4 bg-white">
+                    <div className="p-4 bg-white dark:bg-gray-800">
                       <div className="mb-3 ml-4 border-l-2 border-purple-300 pl-4">
                         <div className="flex items-center gap-2 mb-2">
-                          <h4 className="font-semibold text-gray-800">Personal</h4>
+                          <h4 className="font-semibold text-gray-800 dark:text-gray-100">Personal</h4>
                           <a href={`/f/${code}/admin/sup/dashboard?tab=settings&sub-tab=personal`} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800">
                             <ExternalLink className="w-4 h-4" />
                           </a>
                         </div>
-                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                          <p className="text-sm font-medium text-gray-700">Super Admin Password</p>
-                          <p className="text-xs text-gray-500 mt-1">Update super admin dashboard access password</p>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Super Admin Password</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Update super admin dashboard access password</p>
                         </div>
                       </div>
                       <div className="mb-3 ml-4 border-l-2 border-purple-300 pl-4">
                         <div className="flex items-center gap-2 mb-2">
-                          <h4 className="font-semibold text-gray-800">Admin Management</h4>
+                          <h4 className="font-semibold text-gray-800 dark:text-gray-100">Admin Management</h4>
                           <a href={`/f/${code}/admin/sup/dashboard?tab=settings&sub-tab=admin-management`} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800">
                             <ExternalLink className="w-4 h-4" />
                           </a>
                         </div>
-                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                          <p className="text-sm font-medium text-gray-700">Create Admin</p>
-                          <p className="text-xs text-gray-500 mt-1">Add new admin accounts with custom codes and passwords</p>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Create Admin</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Add new admin accounts with custom codes and passwords</p>
                         </div>
-                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                          <p className="text-sm font-medium text-gray-700">Admin Search & Filters</p>
-                          <p className="text-xs text-gray-500 mt-1">Search by code/name, filter by status, sort by various fields</p>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Admin Search & Filters</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Search by code/name, filter by status, sort by various fields</p>
                         </div>
-                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                          <p className="text-sm font-medium text-gray-700">Admin Table</p>
-                          <p className="text-xs text-gray-500 mt-1">View all admins with type (Default/Super Admin/Regular), status, and actions</p>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Admin Table</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">View all admins with type (Default/Super Admin/Regular), status, and actions</p>
                         </div>
-                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                          <p className="text-sm font-medium text-gray-700">Edit/Delete Admins</p>
-                          <p className="text-xs text-gray-500 mt-1">Modify admin details or remove admin accounts</p>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Edit/Delete Admins</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Modify admin details or remove admin accounts</p>
                         </div>
                       </div>
                       <div className="mb-3 ml-4 border-l-2 border-purple-300 pl-4">
                         <div className="flex items-center gap-2 mb-2">
-                          <h4 className="font-semibold text-gray-800">Media Storage</h4>
+                          <h4 className="font-semibold text-gray-800 dark:text-gray-100">Media Storage</h4>
                           <a href={`/f/${code}/admin/sup/dashboard?tab=settings&sub-tab=media-storage`} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800">
                             <ExternalLink className="w-4 h-4" />
                           </a>
                         </div>
-                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                          <p className="text-sm font-medium text-gray-700">Total Storage Limit</p>
-                          <p className="text-xs text-gray-500 mt-1">Set festival-wide storage limit (100-10000 MB)</p>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Total Storage Limit</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Set festival-wide storage limit (100-10000 MB)</p>
                         </div>
-                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                          <p className="text-sm font-medium text-gray-700">Max Video File Size</p>
-                          <p className="text-xs text-gray-500 mt-1">Configure maximum video upload size (10-500 MB)</p>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Max Video File Size</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Configure maximum video upload size (10-500 MB)</p>
                         </div>
-                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                          <p className="text-sm font-medium text-gray-700">Max File Size</p>
-                          <p className="text-xs text-gray-500 mt-1">Set limit for images, audio, PDFs (1-100 MB)</p>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Max File Size</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Set limit for images, audio, PDFs (1-100 MB)</p>
                         </div>
                       </div>
                       <div className="mb-3 ml-4 border-l-2 border-purple-300 pl-4">
                         <div className="flex items-center gap-2 mb-2">
-                          <h4 className="font-semibold text-gray-800">Analytics</h4>
+                          <h4 className="font-semibold text-gray-800 dark:text-gray-100">Analytics</h4>
                           <a href={`/f/${code}/admin/sup/dashboard?tab=settings&sub-tab=analytics`} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800">
                             <ExternalLink className="w-4 h-4" />
                           </a>
                         </div>
-                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                          <p className="text-sm font-medium text-gray-700">Analytics Cards Configuration</p>
-                          <p className="text-xs text-gray-500 mt-1">Manage visibility and order of analytics cards for visitors</p>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Analytics Cards Configuration</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Manage visibility and order of analytics cards for visitors</p>
                         </div>
                       </div>
                       <div className="mb-3 ml-4 border-l-2 border-purple-300 pl-4">
                         <div className="flex items-center gap-2 mb-2">
-                          <h4 className="font-semibold text-gray-800">Danger</h4>
+                          <h4 className="font-semibold text-gray-800 dark:text-gray-100">Danger</h4>
                           <a href={`/f/${code}/admin/sup/dashboard?tab=settings&sub-tab=danger`} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800">
                             <ExternalLink className="w-4 h-4" />
                           </a>
                         </div>
-                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                          <p className="text-sm font-medium text-gray-700">Delete Festival</p>
-                          <p className="text-xs text-gray-500 mt-1">Permanently delete festival and all associated data (irreversible)</p>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Delete Festival</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Permanently delete festival and all associated data (irreversible)</p>
                         </div>
                       </div>
                     </div>
                   </div>
 
                   {/* Activity Tab */}
-                  <div className="mb-4 border border-gray-200 rounded-lg overflow-hidden">
+                  <div className="mb-4 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                     <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4">
                       <div className="flex items-center gap-3">
                         <span className="text-2xl">📝</span>
-                        <h3 className="text-lg font-bold text-gray-900">Activity</h3>
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Activity</h3>
                       </div>
                     </div>
-                    <div className="p-4 bg-white">
+                    <div className="p-4 bg-white dark:bg-gray-800">
                       <div className="mb-3 ml-4 border-l-2 border-purple-300 pl-4">
                         <div className="flex items-center gap-2 mb-2">
-                          <h4 className="font-semibold text-gray-800">My Activity</h4>
+                          <h4 className="font-semibold text-gray-800 dark:text-gray-100">My Activity</h4>
                           <a href={`/f/${code}/admin/sup/dashboard?tab=activity&sub-tab=own`} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800">
                             <ExternalLink className="w-4 h-4" />
                           </a>
                         </div>
-                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                          <p className="text-sm font-medium text-gray-700">Super Admin Actions</p>
-                          <p className="text-xs text-gray-500 mt-1">Track your super admin activities with search and filtering</p>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Super Admin Actions</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Track your super admin activities with search and filtering</p>
                         </div>
-                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                          <p className="text-sm font-medium text-gray-700">System Activities</p>
-                          <p className="text-xs text-gray-500 mt-1">View system-level operations and changes</p>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">System Activities</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">View system-level operations and changes</p>
                         </div>
                       </div>
                       <div className="mb-3 ml-4 border-l-2 border-purple-300 pl-4">
                         <div className="flex items-center gap-2 mb-2">
-                          <h4 className="font-semibold text-gray-800">All Transactions</h4>
+                          <h4 className="font-semibold text-gray-800 dark:text-gray-100">All Transactions</h4>
                           <a href={`/f/${code}/admin/sup/dashboard?tab=activity&sub-tab=transactions`} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800">
                             <ExternalLink className="w-4 h-4" />
                           </a>
                         </div>
-                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                          <p className="text-sm font-medium text-gray-700">Combined View</p>
-                          <p className="text-xs text-gray-500 mt-1">See all collections and expenses in one place</p>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Combined View</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">See all collections and expenses in one place</p>
                         </div>
-                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                          <p className="text-sm font-medium text-gray-700">Admin Attribution</p>
-                          <p className="text-xs text-gray-500 mt-1">Track which admin created each transaction</p>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Admin Attribution</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Track which admin created each transaction</p>
                         </div>
-                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                          <p className="text-sm font-medium text-gray-700">Transaction Management</p>
-                          <p className="text-xs text-gray-500 mt-1">Edit or delete any transaction with confirmation</p>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Transaction Management</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Edit or delete any transaction with confirmation</p>
                         </div>
                       </div>
                       <div className="mb-3 ml-4 border-l-2 border-purple-300 pl-4">
                         <div className="flex items-center gap-2 mb-2">
-                          <h4 className="font-semibold text-gray-800">All Visitors</h4>
+                          <h4 className="font-semibold text-gray-800 dark:text-gray-100">All Visitors</h4>
                           <a href={`/f/${code}/admin/sup/dashboard?tab=activity&sub-tab=visitors`} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800">
                             <ExternalLink className="w-4 h-4" />
                           </a>
                         </div>
-                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                          <p className="text-sm font-medium text-gray-700">Visitor Access Log</p>
-                          <p className="text-xs text-gray-500 mt-1">Complete history of visitor logins</p>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Visitor Access Log</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Complete history of visitor logins</p>
                         </div>
-                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                          <p className="text-sm font-medium text-gray-700">Authentication Details</p>
-                          <p className="text-xs text-gray-500 mt-1">See which admin/password was used for access</p>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Authentication Details</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">See which admin/password was used for access</p>
                         </div>
-                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                          <p className="text-sm font-medium text-gray-700">Access Method</p>
-                          <p className="text-xs text-gray-500 mt-1">Track login page vs direct link access</p>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Access Method</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Track login page vs direct link access</p>
                         </div>
                       </div>
                       <div className="mb-3 ml-4 border-l-2 border-purple-300 pl-4">
                         <div className="flex items-center gap-2 mb-2">
-                          <h4 className="font-semibold text-gray-800">Admin Activity</h4>
+                          <h4 className="font-semibold text-gray-800 dark:text-gray-100">Admin Activity</h4>
                           <a href={`/f/${code}/admin/sup/dashboard?tab=activity&sub-tab=admins`} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800">
                             <ExternalLink className="w-4 h-4" />
                           </a>
                         </div>
-                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                          <p className="text-sm font-medium text-gray-700">All Admin Actions</p>
-                          <p className="text-xs text-gray-500 mt-1">Monitor actions from all admin accounts</p>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">All Admin Actions</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Monitor actions from all admin accounts</p>
                         </div>
-                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                          <p className="text-sm font-medium text-gray-700">Multi-level Filtering</p>
-                          <p className="text-xs text-gray-500 mt-1">Filter by action type and specific admin</p>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Multi-level Filtering</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Filter by action type and specific admin</p>
                         </div>
-                        <div className="ml-4 mb-2 p-2 bg-gray-50 rounded border-l-2 border-gray-300">
-                          <p className="text-sm font-medium text-gray-700">Accountability Tracking</p>
-                          <p className="text-xs text-gray-500 mt-1">Full audit trail of admin operations</p>
+                        <div className="ml-4 mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded border-l-2 border-gray-300 dark:border-gray-600">
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Accountability Tracking</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Full audit trail of admin operations</p>
                         </div>
                       </div>
                     </div>

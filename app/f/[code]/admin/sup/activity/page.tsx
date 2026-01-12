@@ -343,7 +343,7 @@ function SuperAdminActivityPageContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-700">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
       </div>
     );
@@ -352,14 +352,14 @@ function SuperAdminActivityPageContent() {
   return (
     <div className={`min-h-screen pb-24 ${themeClasses}`} style={{ ...bgStyle, ...themeStyles }}>
       <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="theme-card bg-white rounded-lg shadow-md p-6 mb-6">
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">Super Admin Activity</h1>
-          <p className="text-sm text-gray-600">Complete activity overview and management</p>
+        <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">Super Admin Activity</h1>
+          <p className="text-sm text-gray-600 dark:text-gray-300">Complete activity overview and management</p>
         </div>
 
         {/* Tabs */}
-        <div className="theme-card bg-white rounded-lg shadow-md mb-6">
-          <div className="border-b border-gray-200">
+        <div className="theme-card bg-white dark:bg-gray-800 rounded-lg shadow-md mb-6">
+          <div className="border-b border-gray-200 dark:border-gray-700">
             <div className="flex overflow-x-auto">
               <button
                 onClick={() => setActiveTab('own')}
@@ -420,7 +420,7 @@ function SuperAdminActivityPageContent() {
                         setOwnSearchTerm(e.target.value);
                         setOwnCurrentPage(1);
                       }}
-                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
                     />
                   </div>
                   <select
@@ -429,7 +429,7 @@ function SuperAdminActivityPageContent() {
                       setOwnActionFilter(e.target.value);
                       setOwnCurrentPage(1);
                     }}
-                    className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
                   >
                     <option value="all">All Actions</option>
                     {ownActionTypes.map(type => (
@@ -441,28 +441,28 @@ function SuperAdminActivityPageContent() {
                 {/* Table */}
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-gray-50 dark:bg-gray-700">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Date & Time</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Action</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Target</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Details</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Date & Time</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Action</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Target</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Details</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200">
+                    <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                       {paginatedOwnActivity.length === 0 ? (
                         <tr>
-                          <td colSpan={4} className="px-4 py-8 text-center text-gray-500">
+                          <td colSpan={4} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                             No activity found
                           </td>
                         </tr>
                       ) : (
                         paginatedOwnActivity.map((log) => (
-                          <tr key={log.log_id} className="hover:bg-gray-50">
-                            <td className="px-4 py-3 text-sm text-gray-900">
+                          <tr key={log.log_id} className="hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700">
+                            <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                               {formatDate(log.timestamp)}
                               <br />
-                              <span className="text-xs text-gray-500">
+                              <span className="text-xs text-gray-500 dark:text-gray-400">
                                 {new Date(log.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                               </span>
                             </td>
@@ -471,10 +471,10 @@ function SuperAdminActivityPageContent() {
                                 {log.action_type}
                               </span>
                             </td>
-                            <td className="px-4 py-3 text-sm text-gray-900">
+                            <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                               {log.target_type || 'N/A'}
                             </td>
-                            <td className="px-4 py-3 text-sm text-gray-600">
+                            <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
                               {log.action_details ? JSON.stringify(log.action_details).substring(0, 50) + '...' : 'N/A'}
                             </td>
                           </tr>
@@ -487,7 +487,7 @@ function SuperAdminActivityPageContent() {
                 {/* Pagination */}
                 {ownTotalPages > 1 && (
                   <div className="flex items-center justify-between mt-4">
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
                       Showing {((ownCurrentPage - 1) * ownRecordsPerPage) + 1} to{' '}
                       {Math.min(ownCurrentPage * ownRecordsPerPage, filteredOwnActivity.length)} of{' '}
                       {filteredOwnActivity.length} entries
@@ -496,17 +496,17 @@ function SuperAdminActivityPageContent() {
                       <button
                         onClick={() => setOwnCurrentPage(p => Math.max(1, p - 1))}
                         disabled={ownCurrentPage === 1}
-                        className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="p-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <ChevronLeft className="w-4 h-4" />
                       </button>
-                      <span className="text-sm text-gray-600">
+                      <span className="text-sm text-gray-600 dark:text-gray-300">
                         Page {ownCurrentPage} of {ownTotalPages}
                       </span>
                       <button
                         onClick={() => setOwnCurrentPage(p => Math.min(ownTotalPages, p + 1))}
                         disabled={ownCurrentPage === ownTotalPages}
-                        className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="p-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <ChevronRight className="w-4 h-4" />
                       </button>
@@ -531,7 +531,7 @@ function SuperAdminActivityPageContent() {
                         setTxnSearchTerm(e.target.value);
                         setTxnCurrentPage(1);
                       }}
-                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
                     />
                   </div>
                   <select
@@ -540,7 +540,7 @@ function SuperAdminActivityPageContent() {
                       setTxnTypeFilter(e.target.value as any);
                       setTxnCurrentPage(1);
                     }}
-                    className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
                   >
                     <option value="all">All Types</option>
                     <option value="collection">Collections Only</option>
@@ -551,28 +551,28 @@ function SuperAdminActivityPageContent() {
                 {/* Table */}
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-gray-50 dark:bg-gray-700">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Type</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Date</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Time</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Name/Item</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Amount</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Transaction To</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">By Admin</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Actions</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Type</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Date</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Time</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Name/Item</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Amount</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Transaction To</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">By Admin</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200">
+                    <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                       {paginatedTransactions.length === 0 ? (
                         <tr>
-                          <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                          <td colSpan={8} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                             No transactions found
                           </td>
                         </tr>
                       ) : (
                         paginatedTransactions.map((txn) => (
-                          <tr key={txn.id} className="hover:bg-gray-50">
+                          <tr key={txn.id} className="hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700">
                             <td className="px-4 py-3">
                               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                                 txn.type === 'collection'
@@ -582,32 +582,32 @@ function SuperAdminActivityPageContent() {
                                 {txn.type === 'collection' ? 'Collection' : 'Expense'}
                               </span>
                             </td>
-                            <td className="px-4 py-3 text-sm text-gray-900">{formatDate(txn.date)}</td>
-                            <td className="px-4 py-3 text-sm text-gray-600">
+                            <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{formatDate(txn.date)}</td>
+                            <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
                               {formatTime(txn.time_hour, txn.time_minute) || 'N/A'}
                             </td>
-                            <td className="px-4 py-3 text-sm text-gray-900">{txn.name}</td>
+                            <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{txn.name}</td>
                             <td className={`px-4 py-3 text-sm font-semibold ${
                               txn.type === 'collection' ? 'text-green-600' : 'text-red-600'
                             }`}>
                               {formatCurrency(txn.amount)}
                             </td>
-                            <td className="px-4 py-3 text-sm text-gray-900">{txn.collected_by}</td>
-                            <td className="px-4 py-3 text-sm text-gray-900">
+                            <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{txn.collected_by}</td>
+                            <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                               {getAdminDisplay(txn.admin_code, txn.admin_name)}
                             </td>
                             <td className="px-4 py-3">
                               <div className="flex items-center gap-2">
                                 <button
                                   onClick={() => toast('Edit functionality coming soon')}
-                                  className="p-1 hover:bg-blue-100 rounded transition-colors"
+                                  className="p-1 hover:bg-blue-100 dark:bg-blue-900 rounded transition-colors"
                                   title="Edit"
                                 >
                                   <Edit className="w-4 h-4 text-blue-600" />
                                 </button>
                                 <button
                                   onClick={() => handleDeleteTransaction(txn.id, txn.type)}
-                                  className="p-1 hover:bg-red-100 rounded transition-colors"
+                                  className="p-1 hover:bg-red-100 dark:bg-red-900 rounded transition-colors"
                                   title="Delete"
                                 >
                                   <Trash2 className="w-4 h-4 text-red-600" />
@@ -624,7 +624,7 @@ function SuperAdminActivityPageContent() {
                 {/* Pagination */}
                 {txnTotalPages > 1 && (
                   <div className="flex items-center justify-between mt-4">
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
                       Showing {((txnCurrentPage - 1) * txnRecordsPerPage) + 1} to{' '}
                       {Math.min(txnCurrentPage * txnRecordsPerPage, filteredTransactions.length)} of{' '}
                       {filteredTransactions.length} entries
@@ -633,17 +633,17 @@ function SuperAdminActivityPageContent() {
                       <button
                         onClick={() => setTxnCurrentPage(p => Math.max(1, p - 1))}
                         disabled={txnCurrentPage === 1}
-                        className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="p-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <ChevronLeft className="w-4 h-4" />
                       </button>
-                      <span className="text-sm text-gray-600">
+                      <span className="text-sm text-gray-600 dark:text-gray-300">
                         Page {txnCurrentPage} of {txnTotalPages}
                       </span>
                       <button
                         onClick={() => setTxnCurrentPage(p => Math.min(txnTotalPages, p + 1))}
                         disabled={txnCurrentPage === txnTotalPages}
-                        className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="p-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <ChevronRight className="w-4 h-4" />
                       </button>
@@ -667,40 +667,40 @@ function SuperAdminActivityPageContent() {
                       setVisitorSearchTerm(e.target.value);
                       setVisitorCurrentPage(1);
                     }}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
                   />
                 </div>
 
                 {/* Table */}
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-gray-50 dark:bg-gray-700">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Visitor Name</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Login Time</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Login Using</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Access Method</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Visitor Name</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Login Time</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Login Using</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Access Method</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200">
+                    <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                       {paginatedVisitors.length === 0 ? (
                         <tr>
-                          <td colSpan={4} className="px-4 py-8 text-center text-gray-500">
+                          <td colSpan={4} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                             No visitors found
                           </td>
                         </tr>
                       ) : (
                         paginatedVisitors.map((log) => (
-                          <tr key={log.id} className="hover:bg-gray-50">
-                            <td className="px-4 py-3 text-sm text-gray-900 font-medium">{log.visitor_name}</td>
-                            <td className="px-4 py-3 text-sm text-gray-900">
+                          <tr key={log.id} className="hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700">
+                            <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 font-medium">{log.visitor_name}</td>
+                            <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                               {formatDate(log.accessed_at)}
                               <br />
-                              <span className="text-xs text-gray-500">
+                              <span className="text-xs text-gray-500 dark:text-gray-400">
                                 {new Date(log.accessed_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                               </span>
                             </td>
-                            <td className="px-4 py-3 text-sm text-gray-900">
+                            <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                               {log.admin_id ? (
                                 <div>
                                   <div className="font-medium">
@@ -709,7 +709,7 @@ function SuperAdminActivityPageContent() {
                                       admins.find(a => a.admin_id === log.admin_id)?.admin_name
                                     )}
                                   </div>
-                                  <div className="text-xs text-gray-500">{log.password_used}</div>
+                                  <div className="text-xs text-gray-500 dark:text-gray-400">{log.password_used}</div>
                                 </div>
                               ) : 'N/A'}
                             </td>
@@ -732,7 +732,7 @@ function SuperAdminActivityPageContent() {
                 {/* Pagination */}
                 {visitorTotalPages > 1 && (
                   <div className="flex items-center justify-between mt-4">
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
                       Showing {((visitorCurrentPage - 1) * visitorRecordsPerPage) + 1} to{' '}
                       {Math.min(visitorCurrentPage * visitorRecordsPerPage, filteredVisitors.length)} of{' '}
                       {filteredVisitors.length} entries
@@ -741,17 +741,17 @@ function SuperAdminActivityPageContent() {
                       <button
                         onClick={() => setVisitorCurrentPage(p => Math.max(1, p - 1))}
                         disabled={visitorCurrentPage === 1}
-                        className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="p-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <ChevronLeft className="w-4 h-4" />
                       </button>
-                      <span className="text-sm text-gray-600">
+                      <span className="text-sm text-gray-600 dark:text-gray-300">
                         Page {visitorCurrentPage} of {visitorTotalPages}
                       </span>
                       <button
                         onClick={() => setVisitorCurrentPage(p => Math.min(visitorTotalPages, p + 1))}
                         disabled={visitorCurrentPage === visitorTotalPages}
-                        className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="p-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <ChevronRight className="w-4 h-4" />
                       </button>
@@ -776,7 +776,7 @@ function SuperAdminActivityPageContent() {
                         setAdminSearchTerm(e.target.value);
                         setAdminCurrentPage(1);
                       }}
-                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
                     />
                   </div>
                   <select
@@ -785,7 +785,7 @@ function SuperAdminActivityPageContent() {
                       setAdminActionFilter(e.target.value);
                       setAdminCurrentPage(1);
                     }}
-                    className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
                   >
                     <option value="all">All Actions</option>
                     {adminActionTypes.map(type => (
@@ -798,7 +798,7 @@ function SuperAdminActivityPageContent() {
                       setAdminFilterByAdmin(e.target.value);
                       setAdminCurrentPage(1);
                     }}
-                    className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
                   >
                     <option value="all">All Admins</option>
                     {admins.map(admin => (
@@ -812,44 +812,44 @@ function SuperAdminActivityPageContent() {
                 {/* Table */}
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-gray-50 dark:bg-gray-700">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Admin</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Date & Time</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Action</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Target</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Details</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Admin</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Date & Time</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Action</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Target</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Details</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200">
+                    <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                       {paginatedAdminActivity.length === 0 ? (
                         <tr>
-                          <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
+                          <td colSpan={5} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                             No admin activity found
                           </td>
                         </tr>
                       ) : (
                         paginatedAdminActivity.map((log) => (
-                          <tr key={log.log_id} className="hover:bg-gray-50">
-                            <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                          <tr key={log.log_id} className="hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700">
+                            <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 font-medium">
                               {log.admin_name || 'Unknown'}
                             </td>
-                            <td className="px-4 py-3 text-sm text-gray-900">
+                            <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                               {formatDate(log.timestamp)}
                               <br />
-                              <span className="text-xs text-gray-500">
+                              <span className="text-xs text-gray-500 dark:text-gray-400">
                                 {new Date(log.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                               </span>
                             </td>
                             <td className="px-4 py-3 text-sm">
-                              <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                              <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 rounded-full text-xs font-medium">
                                 {log.action_type}
                               </span>
                             </td>
-                            <td className="px-4 py-3 text-sm text-gray-900">
+                            <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                               {log.target_type || 'N/A'}
                             </td>
-                            <td className="px-4 py-3 text-sm text-gray-600">
+                            <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
                               {log.action_details ? JSON.stringify(log.action_details).substring(0, 50) + '...' : 'N/A'}
                             </td>
                           </tr>
@@ -862,7 +862,7 @@ function SuperAdminActivityPageContent() {
                 {/* Pagination */}
                 {adminTotalPages > 1 && (
                   <div className="flex items-center justify-between mt-4">
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
                       Showing {((adminCurrentPage - 1) * adminRecordsPerPage) + 1} to{' '}
                       {Math.min(adminCurrentPage * adminRecordsPerPage, filteredAdminActivity.length)} of{' '}
                       {filteredAdminActivity.length} entries
@@ -871,17 +871,17 @@ function SuperAdminActivityPageContent() {
                       <button
                         onClick={() => setAdminCurrentPage(p => Math.max(1, p - 1))}
                         disabled={adminCurrentPage === 1}
-                        className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="p-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <ChevronLeft className="w-4 h-4" />
                       </button>
-                      <span className="text-sm text-gray-600">
+                      <span className="text-sm text-gray-600 dark:text-gray-300">
                         Page {adminCurrentPage} of {adminTotalPages}
                       </span>
                       <button
                         onClick={() => setAdminCurrentPage(p => Math.min(adminTotalPages, p + 1))}
                         disabled={adminCurrentPage === adminTotalPages}
-                        className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="p-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <ChevronRight className="w-4 h-4" />
                       </button>
